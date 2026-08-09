@@ -1,6 +1,8 @@
+maintainer="Your Name <you@example.com>"
 pkgname=htop
 pkgver=3.5.2
 pkgrel=0
+subpackages="$pkgname-doc"
 source="https://github.com/htop-dev/htop/releases/download/$pkgver/htop-$pkgver.tar.xz"
 # TODO(contributor): replace with the real sha256 of the tarball above —
 # left as a placeholder here since this example recipe was written
@@ -17,4 +19,12 @@ build() {
 
 package() {
     make DESTDIR="$PAYLOAD_DIR" install
+}
+
+# Matches Alpine's real htop APKBUILD (subpackages="$pkgname-doc") — man
+# pages move out into their own package instead of shipping with the
+# binary.
+doc() {
+    mkdir -p "$SUBPKG_PAYLOAD_DIR"/share/man
+    mv "$PAYLOAD_DIR"/share/man/* "$SUBPKG_PAYLOAD_DIR"/share/man/
 }

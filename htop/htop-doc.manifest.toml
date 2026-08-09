@@ -1,0 +1,32 @@
+# htop-doc.manifest.toml — subpackage of htop (man pages)
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "htop-doc"
+version          = "3.5.2"
+description      = "Man pages for htop"
+license          = "GPL-2.0-or-later"
+maintainer       = "Your Name <you@example.com>"
+homepage         = "https://htop.dev/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["htop"]
+provides         = ["htop-doc"]
+tags             = ["monitor", "system", "docs"]
+
+[install]
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
