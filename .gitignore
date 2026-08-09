@@ -1,0 +1,7 @@
+/build/
+/staging/
+*.zex
+*.zex.locked
+*.zex.locked.review.md
+*.receipt.toml
+*.spdx.json

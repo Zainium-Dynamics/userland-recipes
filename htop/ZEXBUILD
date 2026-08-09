@@ -1,0 +1,20 @@
+pkgname=htop
+pkgver=3.5.2
+pkgrel=0
+source="https://github.com/htop-dev/htop/releases/download/$pkgver/htop-$pkgver.tar.xz"
+# TODO(contributor): replace with the real sha256 of the tarball above —
+# left as a placeholder here since this example recipe was written
+# without network access to fetch and hash it.
+sha256sums="0000000000000000000000000000000000000000000000000000000000000000  htop-$pkgver.tar.xz"
+
+build() {
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/zexlib/union \
+        --disable-unicode
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+}
