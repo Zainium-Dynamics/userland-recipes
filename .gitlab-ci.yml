@@ -24,11 +24,9 @@ default:
     # a side effect (no way to opt out per-recipe) — without makeinfo that
     # fails the whole build, not just the docs.
     - apk add --no-cache bash git wget tar gzip xz build-base texinfo cargo
-    # substrate: no published release binary yet (TODO once that exists —
-    # this is the slow path meanwhile), so build it from source each run.
-    - git clone --depth 1 https://gitlab.com/alizain.arch/substrate.git /tmp/substrate-src
-    - (cd /tmp/substrate-src && cargo build --release)
-    - cp /tmp/substrate-src/target/release/substrate /usr/local/bin/substrate
+    # substrate is published on crates.io (substrate-zainium, binary name
+    # substrate) — install straight from there, no git clone/build needed.
+    - cargo install substrate-zainium --locked
 
 check:
   stage: check
@@ -60,11 +58,11 @@ release:
     REQUIRES_SYSHUB: "$REQUIRES_SYSHUB"   # set as a CI/CD variable, current syshub release
   before_script:
     - !reference [default, before_script]
-    # zex-ports: same "build from source, no release binary yet" situation
-    # as substrate above. R2_ENDPOINT/R2_BUCKET/R2_ACCESS_KEY_ID/
-    # R2_SECRET_ACCESS_KEY must be set as protected, masked CI/CD variables
-    # on this project — zex-ports reads them straight from the
-    # environment, nothing to wire here.
+    # zex-ports isn't published to crates.io yet (unlike substrate above) —
+    # build from source until it is. R2_ENDPOINT/R2_BUCKET/
+    # R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY must be set as protected,
+    # masked CI/CD variables on this project — zex-ports reads them
+    # straight from the environment, nothing to wire here.
     - git clone --depth 1 https://gitlab.com/alizain.arch/zex-port.git /tmp/zex-ports-src
     - (cd /tmp/zex-ports-src && cargo build --release)
     - cp /tmp/zex-ports-src/target/release/zex-ports /usr/local/bin/zex-ports
