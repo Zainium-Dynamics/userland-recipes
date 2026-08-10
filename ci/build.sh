@@ -43,6 +43,21 @@ mkdir -p "$SRCDIR"
 
 echo "== $pkgname $pkgver-$pkgrel =="
 
+# `--prefix=/overlayer/syshub` (see README's "Why --prefix=/overlayer/syshub
+# even for userland packages") means `make DESTDIR=$1 install` lands files
+# at $1/overlayer/syshub/{bin,lib,...} — DESTDIR prepends the configured
+# prefix, it doesn't replace it. substrate needs the flat form
+# ($1/{bin,lib,...}) to match manifest.toml's [install] map. Recipes don't
+# have to know this — every package()/subpackage function's DESTDIR gets
+# flattened right after it runs.
+flatten_prefix() {
+    dir="$1"
+    if [ -d "$dir/overlayer/syshub" ]; then
+        (cd "$dir/overlayer/syshub" && find . -mindepth 1 -maxdepth 1 -exec mv {} "$dir/" \;)
+        rm -rf "$dir/overlayer"
+    fi
+}
+
 # ── fetch + verify each URL entry in $source ─────────────────────────
 cd "$SRCDIR"
 for entry in ${source:-}; do
@@ -77,6 +92,7 @@ build
 PAYLOAD_DIR="$STAGING_ROOT/pkg/payload"
 mkdir -p "$PAYLOAD_DIR"
 package
+flatten_prefix "$PAYLOAD_DIR"
 
 cp "$RECIPE_DIR/manifest.toml" "$STAGING_ROOT/pkg/manifest.toml"
 
@@ -91,6 +107,7 @@ for sub in ${subpackages:-}; do
     SUBPKG_PAYLOAD_DIR="$STAGING_ROOT/subpkg/$sub/payload"
     mkdir -p "$SUBPKG_PAYLOAD_DIR"
     "$subfn"
+    flatten_prefix "$SUBPKG_PAYLOAD_DIR"
 
     cp "$RECIPE_DIR/$sub.manifest.toml" "$STAGING_ROOT/subpkg/$sub/manifest.toml"
 
