@@ -1,6 +1,6 @@
 # userland-recipes
 
-Community package recipes for Zainium OS userland — fork, add a recipe, open a merge request. Review *is* the MR review; once it's merged, CI builds it, packs it with [`substrate`](https://gitlab.com/alizain.arch/substrate), and publishes it to the package repository. No separate website upload/approval step.
+Community package recipes for Zainium OS userland — fork, add a recipe, open a pull request. Review *is* the PR review; once it's merged, CI builds it, packs it with [`substrate`](https://gitlab.com/alizain.arch/substrate), and publishes it to the package repository. No separate website upload/approval step.
 
 Modeled on Alpine's [aports](https://gitlab.alpinelinux.org/alpine/aports) — a `ZEXBUILD` here plays the same role an `APKBUILD` plays there.
 
@@ -9,7 +9,7 @@ Modeled on Alpine's [aports](https://gitlab.alpinelinux.org/alpine/aports) — a
 1. Fork this repo.
 2. Create `<pkgname>/ZEXBUILD` (see format below) and `<pkgname>/manifest.toml`.
 3. If you need to patch upstream source, drop `*.patch` files flat next to `ZEXBUILD` (see `htop/` for the layout — not a subfolder, matching aports convention) and apply them explicitly inside `ZEXBUILD`.
-4. Open a merge request. CI runs a build-only check automatically.
+4. Open a pull request. CI runs a build-only check automatically.
 5. On merge, CI builds, packs, and publishes for real.
 
 See `htop/` for a complete working example.
@@ -121,17 +121,22 @@ package() {
 
 Same shape `substrate pack` has always read — see `htop/manifest.toml` for a real example, or `substrate`'s own `USAGE.md` for the full field reference. A `-dev` subpackage's `manifest.toml` is a completely normal one — `package.name` is the subpackage's own name (e.g. `libfoo-dev`), not the parent's.
 
-## A note on CI time
+## CI
 
-There's no self-hosted runner behind this yet — builds run on GitLab.com's shared runners, so they're bound by its free-tier CI minutes and per-job timeout. Keep `ZEXBUILD`s lean (avoid unnecessary rebuild-the-world steps, prefer upstream's own incremental build where possible) — a recipe that reliably blows past the shared-runner timeout needs to shrink its build, not get a special exception.
+Runs on GitHub Actions (`.github/workflows/ci.yml`) — free/unlimited minutes on GitHub-hosted runners for a public repo, so no shared-runner budget to worry about. Two jobs:
 
-## CI/CD variables (project settings, protected + masked)
+- **`check`** — every pull request, build-only, no publish.
+- **`release`** — every push to `main` (i.e. every merged PR), builds and publishes for real.
 
-| Variable | Meaning |
-|---|---|
-| `SUBSTRATE_BINARY_URL` | Where CI fetches a prebuilt `substrate` binary from. |
-| `ZEX_PORTS_BINARY_URL` | Where CI fetches a prebuilt `zex-ports` binary from (the tool that uploads a built `.zex` to R2 and merges it into the ledger — only needed on `main`, not on MR check builds). |
-| `R2_ENDPOINT` | `https://<account_id>.r2.cloudflarestorage.com` |
-| `R2_BUCKET` | The R2 bucket packages publish to. |
-| `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | R2 API token (S3-compatible credentials) — publish-only scope, not full account access. |
-| `REQUIRES_SYSHUB` | Passed straight to `substrate pack --requires-syshub`. |
+Both only touch packages whose directory actually changed (`ci/changed-packages.sh`) — this repo can hold thousands of recipes, no reason to rebuild the rest on every run.
+
+`substrate` is installed straight from crates.io (`cargo install substrate-zainium --locked`). `zex-ports` isn't published yet, so `release` builds it from source each run (`gitlab.com/alizain.arch/zex-port` — that tool stays on GitLab, only the recipe repos moved here).
+
+## Repository secrets / variables (repo settings → Secrets and variables → Actions)
+
+| Name | Kind | Meaning |
+|---|---|---|
+| `R2_ENDPOINT` | secret | `https://<account_id>.r2.cloudflarestorage.com` |
+| `R2_BUCKET` | secret | The R2 bucket packages publish to. |
+| `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | secret | R2 API token (S3-compatible credentials) — publish-only scope, not full account access. |
+| `REQUIRES_SYSHUB` | variable | Passed straight to `substrate pack --requires-syshub`. |

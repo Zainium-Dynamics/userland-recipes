@@ -1,0 +1,110 @@
+# userland-recipes — GitHub Actions CI/CD
+#
+# Only ever builds packages whose directory actually changed (see
+# ci/changed-packages.sh) — this repo can hold thousands of recipes, no
+# reason to touch the rest on every run.
+#
+# GitHub-hosted runners are free/unlimited on public repos, unlike
+# GitLab.com's shared-runner free tier — that's why this lives here.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install build deps
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential texinfo xz-utils
+
+      # substrate is published on crates.io (substrate-zainium, binary
+      # name substrate) — install straight from there.
+      - name: Install substrate
+        run: cargo install substrate-zainium --locked
+
+      - name: Build changed packages
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          failed=""
+          for pkg in $(sh ci/changed-packages.sh); do
+            echo "=== check build: $pkg ==="
+            sh ci/build.sh "$pkg" || failed="$failed $pkg"
+          done
+          if [ -n "$failed" ]; then
+            echo "FAILED:$failed"
+            exit 1
+          fi
+
+      - name: Upload staging on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zexbuild-staging
+          path: .zexbuild-staging/
+          retention-days: 1
+
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      PUBLISH: "1"
+      REQUIRES_SYSHUB: ${{ vars.REQUIRES_SYSHUB }}
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install build deps
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential texinfo xz-utils
+
+      # zex-ports isn't published to crates.io yet — build from source.
+      # substrate is (substrate-zainium) — install straight from there.
+      - name: Install substrate + zex-ports
+        run: |
+          cargo install substrate-zainium --locked
+          git clone --depth 1 https://gitlab.com/alizain.arch/zex-port.git /tmp/zex-ports-src
+          (cd /tmp/zex-ports-src && cargo build --release)
+          sudo cp /tmp/zex-ports-src/target/release/zex-ports /usr/local/bin/zex-ports
+
+      - name: Build + publish changed packages
+        run: |
+          failed=""
+          for pkg in $(sh ci/changed-packages.sh); do
+            echo "=== release build: $pkg ==="
+            sh ci/build.sh "$pkg" || failed="$failed $pkg"
+          done
+          if [ -n "$failed" ]; then
+            echo "FAILED:$failed"
+            exit 1
+          fi
+
+      - name: Upload staging on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zexbuild-staging
+          path: .zexbuild-staging/
+          retention-days: 1

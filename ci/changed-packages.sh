@@ -6,8 +6,8 @@
 
 set -eu
 
-if [ -n "${CI_MERGE_REQUEST_TARGET_BRANCH_SHA:-}" ]; then
-    BASE="$CI_MERGE_REQUEST_TARGET_BRANCH_SHA"
+if [ -n "${BASE_SHA:-}" ]; then
+    BASE="$BASE_SHA"
 else
     BASE="HEAD~1"
 fi
