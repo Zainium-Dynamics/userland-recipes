@@ -1,13 +1,10 @@
-# manifest.toml — htop
-# See substrate's USAGE.md for the full field reference.
-
 [package]
-name             = "htop"
-version          = "3.5.2"
-description      = "Interactive process viewer"
-license          = "GPL-2.0-or-later"
-maintainer       = "Your Name <you@example.com>"
-homepage         = "https://htop.dev/"
+name             = "indent"
+version          = "2.2.13"
+description      = "GNU Indent — C source code formatter"
+license          = "GPL-3.0-or-later"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://www.gnu.org/software/indent/"
 build_type       = "dynamic"
 libc_target      = "musl"
 
@@ -17,8 +14,8 @@ ed25519_pubkey   = ""
 
 requires_syshub  = ""
 depends          = ["musl"]
-provides         = ["htop"]
-tags             = ["monitor", "system", "terminal"]
+provides         = ["indent"]
+tags             = ["utility", "devtools"]
 
 [install]
 bin     = "/overlayer/zexlib/union/bin"

@@ -1,0 +1,21 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=datamash
+pkgver=1.8
+pkgrel=0
+source="https://ftp.gnu.org/gnu/datamash/datamash-$pkgver.tar.gz"
+sha256sums="7ad97e8c7ef616dd03aa5bd67ae24c488272db3e7d1f5774161c18b75f29f6fd  datamash-$pkgver.tar.gz"
+
+build() {
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --mandir=/overlayer/syshub/share/man \
+        --infodir=/overlayer/syshub/share/info \
+        --localstatedir=/overlayer/syshub/var
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+}

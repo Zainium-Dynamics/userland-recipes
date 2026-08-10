@@ -1,0 +1,21 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=indent
+pkgver=2.2.13
+pkgrel=0
+source="https://ftp.gnu.org/gnu/indent/indent-$pkgver.tar.gz"
+sha256sums="9e64634fc4ce6797b204bcb8897ce14fdd0ab48ca57696f78767c59cae578095  indent-$pkgver.tar.gz"
+
+build() {
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --mandir=/overlayer/syshub/share/man \
+        --infodir=/overlayer/syshub/share/info \
+        --localstatedir=/overlayer/syshub/var
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+}

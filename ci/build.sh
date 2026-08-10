@@ -87,7 +87,7 @@ echo "-- packing $pkgname --"
 
 # ── subpackages, if any ────────────────────────────────────────────────
 for sub in ${subpackages:-}; do
-    subfn="${sub#"$pkgname"-}"   # "$pkgname-doc" -> "doc"
+    subfn="${sub#"$pkgname"-}"   # "$pkgname-dev" -> "dev"
     SUBPKG_PAYLOAD_DIR="$STAGING_ROOT/subpkg/$sub/payload"
     mkdir -p "$SUBPKG_PAYLOAD_DIR"
     "$subfn"
