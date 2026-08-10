@@ -1,0 +1,71 @@
+# userland-recipes — GitLab CI/CD
+#
+# Only ever builds packages whose directory actually changed (see
+# ci/changed-packages.sh) — this repo can hold thousands of recipes, no
+# reason to touch the rest on every pipeline.
+#
+# No self-hosted runner behind this (yet) — shared runners only, so stay
+# mindful of GitLab.com's free-tier CI minutes/timeout. See README.md's
+# "A note on CI time".
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+
+stages:
+  - check
+  - release
+
+default:
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache bash git wget tar gzip xz build-base
+    # substrate itself: prebuilt static binary, not built from source here
+    # (that's substrate's own CI's job) — TODO: pin a real release URL
+    # once substrate has published binaries; placeholder for now.
+    - wget -q -O /usr/local/bin/substrate "$SUBSTRATE_BINARY_URL" || true
+    - chmod +x /usr/local/bin/substrate || true
+
+check:
+  stage: check
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - |
+      for pkg in $(sh ci/changed-packages.sh); do
+        echo "=== check build: $pkg ==="
+        sh ci/build.sh "$pkg"
+      done
+  artifacts:
+    when: on_failure
+    expire_in: 1 day
+    paths:
+      - .zexbuild-staging/
+
+release:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  variables:
+    PUBLISH: "1"
+    REQUIRES_SYSHUB: "$REQUIRES_SYSHUB"   # set as a CI/CD variable, current syshub release
+  before_script:
+    - !reference [default, before_script]
+    # zex-ports: same prebuilt-binary approach as substrate above.
+    # R2_ENDPOINT/R2_BUCKET/R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY must be
+    # set as protected, masked CI/CD variables on this project — zex-ports
+    # reads them straight from the environment, nothing to wire here.
+    - wget -q -O /usr/local/bin/zex-ports "$ZEX_PORTS_BINARY_URL" || true
+    - chmod +x /usr/local/bin/zex-ports || true
+  script:
+    - |
+      for pkg in $(sh ci/changed-packages.sh); do
+        echo "=== release build: $pkg ==="
+        sh ci/build.sh "$pkg"
+      done
+  artifacts:
+    when: on_failure
+    expire_in: 1 day
+    paths:
+      - .zexbuild-staging/

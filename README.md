@@ -76,3 +76,14 @@ Same shape `substrate pack` has always read — see `htop/manifest.toml` for a r
 ## A note on CI time
 
 There's no self-hosted runner behind this yet — builds run on GitLab.com's shared runners, so they're bound by its free-tier CI minutes and per-job timeout. Keep `ZEXBUILD`s lean (avoid unnecessary rebuild-the-world steps, prefer upstream's own incremental build where possible) — a recipe that reliably blows past the shared-runner timeout needs to shrink its build, not get a special exception.
+
+## CI/CD variables (project settings, protected + masked)
+
+| Variable | Meaning |
+|---|---|
+| `SUBSTRATE_BINARY_URL` | Where CI fetches a prebuilt `substrate` binary from. |
+| `ZEX_PORTS_BINARY_URL` | Where CI fetches a prebuilt `zex-ports` binary from (the tool that uploads a built `.zex` to R2 and merges it into the ledger — only needed on `main`, not on MR check builds). |
+| `R2_ENDPOINT` | `https://<account_id>.r2.cloudflarestorage.com` |
+| `R2_BUCKET` | The R2 bucket packages publish to. |
+| `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | R2 API token (S3-compatible credentials) — publish-only scope, not full account access. |
+| `REQUIRES_SYSHUB` | Passed straight to `substrate pack --requires-syshub`. |
