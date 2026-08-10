@@ -97,7 +97,7 @@ flatten_prefix "$PAYLOAD_DIR"
 cp "$RECIPE_DIR/manifest.toml" "$STAGING_ROOT/pkg/manifest.toml"
 
 echo "-- packing $pkgname --"
-"$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" \
+"$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" --no-locked \
     "$STAGING_ROOT/pkg" -o "$OUT_DIR/$pkgname-$pkgver.zex" \
     2>&1 | tail -30
 
@@ -112,7 +112,7 @@ for sub in ${subpackages:-}; do
     cp "$RECIPE_DIR/$sub.manifest.toml" "$STAGING_ROOT/subpkg/$sub/manifest.toml"
 
     echo "-- packing $sub --"
-    "$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" \
+    "$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" --no-locked \
         "$STAGING_ROOT/subpkg/$sub" -o "$OUT_DIR/$sub-$pkgver.zex" \
         2>&1 | tail -30
 done
