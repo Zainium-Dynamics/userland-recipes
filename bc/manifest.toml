@@ -1,0 +1,33 @@
+[package]
+name             = "bc"
+version          = "1.08.2"
+description      = "GNU bc — arbitrary precision calculator language"
+license          = "GPL-3.0-or-later"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://www.gnu.org/software/bc/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["bc"]
+tags             = ["utility", "cli"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+etc     = "/overlayer/zexlib/union/etc"
+share   = "/overlayer/zexlib/union/share"
+var     = "/overlayer/zexlib/union/var"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
