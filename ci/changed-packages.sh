@@ -54,8 +54,18 @@ if ! git diff --name-only "$BASE"...HEAD -- . > "$diff_out" 2>&1; then
     exit 1
 fi
 
+# "$dir/ZEXBUILD" not existing for a given changed top-level path (e.g.
+# a push that only touches .github/ or ci/, no package directory at
+# all) is a completely normal outcome, not a failure — but `[ -f ... ]`
+# failing IS what a bare `&&`-only body leaves as the while loop's own
+# exit status once it hits EOF, which then becomes this whole
+# pipeline's (and the script's) exit status under `set -e`. `|| true`
+# makes "not a package dir" and "is a package dir" both count as a
+# successful iteration; only a real git-diff failure above should ever
+# fail this script.
 cut -d/ -f1 < "$diff_out" \
     | sort -u \
     | while read -r dir; do
         [ -f "$dir/ZEXBUILD" ] && echo "$dir"
+        true
       done

@@ -53,6 +53,20 @@ jobs:
       - name: Install build deps
         run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev rust cargo
 
+      # cargo install/build were recompiling substrate + all its deps
+      # from zero on every single run — several minutes wasted on every
+      # retry regardless of whether any Rust source actually changed.
+      # ~/.cargo/bin already having the right binary makes `cargo
+      # install` a same-version no-op instead of a full rebuild.
+      - name: Cache cargo (registry + installed binaries)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+          key: cargo-check-${{ runner.os }}-v1
+
       # substrate is published on crates.io (substrate-zainium, binary
       # name substrate) — install straight from there.
       - name: Install substrate
@@ -117,12 +131,40 @@ jobs:
       - name: Install build deps
         run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev rust cargo
 
+      # cargo install/build were recompiling substrate, zex-ports, and
+      # every dependency (aws-sdk-s3 alone took 6+ minutes) from zero on
+      # every single run — most of this job's time regardless of whether
+      # any Rust source actually changed. ~/.cargo/bin already having
+      # the right substrate binary makes `cargo install` a same-version
+      # no-op; the zex-ports target/ dir lets cargo skip recompiling
+      # unchanged crates instead of starting from an empty target/.
+      - name: Cache cargo (registry + installed binaries + zex-ports build)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            /tmp/zex-ports-src/target
+          key: cargo-release-${{ runner.os }}-v1
+
       # zex-ports isn't published to crates.io yet — build from source.
       # substrate is (substrate-zainium) — install straight from there.
       - name: Install substrate + zex-ports
         run: |
           cargo install substrate-zainium --locked
-          git clone --depth 1 https://gitlab.com/alizain.arch/zex-port.git /tmp/zex-ports-src
+          # The cache step above only restores target/ — .git won't be
+          # there on a cache hit (it's not part of the cached path), so
+          # check for that specifically, not just the directory existing.
+          if [ ! -d /tmp/zex-ports-src/.git ]; then
+            cached_target=""
+            [ -d /tmp/zex-ports-src/target ] && mv /tmp/zex-ports-src/target /tmp/zex-ports-target-cache && cached_target=1
+            rm -rf /tmp/zex-ports-src
+            git clone --depth 1 https://gitlab.com/alizain.arch/zex-port.git /tmp/zex-ports-src
+            [ -n "$cached_target" ] && mv /tmp/zex-ports-target-cache /tmp/zex-ports-src/target
+          else
+            (cd /tmp/zex-ports-src && git pull --ff-only)
+          fi
           (cd /tmp/zex-ports-src && cargo build --release)
           cp /tmp/zex-ports-src/target/release/zex-ports /usr/local/bin/zex-ports
 
