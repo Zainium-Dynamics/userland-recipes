@@ -6,6 +6,15 @@
 #
 # GitHub-hosted runners are free/unlimited on public repos, unlike
 # GitLab.com's shared-runner free tier — that's why this lives here.
+#
+# Jobs run inside an Alpine container, not bare ubuntu-latest — Alpine's
+# own gcc/libc IS musl, so every recipe's `--host="$CHOST"` (or, for a
+# Makefile-only build like git's, the explicit config.mak LDFLAGS) now
+# produces a genuinely musl-linked binary, not a glibc binary wearing a
+# musl interpreter string. `libc6-compat` is installed first, before
+# anything else runs — GitHub's runner injects a glibc-built Node binary
+# into every container job to run JS actions (actions/checkout,
+# actions/upload-artifact), which silently fails on bare Alpine without it.
 
 name: CI
 
@@ -23,15 +32,17 @@ jobs:
   check:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    container: alpine:latest
     steps:
+      - name: Container prerequisites (glibc shim for actions' Node runtime)
+        run: apk add --no-cache libc6-compat git bash
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: dtolnay/rust-toolchain@stable
-
       - name: Install build deps
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential texinfo xz-utils zlib1g-dev libcurl4-openssl-dev libexpat1-dev
+        run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev rust cargo
 
       # substrate is published on crates.io (substrate-zainium, binary
       # name substrate) — install straight from there.
@@ -63,6 +74,7 @@ jobs:
   release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    container: alpine:latest
     env:
       PUBLISH: "1"
       REQUIRES_SYSHUB: ${{ vars.REQUIRES_SYSHUB }}
@@ -71,14 +83,15 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
     steps:
+      - name: Container prerequisites (glibc shim for actions' Node runtime)
+        run: apk add --no-cache libc6-compat git bash
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: dtolnay/rust-toolchain@stable
-
       - name: Install build deps
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential texinfo xz-utils zlib1g-dev libcurl4-openssl-dev libexpat1-dev
+        run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev rust cargo
 
       # zex-ports isn't published to crates.io yet — build from source.
       # substrate is (substrate-zainium) — install straight from there.
@@ -87,7 +100,7 @@ jobs:
           cargo install substrate-zainium --locked
           git clone --depth 1 https://gitlab.com/alizain.arch/zex-port.git /tmp/zex-ports-src
           (cd /tmp/zex-ports-src && cargo build --release)
-          sudo cp /tmp/zex-ports-src/target/release/zex-ports /usr/local/bin/zex-ports
+          cp /tmp/zex-ports-src/target/release/zex-ports /usr/local/bin/zex-ports
 
       - name: Build + publish changed packages
         env:

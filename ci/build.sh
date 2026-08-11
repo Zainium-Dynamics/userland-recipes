@@ -58,6 +58,68 @@ flatten_prefix() {
     fi
 }
 
+# ── verify: every ELF in the payload is actually musl-linked, with its
+#    interpreter under /overlayer/syshub — not a glibc binary that
+#    silently built anyway because $CHOST's cross-compiler wasn't found
+#    (exactly what happened once already on an ubuntu-latest runner,
+#    which has no real musl toolchain at all — --host="$CHOST" fell
+#    back to plain glibc gcc without ever failing the build). Runs
+#    after flatten_prefix, before `substrate pack`, so a bad binary
+#    fails the build right here instead of getting packed/published.
+#    Opt out via `native = true` in manifest.toml (self-hosting
+#    toolchain packages with their own already-correct linking).
+verify_musl() {
+    dir="$1"
+    manifest="$2"
+
+    if grep -Eq '^[[:space:]]*native[[:space:]]*=[[:space:]]*true' "$manifest" 2>/dev/null; then
+        echo "-- manifest.toml: native = true, skipping musl verification --"
+        return 0
+    fi
+
+    echo "-- verifying musl / interpreter / prefix under ${dir#"$(pwd)"/} --"
+    fail_marker="$STAGING_ROOT/.verify-failed"
+    rm -f "$fail_marker"
+
+    find "$dir" -type f -perm -u+x -print | while IFS= read -r f; do
+        magic="$(od -An -tx1 -N4 "$f" 2>/dev/null | tr -d ' \n')"
+        [ "$magic" = "7f454c46" ] || continue
+
+        interp="$(readelf -l "$f" 2>/dev/null | sed -n 's/.*interpreter: \([^]]*\).*/\1/p')"
+        rel="${f#"$dir"/}"
+
+        echo "  $rel"
+        echo "    prefix      : ${dir}"
+        echo "    interpreter : ${interp:-<none - static or not a dynamic exe>}"
+
+        if readelf -d "$f" 2>/dev/null | grep -q 'NEEDED.*libc\.so\.6'; then
+            echo "    FAIL: linked against GLIBC (libc.so.6), not musl"
+            touch "$fail_marker"
+            continue
+        fi
+
+        if [ -n "$interp" ]; then
+            case "$interp" in
+                /overlayer/syshub/*ld-musl-*) ;;
+                *)
+                    echo "    FAIL: interpreter is not the Zainium musl loader under /overlayer/syshub: $interp"
+                    touch "$fail_marker"
+                    continue
+                    ;;
+            esac
+        fi
+
+        echo "    OK"
+    done
+
+    if [ -f "$fail_marker" ]; then
+        rm -f "$fail_marker"
+        echo "musl/interpreter verification FAILED for $pkgname — see FAIL lines above"
+        exit 1
+    fi
+    echo "-- musl verification passed --"
+}
+
 # ── fetch + verify each URL entry in $source ─────────────────────────
 cd "$SRCDIR"
 for entry in ${source:-}; do
@@ -95,6 +157,7 @@ package
 flatten_prefix "$PAYLOAD_DIR"
 
 cp "$RECIPE_DIR/manifest.toml" "$STAGING_ROOT/pkg/manifest.toml"
+verify_musl "$PAYLOAD_DIR" "$STAGING_ROOT/pkg/manifest.toml"
 
 echo "-- packing $pkgname --"
 # Not piped through `tail` directly — in plain POSIX sh (no pipefail),
@@ -120,6 +183,7 @@ for sub in ${subpackages:-}; do
     flatten_prefix "$SUBPKG_PAYLOAD_DIR"
 
     cp "$RECIPE_DIR/$sub.manifest.toml" "$STAGING_ROOT/subpkg/$sub/manifest.toml"
+    verify_musl "$SUBPKG_PAYLOAD_DIR" "$STAGING_ROOT/subpkg/$sub/manifest.toml"
 
     echo "-- packing $sub --"
     sub_pack_log="$STAGING_ROOT/pack-$sub.log"

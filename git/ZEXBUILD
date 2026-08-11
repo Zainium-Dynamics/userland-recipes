@@ -1,7 +1,7 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=git
 pkgver=2.54.0
-pkgrel=0
+pkgrel=1
 source="https://mirrors.edge.kernel.org/pub/software/scm/git/git-$pkgver.tar.xz"
 # sha256 independently re-verified 2026-08-11 against kernel.org's own
 # published sha256sums.asc for this release.
@@ -24,7 +24,10 @@ sha256sums="f689162364c10de79ef89aa8dbf48731eb057e34edbbd20aca510ce0154681a3  gi
 # /overlayer/syshub/. elfpatch still runs afterward and will find these
 # already correct (a no-op confirmation, not a fix).
 build() {
-    cat > config.mak <<'CFG'
+    # Alpine's bash package lands wherever that image's /bin symlink
+    # policy puts it — detect it instead of hardcoding /bin/bash.
+    HOST_BASH="$(command -v bash)"
+    cat > config.mak <<CFG
 prefix = /overlayer/syshub
 sysconfdir = /overlayer/syshub/etc
 NO_GETTEXT = YesPlease
@@ -37,12 +40,21 @@ NO_OPENSSL = YesPlease
 # conflicting -Wl,-rpath entries.
 NO_R_TO_GCC_LINKER = YesPlease
 
+# Strip debug symbols at install time — one unstripped binary alone
+# (git itself) was ~19MB vs ~4MB stripped, and git installs ~15
+# genuinely separate executables (git-remote-http, git-daemon,
+# git-credential-*, etc, not just hardlinked builtin dispatch names),
+# so this is most of the difference between an accidentally-glibc,
+# unstripped .zex and a real, lean musl one.
+INSTALL_STRIP = -s
+CFLAGS = -O2
+
 # Build-time shell (make recipes run on the CI host) stays the real host
 # shell. Runtime SHELL_PATH (compiled into the binary, used for hooks /
 # `git rebase -i` / etc. on an actual Zainium boot) is overridden right
 # after via EXTRA_CPPFLAGS — last -D wins over this SHELL_PATH.
-SHELL_PATH = /bin/bash
-TEST_SHELL_PATH = /bin/bash
+SHELL_PATH = $HOST_BASH
+TEST_SHELL_PATH = $HOST_BASH
 EXTRA_CPPFLAGS += -DSHELL_PATH='"/overlayer/syshub/bin/bash"'
 
 BASIC_LDFLAGS += -Wl,-dynamic-linker,/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1
