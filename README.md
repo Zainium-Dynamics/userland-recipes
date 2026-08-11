@@ -101,6 +101,19 @@ Every dynamically-linked ELF binary's `PT_INTERP` — the loader the kernel runs
 
 Always this, regardless of `_syshub`, same reasoning as above: the loader is one shared system component every binary needs to find at the same runtime-visible path. You don't need to set this yourself — `substrate pack` patches every payload binary's interpreter to this automatically (`elfpatch.rs`). It's documented here so it's not a mystery if you ever inspect a built binary directly (`readelf -l` / `patchelf --print-interpreter`).
 
+#### Baking it in yourself (optional, for `configure`-less builds)
+
+`elfpatch.rs` is enough for any recipe that runs `./configure` — which is every recipe in this repo so far except `git` (no pre-generated `./configure`, driven straight through its Makefile via a hand-written `config.mak` instead, see `git/ZEXBUILD`). For that kind of Makefile-only build it's worth setting the same three runtime paths directly in `build()` too, so the binary is already correct before `substrate pack` ever touches it — `elfpatch` then just confirms it, it isn't doing the only correcting pass:
+
+```make
+EXTRA_CPPFLAGS += -DSHELL_PATH='"/overlayer/syshub/bin/bash"'
+BASIC_LDFLAGS  += -Wl,-dynamic-linker,/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1
+BASIC_LDFLAGS  += -Wl,-rpath,/overlayer/syshub/lib
+BASIC_LDFLAGS  += -Wl,-rpath,/overlayer/syshub/x86_64-zainium-linux-musl/lib
+```
+
+Same three things `--host="$CHOST"`-driven `./configure` builds get from `elfpatch` after the fact: interpreter, rpath, and the runtime `SHELL_PATH` string compiled into the binary (distinct from the build-time `SHELL_PATH`/`TEST_SHELL_PATH` `make` itself uses to run its own recipes on the CI host — see `git/ZEXBUILD` for both side by side).
+
 ### Rust packages — target spec
 
 `targets/x86_64-zainium-linux-musl.json` in this repo is the custom Rust target spec for Zainium's musl userland (matches the one `substrate`/`zex-server` build against). A Rust `ZEXBUILD` should build against it explicitly, not the host's default target:
