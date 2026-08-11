@@ -41,6 +41,28 @@ NO_OPENSSL = YesPlease
 # tell Git to use its own bundled regex instead of the system one.
 NO_REGEX = NeedsStartEnd
 
+# The rest of this block mirrors build-zainium-musl.sh's config.mak
+# line for line (its "Force Linux/musl feature set" section) — Alpine's
+# musl genuinely has all of these (it's not a cross-compile here, so
+# Git's own uname_S=Linux auto-detection would likely get most of them
+# right anyway), but matching the proven reference exactly instead of
+# trusting auto-detection is the point, after two rounds of musl-only
+# build breaks already.
+HAVE_ALLOCA_H = YesPlease
+HAVE_PATHS_H = YesPlease
+HAVE_DEV_TTY = YesPlease
+HAVE_CLOCK_GETTIME = YesPlease
+HAVE_CLOCK_MONOTONIC = YesPlease
+HAVE_SYNC_FILE_RANGE = YesPlease
+HAVE_GETDELIM = YesPlease
+HAVE_SYSINFO = YesPlease
+CSPRNG_METHOD = getrandom
+PROCFS_EXECUTABLE_PATH = /proc/self/exe
+# musl has its own strlcpy/iconv — don't compile Git's bundled fallbacks.
+NO_STRLCPY =
+NO_ICONV =
+NEEDS_LIBICONV =
+
 # Prevent Git's Makefile from auto-converting -L host paths into its own
 # conflicting -Wl,-rpath entries.
 NO_R_TO_GCC_LINKER = YesPlease
@@ -52,7 +74,7 @@ NO_R_TO_GCC_LINKER = YesPlease
 # so this is most of the difference between an accidentally-glibc,
 # unstripped .zex and a real, lean musl one.
 INSTALL_STRIP = -s
-CFLAGS = -O2
+CFLAGS = -O2 -pipe -fPIC
 
 # Build-time shell (make recipes run on the CI host) stays the real host
 # shell. Runtime SHELL_PATH (compiled into the binary, used for hooks /
