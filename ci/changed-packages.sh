@@ -11,20 +11,49 @@ set -eu
 # there's no real prior commit to diff against.
 EMPTY_TREE="4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 
-if [ -n "${BASE_SHA:-}" ] && [ "$BASE_SHA" != "0000000000000000000000000000000000000000" ] \
-    && git rev-parse --verify -q "${BASE_SHA}^{commit}" >/dev/null 2>&1; then
-    BASE="$BASE_SHA"
-elif git rev-parse --verify -q HEAD~1 >/dev/null 2>&1; then
-    # Also covers BASE_SHA being set but somehow unresolvable in this
-    # checkout (e.g. an unexpected shallow/partial fetch) — falls back
-    # to a same-push single-commit diff instead of hard-failing outright.
-    BASE="HEAD~1"
-else
+# Repo-state diagnostics, always printed — the Alpine-container release
+# run has twice landed on the EMPTY_TREE fallback despite a real,
+# resolvable BASE_SHA (and HEAD~1 too), which shouldn't happen on a
+# fetch-depth:0 checkout and doesn't reproduce locally. Until that's
+# actually understood, print everything relevant so the next occurrence
+# is diagnosable from the CI log instead of guessed at.
+echo "-- changed-packages.sh: repo diagnostics --" >&2
+echo "pwd: $(pwd)" >&2
+git rev-parse --show-toplevel >&2 2>&1 || echo "  (show-toplevel failed)" >&2
+git rev-parse HEAD >&2 2>&1 || echo "  (rev-parse HEAD failed)" >&2
+git log --oneline -5 >&2 2>&1 || echo "  (log failed)" >&2
+git count-objects -v >&2 2>&1 || echo "  (count-objects failed)" >&2
+echo "BASE_SHA env: ${BASE_SHA:-<unset>}" >&2
+echo "-- end diagnostics --" >&2
+
+# Resolves $1 to a commit; on failure prints git's own (real, not -q
+# suppressed) error text to stdout so the caller can log *why*.
+resolve() {
+    git rev-parse --verify "$1^{commit}" 2>&1
+}
+
+BASE=""
+if [ -n "${BASE_SHA:-}" ] && [ "$BASE_SHA" != "0000000000000000000000000000000000000000" ]; then
+    if out="$(resolve "$BASE_SHA")"; then
+        BASE="$BASE_SHA"
+    else
+        echo "changed-packages.sh: BASE_SHA=$BASE_SHA did not resolve: $out" >&2
+    fi
+fi
+if [ -z "$BASE" ]; then
+    if out="$(resolve HEAD~1)"; then
+        BASE="HEAD~1"
+    else
+        echo "changed-packages.sh: HEAD~1 did not resolve: $out" >&2
+    fi
+fi
+if [ -z "$BASE" ]; then
     # First commit in the repo, or (via BASE_SHA=000...0) the very first
     # push of a repo's full history — nothing to diff against, so treat
     # everything as new.
     BASE="$EMPTY_TREE"
 fi
+echo "changed-packages.sh: using BASE=$BASE" >&2
 
 # Not piped straight into cut/sort/while — in POSIX sh (no pipefail), a
 # pipeline's exit status is its LAST command's, so a failing `git diff`
