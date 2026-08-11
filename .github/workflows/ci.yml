@@ -51,7 +51,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install build deps
-        run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev rust cargo
+        run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo
 
       # cargo install/build were recompiling substrate + all its deps
       # from zero on every single run — several minutes wasted on every
@@ -129,7 +129,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install build deps
-        run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev rust cargo
+        run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo
 
       # cargo install/build were recompiling substrate, zex-ports, and
       # every dependency (aws-sdk-s3 alone took 6+ minutes) from zero on
