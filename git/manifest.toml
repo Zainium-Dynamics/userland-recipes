@@ -1,0 +1,37 @@
+# manifest.toml — git
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "git"
+version          = "2.54.0"
+description      = "Fast, scalable, distributed revision control system"
+license          = "GPL-2.0-only"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://git-scm.com/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "zlib", "curl", "expat", "zstd", "openssl"]
+provides         = ["git"]
+tags             = ["vcs", "toolchain", "development"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+libexec = "/overlayer/zexlib/union/libexec"
+lib     = "/overlayer/zexlib/union/lib"
+etc     = "/overlayer/zexlib/union/etc"
+share   = "/overlayer/zexlib/union/share"
+var     = "/overlayer/zexlib/union/var"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

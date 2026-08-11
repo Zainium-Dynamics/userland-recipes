@@ -31,7 +31,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Install build deps
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential texinfo xz-utils
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential texinfo xz-utils zlib1g-dev libcurl4-openssl-dev libexpat1-dev
 
       # substrate is published on crates.io (substrate-zainium, binary
       # name substrate) — install straight from there.
@@ -78,7 +78,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Install build deps
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential texinfo xz-utils
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential texinfo xz-utils zlib1g-dev libcurl4-openssl-dev libexpat1-dev
 
       # zex-ports isn't published to crates.io yet — build from source.
       # substrate is (substrate-zainium) — install straight from there.
