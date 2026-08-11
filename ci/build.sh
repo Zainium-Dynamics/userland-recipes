@@ -97,9 +97,19 @@ flatten_prefix "$PAYLOAD_DIR"
 cp "$RECIPE_DIR/manifest.toml" "$STAGING_ROOT/pkg/manifest.toml"
 
 echo "-- packing $pkgname --"
-"$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" --no-locked \
+# Not piped through `tail` directly — in plain POSIX sh (no pipefail),
+# a pipe's exit status is the LAST command's (tail, which always
+# succeeds), so a failing `pack` would be silently swallowed and the
+# script would carry on to publish a .zex that was never produced.
+pack_log="$STAGING_ROOT/pack-$pkgname.log"
+if ! "$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" \
     "$STAGING_ROOT/pkg" -o "$OUT_DIR/$pkgname-$pkgver.zex" \
-    2>&1 | tail -30
+    > "$pack_log" 2>&1
+then
+    tail -30 "$pack_log"
+    exit 1
+fi
+tail -10 "$pack_log"
 
 # ── subpackages, if any ────────────────────────────────────────────────
 for sub in ${subpackages:-}; do
@@ -112,9 +122,15 @@ for sub in ${subpackages:-}; do
     cp "$RECIPE_DIR/$sub.manifest.toml" "$STAGING_ROOT/subpkg/$sub/manifest.toml"
 
     echo "-- packing $sub --"
-    "$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" --no-locked \
+    sub_pack_log="$STAGING_ROOT/pack-$sub.log"
+    if ! "$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" \
         "$STAGING_ROOT/subpkg/$sub" -o "$OUT_DIR/$sub-$pkgver.zex" \
-        2>&1 | tail -30
+        > "$sub_pack_log" 2>&1
+    then
+        tail -30 "$sub_pack_log"
+        exit 1
+    fi
+    tail -10 "$sub_pack_log"
 done
 
 if [ "${PUBLISH:-}" = "1" ]; then
