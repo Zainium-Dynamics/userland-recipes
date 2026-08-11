@@ -51,7 +51,15 @@ jobs:
           fetch-depth: 0
 
       - name: Install build deps
-        run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo
+        run: |
+          apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo
+          # `cargo install` puts binaries in ~/.cargo/bin — the ubuntu-latest
+          # setup had dtolnay/rust-toolchain adding this to PATH for free;
+          # switching to Alpine's own apk rust/cargo dropped that, so
+          # `substrate` (installed below) wasn't found once the CI got far
+          # enough to actually call it. GITHUB_PATH persists for every
+          # later step in this job, not just this one.
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
       # cargo install/build were recompiling substrate + all its deps
       # from zero on every single run — several minutes wasted on every
@@ -129,7 +137,15 @@ jobs:
           fetch-depth: 0
 
       - name: Install build deps
-        run: apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo
+        run: |
+          apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo
+          # `cargo install` puts binaries in ~/.cargo/bin — the ubuntu-latest
+          # setup had dtolnay/rust-toolchain adding this to PATH for free;
+          # switching to Alpine's own apk rust/cargo dropped that, so
+          # `substrate` (installed below) wasn't found once the CI got far
+          # enough to actually call it. GITHUB_PATH persists for every
+          # later step in this job, not just this one.
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
       # cargo install/build were recompiling substrate, zex-ports, and
       # every dependency (aws-sdk-s3 alone took 6+ minutes) from zero on

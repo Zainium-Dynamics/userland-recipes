@@ -1,7 +1,7 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=git
 pkgver=2.55.0
-pkgrel=1
+pkgrel=2
 source="https://mirrors.edge.kernel.org/pub/software/scm/git/git-$pkgver.tar.xz"
 # sha256 verified 2026-08-11 against kernel.org's own published
 # sha256sums.asc for this release, and independently re-checked via a
