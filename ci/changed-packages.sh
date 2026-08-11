@@ -11,21 +11,6 @@ set -eu
 # there's no real prior commit to diff against.
 EMPTY_TREE="4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 
-# Repo-state diagnostics, always printed — the Alpine-container release
-# run has twice landed on the EMPTY_TREE fallback despite a real,
-# resolvable BASE_SHA (and HEAD~1 too), which shouldn't happen on a
-# fetch-depth:0 checkout and doesn't reproduce locally. Until that's
-# actually understood, print everything relevant so the next occurrence
-# is diagnosable from the CI log instead of guessed at.
-echo "-- changed-packages.sh: repo diagnostics --" >&2
-echo "pwd: $(pwd)" >&2
-git rev-parse --show-toplevel >&2 2>&1 || echo "  (show-toplevel failed)" >&2
-git rev-parse HEAD >&2 2>&1 || echo "  (rev-parse HEAD failed)" >&2
-git log --oneline -5 >&2 2>&1 || echo "  (log failed)" >&2
-git count-objects -v >&2 2>&1 || echo "  (count-objects failed)" >&2
-echo "BASE_SHA env: ${BASE_SHA:-<unset>}" >&2
-echo "-- end diagnostics --" >&2
-
 # Resolves $1 to a commit; on failure prints git's own (real, not -q
 # suppressed) error text to stdout so the caller can log *why*.
 resolve() {

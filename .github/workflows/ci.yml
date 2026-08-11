@@ -35,7 +35,16 @@ jobs:
     container: alpine:latest
     steps:
       - name: Container prerequisites (glibc shim for actions' Node runtime)
-        run: apk add --no-cache libc6-compat git bash
+        run: |
+          apk add --no-cache libc6-compat git bash
+          # actions/checkout sets safe.directory under a *temporary* HOME
+          # that only exists during its own (Node) process — every later
+          # `run:` step uses the container's real HOME, where that trust
+          # entry never landed, so plain `git` calls in later steps
+          # (ci/changed-packages.sh, ci/build.sh) fail with "detected
+          # dubious ownership". Trust it globally, permanently, up front —
+          # this container is single-use/thrown away per job anyway.
+          git config --global --add safe.directory '*'
 
       - uses: actions/checkout@v4
         with:
@@ -90,7 +99,16 @@ jobs:
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
     steps:
       - name: Container prerequisites (glibc shim for actions' Node runtime)
-        run: apk add --no-cache libc6-compat git bash
+        run: |
+          apk add --no-cache libc6-compat git bash
+          # actions/checkout sets safe.directory under a *temporary* HOME
+          # that only exists during its own (Node) process — every later
+          # `run:` step uses the container's real HOME, where that trust
+          # entry never landed, so plain `git` calls in later steps
+          # (ci/changed-packages.sh, ci/build.sh) fail with "detected
+          # dubious ownership". Trust it globally, permanently, up front —
+          # this container is single-use/thrown away per job anyway.
+          git config --global --add safe.directory '*'
 
       - uses: actions/checkout@v4
         with:
