@@ -1,11 +1,12 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=git
-pkgver=2.54.0
-pkgrel=3
+pkgver=2.55.0
+pkgrel=0
 source="https://mirrors.edge.kernel.org/pub/software/scm/git/git-$pkgver.tar.xz"
-# sha256 independently re-verified 2026-08-11 against kernel.org's own
-# published sha256sums.asc for this release.
-sha256sums="f689162364c10de79ef89aa8dbf48731eb057e34edbbd20aca510ce0154681a3  git-$pkgver.tar.xz"
+# sha256 verified 2026-08-11 against kernel.org's own published
+# sha256sums.asc for this release, and independently re-checked via a
+# separate direct download + sha256sum.
+sha256sums="457fdb04dc8728e007d4688695e6912e6f680727920f2a40bf11eacc17505357  git-$pkgver.tar.xz"
 
 # Git's own release tarball ships configure.ac but no pre-generated
 # ./configure (that only exists in the git.org "full" tarball, not this

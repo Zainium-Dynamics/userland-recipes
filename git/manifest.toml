@@ -3,7 +3,7 @@
 
 [package]
 name             = "git"
-version          = "2.54.0"
+version          = "2.55.0"
 description      = "Fast, scalable, distributed revision control system"
 license          = "GPL-2.0-only"
 maintainer       = "Ali Zain <heyalizain@gmail.com>"
