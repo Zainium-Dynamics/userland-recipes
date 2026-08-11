@@ -53,8 +53,14 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
+          pkgs_out="$(mktemp)"
+          if ! sh ci/changed-packages.sh > "$pkgs_out"; then
+            echo "changed-packages.sh failed:"
+            cat "$pkgs_out"
+            exit 1
+          fi
           failed=""
-          for pkg in $(sh ci/changed-packages.sh); do
+          for pkg in $(cat "$pkgs_out"); do
             echo "=== check build: $pkg ==="
             sh ci/build.sh "$pkg" || failed="$failed $pkg"
           done
@@ -114,9 +120,15 @@ jobs:
           # HEAD~1 default) silently drops everything else.
           BASE_SHA: ${{ github.event.before }}
         run: |
+          pkgs_out="$(mktemp)"
+          if ! sh ci/changed-packages.sh > "$pkgs_out"; then
+            echo "changed-packages.sh failed:"
+            cat "$pkgs_out"
+            exit 1
+          fi
           failed=""
           first=1
-          for pkg in $(sh ci/changed-packages.sh); do
+          for pkg in $(cat "$pkgs_out"); do
             if [ "$first" -eq 0 ]; then
               echo "-- waiting 60s before the next package --"
               sleep 60
