@@ -1,12 +1,9 @@
-maintainer="Your Name <you@example.com>"
+maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=htop
 pkgver=3.5.2
 pkgrel=0
 source="https://github.com/htop-dev/htop/releases/download/$pkgver/htop-$pkgver.tar.xz"
-# TODO(contributor): replace with the real sha256 of the tarball above —
-# left as a placeholder here since this example recipe was written
-# without network access to fetch and hash it.
-sha256sums="0000000000000000000000000000000000000000000000000000000000000000  htop-$pkgver.tar.xz"
+sha256sums="225128e697c4a8c8a878fd0078c965ff8bd5fb24913bfc8473b8edbd50f843f8  htop-$pkgver.tar.xz"
 
 build() {
     ./configure \

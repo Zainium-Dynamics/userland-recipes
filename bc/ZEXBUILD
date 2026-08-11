@@ -3,6 +3,7 @@ pkgname=bc
 pkgver=1.08.2
 pkgrel=0
 source="https://ftp.gnu.org/gnu/bc/bc-$pkgver.tar.gz"
+# sha256 independently re-verified 2026-08-11 against the live GNU mirror.
 sha256sums="ae470fec429775653e042015edc928d07c8c3b2fc59765172a330d3d87785f86  bc-$pkgver.tar.gz"
 
 build() {

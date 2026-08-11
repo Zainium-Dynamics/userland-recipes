@@ -90,9 +90,25 @@ jobs:
           sudo cp /tmp/zex-ports-src/target/release/zex-ports /usr/local/bin/zex-ports
 
       - name: Build + publish changed packages
+        env:
+          # github.event.before is the SHA the branch was at right before
+          # this push — covers every commit in the push, not just the
+          # last one. Without this, changed-packages.sh's HEAD~1 fallback
+          # only ever sees the final commit's diff, so pushing several
+          # commits at once (or the very first push of a repo's full
+          # history, where `before` is the all-zero SHA and this env var
+          # ends up empty, falling through to changed-packages.sh's own
+          # HEAD~1 default) silently drops everything else.
+          BASE_SHA: ${{ github.event.before }}
         run: |
           failed=""
+          first=1
           for pkg in $(sh ci/changed-packages.sh); do
+            if [ "$first" -eq 0 ]; then
+              echo "-- waiting 60s before the next package --"
+              sleep 60
+            fi
+            first=0
             echo "=== release build: $pkg ==="
             sh ci/build.sh "$pkg" || failed="$failed $pkg"
           done
