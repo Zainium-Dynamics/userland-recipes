@@ -1,7 +1,7 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=indent
 pkgver=2.2.13
-pkgrel=0
+pkgrel=1
 source="https://ftp.gnu.org/gnu/indent/indent-$pkgver.tar.gz"
 # sha256 independently re-verified 2026-08-11 against the live GNU mirror.
 sha256sums="9e64634fc4ce6797b204bcb8897ce14fdd0ab48ca57696f78767c59cae578095  indent-$pkgver.tar.gz"
