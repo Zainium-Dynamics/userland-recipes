@@ -1,7 +1,7 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=git
 pkgver=2.54.0
-pkgrel=2
+pkgrel=3
 source="https://mirrors.edge.kernel.org/pub/software/scm/git/git-$pkgver.tar.xz"
 # sha256 independently re-verified 2026-08-11 against kernel.org's own
 # published sha256sums.asc for this release.
@@ -35,6 +35,10 @@ NO_PERL = YesPlease
 NO_PYTHON = YesPlease
 NO_TCLTK = YesPlease
 NO_OPENSSL = YesPlease
+
+# musl's regex implementation has no REG_STARTEND (a glibc extension) —
+# tell Git to use its own bundled regex instead of the system one.
+NO_REGEX = NeedsStartEnd
 
 # Prevent Git's Makefile from auto-converting -L host paths into its own
 # conflicting -Wl,-rpath entries.
