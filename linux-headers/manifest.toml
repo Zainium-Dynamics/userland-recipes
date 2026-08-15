@@ -1,0 +1,29 @@
+[package]
+name             = "linux-headers"
+version          = "7.1"
+description      = "Linux kernel headers for Xenomai EVL"
+license          = "GPL-2.0-only"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://gitlab.com/Xenomai/xenomai4/linux-evl"
+build_type       = ""
+libc_target      = ""
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = []
+provides         = ["linux-headers"]
+tags             = ["kernel", "headers", "development"]
+
+[install]
+include = "/overlayer/zexlib/union/include"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

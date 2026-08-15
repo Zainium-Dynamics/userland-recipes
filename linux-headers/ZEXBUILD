@@ -1,0 +1,20 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=linux-headers
+pkgver=7.1
+pkgrel=0
+source="https://gitlab.com/Xenomai/xenomai4/linux-evl/-/archive/v7.1-evl-rebase/linux-evl-v7.1-evl-rebase.tar.gz"
+sha256sums=""
+
+build() {
+    cd "$SRCDIR/linux-evl-v7.1-evl-rebase"
+    make ARCH=x86_64 defconfig
+    make ARCH=x86_64 headers
+}
+
+package() {
+    cd "$SRCDIR/linux-evl-v7.1-evl-rebase"
+    make ARCH=x86_64 INSTALL_HDR_PATH="$PAYLOAD_DIR" headers_install
+    
+    # Remove unwanted files
+    find "$PAYLOAD_DIR" \( -name .install -o -name ..install.cmd \) -exec rm -f {} +
+}
