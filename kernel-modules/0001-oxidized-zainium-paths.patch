@@ -35,11 +35,18 @@ index 408f070d4..1c1cbbaba 100644
 -	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
 -	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
 -	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
-+	echo '#define LINUX_VERSION_CODE $(shell expr $(VERSION_NUM) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL))'; \
-+	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))'; \
-+	echo '#define LINUX_VERSION_MAJOR $(VERSION_NUM)'; \
-+	echo '#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL)'; \
-+	echo '#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)';
++	if [ $(or $(SUBLEVEL),0) -gt 255 ]; then                                 \
++		echo \#define LINUX_VERSION_CODE $(shell                 \
++		expr $(VERSION_NUM) \* 65536 + $(PATCHLEVEL) \* 256 + 255); \
++	else                                                             \
++		echo \#define LINUX_VERSION_CODE $(shell                 \
++		expr $(VERSION_NUM) \* 65536 + $(PATCHLEVEL) \* 256 + $(or $(SUBLEVEL),0)); \
++	fi;                                                              \
++	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) +  \
++	((c) > 255 ? 255 : (c)))';                                       \
++	echo \#define LINUX_VERSION_MAJOR $(VERSION_NUM);                    \
++	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
++	echo \#define LINUX_VERSION_SUBLEVEL $(or $(SUBLEVEL),0)
  endef
  
  $(version_h): private PATCHLEVEL := $(or $(PATCHLEVEL), 0)
