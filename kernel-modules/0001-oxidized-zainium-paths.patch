@@ -1,0 +1,130 @@
+diff --git a/Makefile b/Makefile
+index 408f070d4..1c1cbbaba 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,9 +1,14 @@
+ # SPDX-License-Identifier: GPL-2.0
+-VERSION = 7
++VERSION = linux-evl-7
+ PATCHLEVEL = 1
+ SUBLEVEL = 0
+ EXTRAVERSION =
+-NAME = Baby Opossum Posse
++NAME = linux-evl
++
++VERSION_NUM := $(shell echo $(VERSION) | grep -o '[0-9]*$$')
++ifeq ($(VERSION_NUM),)
++VERSION_NUM := 7
++endif
+ 
+ # *DOCUMENTATION*
+ # To see a list of typical targets execute "make help"
+@@ -1413,18 +1418,11 @@ define filechk_utsrelease.h
+ endef
+ 
+ define filechk_version.h
+-	if [ $(SUBLEVEL) -gt 255 ]; then                                 \
+-		echo \#define LINUX_VERSION_CODE $(shell                 \
+-		expr $(VERSION) \* 65536 + $(PATCHLEVEL) \* 256 + 255); \
+-	else                                                             \
+-		echo \#define LINUX_VERSION_CODE $(shell                 \
+-		expr $(VERSION) \* 65536 + $(PATCHLEVEL) \* 256 + $(SUBLEVEL)); \
+-	fi;                                                              \
+-	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) +  \
+-	((c) > 255 ? 255 : (c)))';                                       \
+-	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
+-	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
+-	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
++	echo '#define LINUX_VERSION_CODE $(shell expr $(VERSION_NUM) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL))'; \
++	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))'; \
++	echo '#define LINUX_VERSION_MAJOR $(VERSION_NUM)'; \
++	echo '#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL)'; \
++	echo '#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)';
+ endef
+ 
+ $(version_h): private PATCHLEVEL := $(or $(PATCHLEVEL), 0)
+diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
+index a11b30dda..d3944ff10 100644
+--- a/drivers/base/firmware_loader/main.c
++++ b/drivers/base/firmware_loader/main.c
+@@ -471,10 +471,10 @@ static int fw_decompress_xz(struct device *dev, struct fw_priv *fw_priv,
+ static char fw_path_para[256];
+ static const char * const fw_path[] = {
+ 	fw_path_para,
+-	"/lib/firmware/updates/" UTS_RELEASE,
+-	"/lib/firmware/updates",
+-	"/lib/firmware/" UTS_RELEASE,
+-	"/lib/firmware"
++	"/overlayer/syshub/drivers/hardware/firmwere/updates/" UTS_RELEASE,
++	"/overlayer/syshub/drivers/hardware/firmwere/updates",
++	"/overlayer/syshub/drivers/hardware/firmwere/" UTS_RELEASE,
++	"/overlayer/syshub/drivers/hardware/firmwere"
+ };
+ 
+ /*
+diff --git a/init/main.c b/init/main.c
+index 05f656823..bde651be4 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -165,7 +165,7 @@ static size_t initargs_offs;
+ #endif
+ 
+ static char *execute_command;
+-static char *ramdisk_execute_command = "/init";
++static char *ramdisk_execute_command = "/quantra-ramfs";
+ static bool __initdata ramdisk_execute_command_set;
+ 
+ /*
+@@ -195,8 +195,11 @@ static int __init set_reset_devices(char *str)
+ 
+ __setup("reset_devices", set_reset_devices);
+ 
+-static const char *argv_init[MAX_INIT_ARGS+2] = { "init", NULL, };
+-const char *envp_init[MAX_INIT_ENVS+2] = { "HOME=/", "TERM=linux", NULL, };
++static const char *argv_init[MAX_INIT_ARGS+2] = { "quantra-ramfs", NULL, };
++const char *envp_init[MAX_INIT_ENVS+2] = { "HOME=/",
++"TERM=linux",
++"PATH=/overlayer/syshub/bin:/overlayer/syshub/sbin",
++NULL, };
+ static const char *panic_later, *panic_param;
+ 
+ static bool __init obsolete_checksetup(char *line)
+@@ -1650,9 +1653,9 @@ static int __ref kernel_init(void *unused)
+ 			return 0;
+ 	}
+ 
+-	if (!try_to_run_init_process("/sbin/init") ||
+-	    !try_to_run_init_process("/etc/init") ||
+-	    !try_to_run_init_process("/bin/init") ||
++	if (!try_to_run_init_process("/overlayer/syshub/engine/quantra") ||
++	    !try_to_run_init_process("/overlayer/syshub/bin/bash") ||
++	    !try_to_run_init_process("/overlayer/syshub/bin/nu") ||
+ 	    !try_to_run_init_process("/bin/sh"))
+ 		return 0;
+ 
+diff --git a/kernel/module/Kconfig b/kernel/module/Kconfig
+index 43b1bb01f..1785c7acf 100644
+--- a/kernel/module/Kconfig
++++ b/kernel/module/Kconfig
+@@ -418,7 +418,7 @@ config MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS
+ 
+ config MODPROBE_PATH
+ 	string "Path to modprobe binary"
+-	default "/sbin/modprobe"
++	default "/overlayer/syshub/bin/modprobe"
+ 	help
+ 	  When kernel code requests a module, it does so by calling
+ 	  the "modprobe" userspace utility. This option allows you to
+diff --git a/kernel/module/kmod.c b/kernel/module/kmod.c
+index a25dccdf7..ae2c2b1b1 100644
+--- a/kernel/module/kmod.c
++++ b/kernel/module/kmod.c
+@@ -75,7 +75,7 @@ static int call_modprobe(char *orig_module_name, int wait)
+ 	static char *envp[] = {
+ 		"HOME=/",
+ 		"TERM=linux",
+-		"PATH=/sbin:/usr/sbin:/bin:/usr/bin",
++		"PATH=/overlayer/syshub/bin:/overlayer/syshub/sbin",
+ 		NULL
+ 	};
+ 	char *module_name;

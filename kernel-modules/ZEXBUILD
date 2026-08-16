@@ -1,0 +1,38 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=kernel-modules
+pkgver=7.1
+pkgrel=0
+source="https://gitlab.com/Xenomai/xenomai4/linux-evl/-/archive/v7.1-evl-rebase/linux-evl-v7.1-evl-rebase.tar.gz"
+sha256sums=""
+
+prepare() {
+    cd "$SRCDIR/linux-evl-v7.1-evl-rebase"
+    
+    # Apply Zainium paths patch
+    patch -p1 < "$RECIPE_DIR/0001-oxidized-zainium-paths.patch"
+    
+    # Copy defconfig
+    cp "$RECIPE_DIR/evl-7.1.defconfig" arch/x86/configs/evl-7.1_defconfig
+    make ARCH=x86_64 evl-7.1_defconfig
+}
+
+build() {
+    cd "$SRCDIR/linux-evl-v7.1-evl-rebase"
+    
+    # Compile the modules
+    make ARCH=x86_64 modules -j$(nproc)
+    
+    # Compile the kernel itself
+    make ARCH=x86_64 bzImage -j$(nproc)
+}
+
+package() {
+    cd "$SRCDIR/linux-evl-v7.1-evl-rebase"
+    
+    # Install modules to payload/drivers/modules strictly stripped with INSTALL_MOD_STRIP=1
+    make ARCH=x86_64 INSTALL_MOD_PATH="$PAYLOAD_DIR" INSTALL_MOD_STRIP=1 modules_install
+    
+    # Install the kernel binary itself to payload/engine
+    mkdir -p "$PAYLOAD_DIR/engine"
+    cp arch/x86/boot/bzImage "$PAYLOAD_DIR/engine/vmlinuz-oxidized-7.1"
+}
