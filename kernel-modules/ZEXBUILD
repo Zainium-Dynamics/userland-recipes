@@ -1,50 +1,27 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=kernel-modules
 pkgver=7.1
-pkgrel=6
+pkgrel=7
 source="https://gitlab.com/Xenomai/xenomai4/linux-evl/-/archive/v7.1-evl-rebase/linux-evl-v7.1-evl-rebase.tar.gz"
 sha256sums=""
 
-prepare() {
-    cd "$SRCDIR/linux-evl-v7.1-evl-rebase"
-    
-    # Apply Zainium paths patch
-    patch -p1 < "$RECIPE_DIR/0001-oxidized-zainium-paths.patch"
-    
-    # Copy defconfig directly to .config
-    cp "$RECIPE_DIR/evl-7.1.defconfig" .config
-}
-
+# ci/build.sh only calls build()/package() — prepare() was never invoked.
 build() {
     cd "$SRCDIR/linux-evl-v7.1-evl-rebase"
-    
-    # Ensure .config exists and process defaults
-    if [ ! -f .config ]; then
-        cp "$RECIPE_DIR/evl-7.1.defconfig" .config
-    fi
+
+    patch -p1 < "$RECIPE_DIR/0001-oxidized-zainium-paths.patch"
+    cp "$RECIPE_DIR/evl-7.1.defconfig" .config
     make ARCH=x86_64 olddefconfig
-    
-    # -j$(nproc) OOM'd objtool mid-build ("sigaltstack failed: Out of
-    # memory") — full-kernel + all-modules parallel compiles are heavy
-    # enough that the free GitHub-hosted runner's real available memory
-    # (not just core count) becomes the actual constraint. Fixed at -j2,
-    # not nproc-derived, since nproc reporting 2 cores didn't stop this
-    # from happening at that same parallelism already.
-    #
-    # vmlinux (not bzImage) — `make modules` alone, without vmlinux
-    # built first, fails modpost with tens of thousands of unresolved
-    # symbol errors ("vmlinux.o is missing" warning) because
-    # Module.symvers is generated as part of the vmlinux link, not by
-    # `make modules` itself. We don't need a bootable compressed image
-    # (bzImage) — only the .ko modules — so build vmlinux to get real
-    # symbol resolution, skip the bzImage packaging step entirely.
-    make ARCH=x86_64 vmlinux -j2
-    make ARCH=x86_64 modules -j2
+    make ARCH=x86_64 KERNELRELEASE=linux-evl-7.1 vmlinux -j2
+    make ARCH=x86_64 KERNELRELEASE=linux-evl-7.1 modules -j2
 }
 
 package() {
     cd "$SRCDIR/linux-evl-v7.1-evl-rebase"
-    
-    # Install modules to payload/drivers/modules strictly stripped with INSTALL_MOD_STRIP=1
-    make ARCH=x86_64 INSTALL_MOD_PATH="$PAYLOAD_DIR" INSTALL_MOD_STRIP=1 modules_install
+
+    make ARCH=x86_64 KERNELRELEASE=linux-evl-7.1 INSTALL_MOD_PATH="$PAYLOAD_DIR" \
+        INSTALL_MOD_STRIP=1 DEPMOD=true modules_install
+    mkdir -p "$PAYLOAD_DIR/drivers/modules"
+    mv "$PAYLOAD_DIR/lib/modules/linux-evl-7.1" "$PAYLOAD_DIR/drivers/modules/linux-evl-7.1"
+    rm -rf "$PAYLOAD_DIR/lib"
 }

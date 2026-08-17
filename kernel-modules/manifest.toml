@@ -1,0 +1,28 @@
+[package]
+name             = "kernel-modules"
+version          = "7.1"
+description      = "Linux-EVL 7.1 kernel modules"
+license          = "GPL-2.0"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://gitlab.com/Xenomai/xenomai4/linux-evl"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+depends          = []
+provides         = ["kernel-modules"]
+tags             = ["kernel", "modules"]
+
+[install]
+drivers = "/overlayer/syshub/drivers"
+_syshub = true
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
