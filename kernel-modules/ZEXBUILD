@@ -1,7 +1,7 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=kernel-modules
 pkgver=7.1
-pkgrel=3
+pkgrel=4
 source="https://gitlab.com/Xenomai/xenomai4/linux-evl/-/archive/v7.1-evl-rebase/linux-evl-v7.1-evl-rebase.tar.gz"
 sha256sums=""
 
@@ -30,10 +30,16 @@ build() {
     # (not just core count) becomes the actual constraint. Fixed at -j2,
     # not nproc-derived, since nproc reporting 2 cores didn't stop this
     # from happening at that same parallelism already.
+    #
+    # vmlinux (not bzImage) — `make modules` alone, without vmlinux
+    # built first, fails modpost with tens of thousands of unresolved
+    # symbol errors ("vmlinux.o is missing" warning) because
+    # Module.symvers is generated as part of the vmlinux link, not by
+    # `make modules` itself. We don't need a bootable compressed image
+    # (bzImage) — only the .ko modules — so build vmlinux to get real
+    # symbol resolution, skip the bzImage packaging step entirely.
+    make ARCH=x86_64 vmlinux -j2
     make ARCH=x86_64 modules -j2
-
-    # Compile the kernel itself
-    make ARCH=x86_64 bzImage -j2
 }
 
 package() {
