@@ -52,7 +52,7 @@ jobs:
 
       - name: Install build deps
         run: |
-          apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo flex bison rsync
+          apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo flex bison rsync elfutils-dev
           # `cargo install` puts binaries in ~/.cargo/bin — the ubuntu-latest
           # setup had dtolnay/rust-toolchain adding this to PATH for free;
           # switching to Alpine's own apk rust/cargo dropped that, so
@@ -138,7 +138,7 @@ jobs:
 
       - name: Install build deps
         run: |
-          apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo flex bison rsync
+          apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo flex bison rsync elfutils-dev
           # `cargo install` puts binaries in ~/.cargo/bin — the ubuntu-latest
           # setup had dtolnay/rust-toolchain adding this to PATH for free;
           # switching to Alpine's own apk rust/cargo dropped that, so
