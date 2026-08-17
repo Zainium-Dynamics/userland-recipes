@@ -145,11 +145,3 @@ Both only touch packages whose directory actually changed (`ci/changed-packages.
 
 `substrate` is installed straight from crates.io (`cargo install substrate-zainium --locked`). `zex-ports` isn't published yet, so `release` builds it from source each run (`gitlab.com/alizain.arch/zex-port` — that tool stays on GitLab, only the recipe repos moved here).
 
-## Repository secrets / variables (repo settings → Secrets and variables → Actions)
-
-| Name | Kind | Meaning |
-|---|---|---|
-| `R2_ENDPOINT` | secret | `https://<account_id>.r2.cloudflarestorage.com` |
-| `R2_BUCKET` | secret | The R2 bucket packages publish to. |
-| `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | secret | R2 API token (S3-compatible credentials) — publish-only scope, not full account access. |
-| `REQUIRES_SYSHUB` | variable | Passed straight to `substrate pack --requires-syshub`. |
