@@ -1,7 +1,7 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=kernel-modules
 pkgver=7.1
-pkgrel=0
+pkgrel=1
 source="https://gitlab.com/Xenomai/xenomai4/linux-evl/-/archive/v7.1-evl-rebase/linux-evl-v7.1-evl-rebase.tar.gz"
 sha256sums=""
 
