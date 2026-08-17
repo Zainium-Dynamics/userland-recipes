@@ -43,6 +43,10 @@ mkdir -p "$SRCDIR"
 
 echo "== $pkgname $pkgver-$pkgrel =="
 
+# Alpine-style: each recipe declares its own extra apk deps instead of
+# CI growing a global list.
+[ -n "${makedepends:-}" ] && apk add --no-cache $makedepends
+
 # `--prefix=/overlayer/syshub` (see README's "Why --prefix=/overlayer/syshub
 # even for userland packages") means `make DESTDIR=$1 install` lands files
 # at $1/overlayer/syshub/{bin,lib,...} — DESTDIR prepends the configured
