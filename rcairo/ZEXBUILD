@@ -7,7 +7,7 @@ pkgrel=0
 # the real, verified upstream source for the same release.
 source="https://github.com/rcairo/rcairo/archive/refs/tags/v$pkgver.tar.gz"
 sha256sums="c26145ae85ee632734c18613620602c032190011dd3cc37a441acf1eb5716811  v$pkgver.tar.gz"
-makedepends="ruby-dev cairo-dev"
+makedepends="ruby-dev cairo-dev ruby-pkg-config"
 
 build() {
     ruby extconf.rb
