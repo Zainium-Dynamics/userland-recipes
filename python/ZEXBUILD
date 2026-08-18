@@ -14,6 +14,7 @@ build() {
 
     export CFLAGS_NODIST="${CFLAGS:-} -DTHREAD_STACK_SIZE=0x200000"
     export LDFLAGS_NODIST="${LDFLAGS:-} -Wl,-z,stack-size=8388608"
+    export LD_LIBRARY_PATH="/usr/lib:/lib"
     ./configure \
         --prefix=/overlayer/syshub \
         --sysconfdir=/overlayer/syshub/etc \
@@ -32,7 +33,6 @@ build() {
 
 package() {
     cd "$SRCDIR/Python-$pkgver"
-    export LD_LIBRARY_PATH="/usr/lib:/lib"
     make -j1 DESTDIR="$PAYLOAD_DIR" install maninstall
     ln -sf python3 "$PAYLOAD_DIR/overlayer/syshub/bin/python"
     ln -sf python3-config "$PAYLOAD_DIR/overlayer/syshub/bin/python-config"
