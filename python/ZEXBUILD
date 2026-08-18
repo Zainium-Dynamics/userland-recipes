@@ -37,6 +37,16 @@ package() {
     ln -sf python3 "$PAYLOAD_DIR/overlayer/syshub/bin/python"
     ln -sf python3-config "$PAYLOAD_DIR/overlayer/syshub/bin/python-config"
 
+    rm -rf "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/test" \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/idlelib" \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/turtledemo"
+
+    find "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14" -type f \
+        \( -name '*.py' -o -name '*.json' -o -name 'Makefile' \) \
+        -exec grep -Il '/usr' {} \; | while IFS= read -r f; do
+        sed -i '/^#!/! s#/usr#/overlayer/syshub#g' "$f"
+    done
+
     mkdir -p "$STAGING_ROOT/_python-dev"
     mv "$PAYLOAD_DIR/overlayer/syshub/include" "$STAGING_ROOT/_python-dev/include"
     mv "$PAYLOAD_DIR/overlayer/syshub/lib/pkgconfig" "$STAGING_ROOT/_python-dev/pkgconfig"
