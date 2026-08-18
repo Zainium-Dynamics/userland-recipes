@@ -1,0 +1,29 @@
+[package]
+name             = "python-dev"
+version          = "3.14.6"
+description      = "Python headers, static lib, pkgconfig"
+license          = "PSF-2.0"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.python.org/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+depends          = ["python"]
+provides         = ["python-dev"]
+tags             = ["language", "dev"]
+
+[install]
+include = "/overlayer/zexlib/union/include"
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

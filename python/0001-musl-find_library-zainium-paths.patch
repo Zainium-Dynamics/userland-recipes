@@ -1,0 +1,40 @@
+--- a/Lib/ctypes/util.py
++++ b/Lib/ctypes/util.py
+@@ -377,6 +377,37 @@
+         def find_library(name, is64 = False):
+             return _get_soname(_findLib_crle(name, is64) or _findLib_gcc(name))
+ 
++    elif True:
++
++        # musl has no ldconfig -- search Zainium's own lib dirs directly,
++        # same technique Alpine uses for musl (see aports/main/python3's
++        # musl-find_library.patch), paths adapted for Zainium.
++        def _is_elf(filepath):
++            try:
++                with open(filepath, 'rb') as fh:
++                    return fh.read(4) == b'\x7fELF'
++            except OSError:
++                return False
++
++        def find_library(name):
++            from glob import glob
++            if os.path.isabs(name):
++                return name
++            if name in ('m', 'crypt', 'pthread'):
++                name = 'c'
++            paths = ['/overlayer/syshub/lib', '/overlayer/zexlib/union/lib']
++            if 'LD_LIBRARY_PATH' in os.environ:
++                paths = os.environ['LD_LIBRARY_PATH'].split(':') + paths
++            for d in paths:
++                f = os.path.join(d, name)
++                if _is_elf(f):
++                    return os.path.basename(f)
++                for suffix in ('.so', '.so.*'):
++                    for f in glob(os.path.join(d, 'lib%s%s' % (name, suffix))):
++                        if _is_elf(f):
++                            return os.path.basename(f)
++            return None
++
+     else:
+ 
+         def _findSoname_ldconfig(name):

@@ -1,0 +1,62 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=python
+pkgver=3.14.6
+pkgrel=0
+subpackages="$pkgname-dev"
+source="https://www.python.org/ftp/python/$pkgver/Python-$pkgver.tar.xz"
+sha256sums="143b1dddefaec3bd2e21e3b839b34a2b7fb9842272883c576420d605e9f30c63  Python-$pkgver.tar.xz"
+makedepends="bzip2-dev expat-dev libffi-dev linux-headers mpdecimal-dev musl-libintl ncurses-dev openssl-dev readline-dev sqlite-dev xz-dev zlib-dev"
+
+# --enable-optimizations/--with-lto dropped for a first pass -- PGO
+# executes the freshly-built interpreter during the build itself, which
+# would need every Alpine-borrowed runtime lib (openssl, sqlite, ffi,
+# ncursesw, readline, mpdec, intl, ...) bootstrapped under
+# /overlayer/syshub/lib first, same class of problem as wayland-scanner
+# but much bigger. tcl-dev left out of makedepends so configure
+# auto-skips _tkinter (non-fatal optional module).
+#
+# musl-find_library-zainium-paths.patch: ctypes.util.find_library() has
+# no ldconfig to query on musl -- same technique Alpine's own
+# musl-find_library.patch uses, adapted to Zainium's real lib paths.
+build() {
+    cd "$SRCDIR/Python-$pkgver"
+    rm -r Modules/expat
+    patch -p1 < "$RECIPE_DIR/0001-musl-find_library-zainium-paths.patch"
+
+    export CFLAGS_NODIST="${CFLAGS:-} -DTHREAD_STACK_SIZE=0x200000"
+    export LDFLAGS_NODIST="${LDFLAGS:-} -Wl,-z,stack-size=8388608"
+    # No --host="$CHOST" here on purpose: CPython's configure treats a
+    # mismatched --host as a real cross-compile (needs a separate
+    # PYTHON_FOR_BUILD/--with-build-python for its own codegen steps).
+    # Alpine's gcc already IS musl, so a plain native build here is a
+    # real musl build (matches Alpine's own APKBUILD, which doesn't
+    # cross-compile either) -- elfpatch fixes interpreter/rpath after.
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --mandir=/overlayer/syshub/share/man \
+        --infodir=/overlayer/syshub/share/info \
+        --localstatedir=/overlayer/syshub/var \
+        --enable-ipv6 \
+        --enable-loadable-sqlite-extensions \
+        --enable-shared \
+        --with-computed-gotos \
+        --with-system-expat \
+        --with-system-libmpdec \
+        --without-ensurepip
+    make -j"$(nproc)"
+}
+
+package() {
+    cd "$SRCDIR/Python-$pkgver"
+    make -j1 DESTDIR="$PAYLOAD_DIR" install maninstall
+    ln -sf python3 "$PAYLOAD_DIR/bin/python"
+    ln -sf python3-config "$PAYLOAD_DIR/bin/python-config"
+}
+
+dev() {
+    mkdir -p "$SUBPKG_PAYLOAD_DIR/include" "$SUBPKG_PAYLOAD_DIR/lib/pkgconfig"
+    mv "$PAYLOAD_DIR"/include/* "$SUBPKG_PAYLOAD_DIR/include/"
+    mv "$PAYLOAD_DIR"/lib/pkgconfig/* "$SUBPKG_PAYLOAD_DIR/lib/pkgconfig/" 2>/dev/null || true
+    find "$PAYLOAD_DIR/lib" -name 'libpython*.a' -exec mv {} "$SUBPKG_PAYLOAD_DIR/lib/" \;
+}
