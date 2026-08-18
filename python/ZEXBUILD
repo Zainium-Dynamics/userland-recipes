@@ -23,8 +23,17 @@ build() {
     rm -r Modules/expat
     patch -p1 < "$RECIPE_DIR/0001-musl-find_library-zainium-paths.patch"
 
+    # LDFLAGS_NODIST (not plain LDFLAGS) -- CPython passes this into the
+    # final interpreter/libpython link only, configure's own "can I run
+    # a compiled test program" self-checks never see it, so this is safe
+    # to set before ./configure runs (see userland-recipes README's
+    # "Baking it in yourself" -- verify_musl runs before elfpatch, so a
+    # plain-gcc native build needs this baked in, not left for elfpatch).
     export CFLAGS_NODIST="${CFLAGS:-} -DTHREAD_STACK_SIZE=0x200000"
-    export LDFLAGS_NODIST="${LDFLAGS:-} -Wl,-z,stack-size=8388608"
+    export LDFLAGS_NODIST="${LDFLAGS:-} -Wl,-z,stack-size=8388608 \
+        -Wl,-dynamic-linker,/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1 \
+        -Wl,-rpath,/overlayer/syshub/lib \
+        -Wl,-rpath,/overlayer/syshub/x86_64-zainium-linux-musl/lib"
     # No --host="$CHOST" here on purpose: CPython's configure treats a
     # mismatched --host as a real cross-compile (needs a separate
     # PYTHON_FOR_BUILD/--with-build-python for its own codegen steps).
