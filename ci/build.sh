@@ -2,7 +2,13 @@
 # ci/build.sh — turn one recipe directory into .zex file(s).
 #
 # Usage: ci/build.sh <pkgdir>
-#   e.g. ci/build.sh htop
+#   e.g. ci/build.sh gcc
+#
+# Identical to userland-recipes' ci/build.sh — the only thing that
+# differs between a userland and a syshub package is manifest.toml's
+# `_syshub` flag (and install paths), which zex-ports publish already
+# routes on. Nothing here needs to know which kind of package it's
+# building.
 #
 # Env this script expects the CI job to set:
 #   CHOST            — target triple, e.g. x86_64-zainium-linux-musl
@@ -47,13 +53,115 @@ echo "== $pkgname $pkgver-$pkgrel =="
 # CI growing a global list.
 [ -n "${makedepends:-}" ] && apk add --no-cache $makedepends
 
-# `--prefix=/overlayer/syshub` (see README's "Why --prefix=/overlayer/syshub
-# even for userland packages") means `make DESTDIR=$1 install` lands files
-# at $1/overlayer/syshub/{bin,lib,...} — DESTDIR prepends the configured
-# prefix, it doesn't replace it. substrate needs the flat form
-# ($1/{bin,lib,...}) to match manifest.toml's [install] map. Recipes don't
-# have to know this — every package()/subpackage function's DESTDIR gets
-# flattened right after it runs.
+# Zainium's own musl loader has to actually exist on this Alpine host
+# before LDFLAGS points -Wl,-dynamic-linker at it — otherwise every
+# ./configure's own "can I run a compiled test program" self-check
+# fails ("cannot run C compiled programs"), since autoconf executes
+# what it just compiled right here on the build host. Force musl into
+# needs_toolchain unconditionally (install_toolchain_deps below) so
+# every recipe gets a real, working loader at that path, not just the
+# ones that already declared musl as a toolchain dep.
+ZAINIUM_LDSO="/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1"
+case " ${needs_toolchain:-} " in
+    *" musl "*) ;;
+    *) needs_toolchain="musl ${needs_toolchain:-}" ;;
+esac
+
+# Self-hosting toolchain packages (gcc-16, binutils, ...) need an
+# already-published Zainium toolchain installed into /overlayer/syshub
+# before they can build at all — set needs_toolchain="pkg1 pkg2 ..." in
+# ZEXBUILD (package NAMES, not filenames/versions) to have this fetched
+# automatically from the live syshub ledger. New recipes needing this
+# just declare it — no CI changes required.
+install_toolchain_deps() {
+    for pkg in ${needs_toolchain:-}; do
+        echo "-- installing toolchain dependency: $pkg --"
+        # Try the syshub ledger first, then userland — a toolchain dep can
+        # be either tier (e.g. binutils needs zstd's *headers*, which live
+        # in zstd-dev, a userland -dev subpackage, not the syshub runtime
+        # package). Package NAME is all a recipe declares; which tier it
+        # actually lives in is this function's problem, not the recipe's.
+        file=""
+        for tier_url in \
+            "https://archive.zainiumdynamics.tech/core/syshub/x86_64/syshub.toml|core/syshub/x86_64/packages" \
+            "https://archive.zainiumdynamics.tech/userland/x86_64/zex_ledger-x86_64.toml|userland/x86_64/packages"
+        do
+            ledger_url="${tier_url%%|*}"
+            pkgs_path="${tier_url##*|}"
+            # `|| true` — under `set -e`, a failed fetch (e.g. a syshub-only
+            # pkg 404ing against the userland ledger, or vice versa) would
+            # otherwise abort the whole script right here, silently, before
+            # the loop ever gets to try the other tier or print anything.
+            ledger="$(wget -qO- "$ledger_url" 2>/dev/null || true)"
+            file="$(printf '%s\n' "$ledger" | sed -n "/^\[packages.$pkg\]\$/,/^\$/p" | sed -n 's/^file *= *"\(.*\)"/\1/p')"
+            if [ -n "$file" ]; then
+                base_url="https://archive.zainiumdynamics.tech/$pkgs_path"
+                break
+            fi
+        done
+        [ -n "$file" ] || { echo "toolchain dep $pkg: not found in syshub or userland ledger" >&2; exit 1; }
+        echo "  -> $file"
+        wget -qO "/tmp/$file" "$base_url/$file"
+        "$SUBSTRATE" unpack "/tmp/$file" --output /overlayer/syshub
+    done
+
+    # gcc-musl's own cc1 was built with --enable-lto, which links it
+    # against libzstd.so.1 *unconditionally* (GCC's LTO bytecode writer is
+    # compiled into cc1 itself, not a plugin) — cc1 can't run at all,
+    # LTO or not, until that .so exists somewhere on its search path. No
+    # zainium-native libzstd is published yet (this is exactly what the
+    # zstd recipe is for), so borrow Alpine's own musl-linked libzstd.so.1
+    # here just to get cc1 off the ground. musl's ABI is stable across
+    # independent builds of the same libc, so this is safe for a library
+    # that only calls ordinary libc functions (malloc/memcpy/...) — once
+    # cc1 can run, the zstd recipe builds and packages Zainium's own
+    # native libzstd.so.1 for real, which is what actually ships. This
+    # only ever fires when gcc-musl was requested and nothing has already
+    # put a real libzstd.so.1 at this path (i.e. becomes a no-op forever
+    # once the zstd package itself is in needs_toolchain).
+    case " ${needs_toolchain:-} " in
+        *" gcc-musl "*)
+            if [ ! -e /overlayer/syshub/lib/libzstd.so.1 ]; then
+                echo "-- bootstrapping libzstd.so.1 from Alpine (cc1 needs it to run at all) --"
+                apk add --no-cache zstd-libs >/dev/null
+                mkdir -p /overlayer/syshub/lib
+                cp -L /usr/lib/libzstd.so.1 /overlayer/syshub/lib/libzstd.so.1
+            fi
+            ;;
+    esac
+}
+install_toolchain_deps
+
+# musl is real now (just unpacked above) — safe to point every
+# recipe's LDFLAGS/RUSTFLAGS at Zainium's actual loader.
+export LDFLAGS="${LDFLAGS:-} -Wl,-dynamic-linker=$ZAINIUM_LDSO -Wl,-rpath=/overlayer/syshub/lib"
+export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="${CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS:-} -C link-arg=-Wl,-dynamic-linker=$ZAINIUM_LDSO -C link-arg=-Wl,-rpath=/overlayer/syshub/lib"
+
+# Some builds run their own just-compiled tool mid-build (wayland's
+# wayland-scanner generating protocol headers, e.g.) — that tool now
+# carries Zainium's interpreter/rpath too, so it needs its *other*
+# runtime libs (not just musl) to already exist under
+# /overlayer/syshub/lib, same problem the gcc-musl/libzstd bootstrap
+# above solves. Same justification: musl's ABI is stable across
+# independent builds of the same libc, so borrowing Alpine's own copy
+# of a plain C library is safe. Extend this list as new build-time
+# tools surface a new missing one.
+for lib in libz.so.1 liblzma.so.5 libexpat.so.1 libxml2.so.2; do
+    [ -e "/overlayer/syshub/lib/$lib" ] && continue
+    src="$(find /usr/lib /lib -maxdepth 1 -name "$lib" 2>/dev/null | head -1)"
+    [ -n "$src" ] || continue
+    echo "-- bootstrapping $lib from Alpine (a build-time tool needs it to run) --"
+    mkdir -p /overlayer/syshub/lib
+    cp -L "$src" "/overlayer/syshub/lib/$lib"
+done
+
+# `--prefix=/overlayer/syshub` is the runtime-visible merged path for
+# EVERY package, syshub or userland (see userland-recipes' README's "Why
+# --prefix=/overlayer/syshub even for userland packages") — DESTDIR
+# prepends the configured prefix, it doesn't replace it. substrate needs
+# the flat form ($1/{bin,lib,...}) to match manifest.toml's [install]
+# map. Recipes don't have to know this — every package()/subpackage
+# function's DESTDIR gets flattened right after it runs.
 flatten_prefix() {
     dir="$1"
     if [ -d "$dir/overlayer/syshub" ]; then
@@ -65,13 +173,14 @@ flatten_prefix() {
 # ── verify: every ELF in the payload is actually musl-linked, with its
 #    interpreter under /overlayer/syshub — not a glibc binary that
 #    silently built anyway because $CHOST's cross-compiler wasn't found
-#    (exactly what happened once already on an ubuntu-latest runner,
-#    which has no real musl toolchain at all — --host="$CHOST" fell
-#    back to plain glibc gcc without ever failing the build). Runs
-#    after flatten_prefix, before `substrate pack`, so a bad binary
-#    fails the build right here instead of getting packed/published.
-#    Opt out via `native = true` in manifest.toml (self-hosting
-#    toolchain packages with their own already-correct linking).
+#    (exactly what happened once already on userland-recipes' original
+#    ubuntu-latest runner, which had no real musl toolchain at all —
+#    --host="$CHOST" fell back to plain glibc gcc without ever failing
+#    the build). Runs after flatten_prefix, before `substrate pack`, so
+#    a bad binary fails the build right here instead of getting
+#    packed/published. Opt out via `native = true` in manifest.toml
+#    (self-hosting toolchain packages — e.g. gcc-musl-cross itself —
+#    that already compiled with their own correct, final linking).
 verify_musl() {
     dir="$1"
     manifest="$2"
@@ -147,7 +256,15 @@ fi
 # root name, git source, etc.) can override by cd-ing themselves inside
 # build() — this is just the common-case default.
 for f in *.tar.*; do
-    [ -e "$f" ] && tar xf "$f"
+    [ -e "$f" ] || continue
+    case "$f" in
+        # Alpine's default `tar` is BusyBox's, not GNU tar — it doesn't
+        # auto-detect/decompress zstd (fails with "invalid tar magic")
+        # even with the zstd CLI on PATH. Pipe through zstd explicitly
+        # instead of relying on tar's own compression-format support.
+        *.tar.zst) zstd -dc "$f" | tar xf - ;;
+        *)         tar xf "$f" ;;
+    esac
 done
 cd "$pkgname-$pkgver" 2>/dev/null || true
 
@@ -183,6 +300,11 @@ for sub in ${subpackages:-}; do
     subfn="${sub#"$pkgname"-}"   # "$pkgname-dev" -> "dev"
     SUBPKG_PAYLOAD_DIR="$STAGING_ROOT/subpkg/$sub/payload"
     mkdir -p "$SUBPKG_PAYLOAD_DIR"
+    # Subpackage functions (dev(), etc.) stage into $PAYLOAD_DIR same as
+    # package() does — without repointing it here it would still hold the
+    # main package's (already-finished) payload dir, silently writing the
+    # subpackage's files into the wrong package.
+    PAYLOAD_DIR="$SUBPKG_PAYLOAD_DIR"
     "$subfn"
     flatten_prefix "$SUBPKG_PAYLOAD_DIR"
 
