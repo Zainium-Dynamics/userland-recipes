@@ -32,6 +32,7 @@ build() {
 
 package() {
     cd "$SRCDIR/Python-$pkgver"
+    export LD_LIBRARY_PATH="/usr/lib:/lib"
     make -j1 DESTDIR="$PAYLOAD_DIR" install maninstall
     ln -sf python3 "$PAYLOAD_DIR/overlayer/syshub/bin/python"
     ln -sf python3-config "$PAYLOAD_DIR/overlayer/syshub/bin/python-config"
