@@ -5,7 +5,7 @@ pkgrel=0
 subpackages="$pkgname-dev"
 source="https://www.python.org/ftp/python/$pkgver/Python-$pkgver.tar.xz"
 sha256sums="143b1dddefaec3bd2e21e3b839b34a2b7fb9842272883c576420d605e9f30c63  Python-$pkgver.tar.xz"
-makedepends="bzip2-dev expat-dev libffi-dev linux-headers mpdecimal-dev musl-libintl ncurses-dev openssl-dev readline-dev sqlite-dev xz-dev zlib-dev"
+makedepends="bzip2-dev expat-dev libffi-dev linux-headers mpdecimal-dev musl-libintl ncurses-dev openssl-dev readline-dev sqlite-dev xz-dev zlib-dev patchelf"
 
 # --enable-optimizations/--with-lto dropped for a first pass -- PGO
 # executes the freshly-built interpreter during the build itself, which
@@ -23,17 +23,15 @@ build() {
     rm -r Modules/expat
     patch -p1 < "$RECIPE_DIR/0001-musl-find_library-zainium-paths.patch"
 
-    # LDFLAGS_NODIST (not plain LDFLAGS) -- CPython passes this into the
-    # final interpreter/libpython link only, configure's own "can I run
-    # a compiled test program" self-checks never see it, so this is safe
-    # to set before ./configure runs (see userland-recipes README's
-    # "Baking it in yourself" -- verify_musl runs before elfpatch, so a
-    # plain-gcc native build needs this baked in, not left for elfpatch).
+    # LDFLAGS_NODIST also covers Programs/_freeze_module -- a build-time
+    # tool CPython compiles and *runs* mid-build to generate frozen
+    # module headers. Baking Zainium's interpreter in here breaks that
+    # tool (the loader path doesn't exist on this Alpine host), so only
+    # stack-size goes here; the interpreter/rpath gets patched onto the
+    # final installed binary/lib directly in package() instead, with
+    # patchelf.
     export CFLAGS_NODIST="${CFLAGS:-} -DTHREAD_STACK_SIZE=0x200000"
-    export LDFLAGS_NODIST="${LDFLAGS:-} -Wl,-z,stack-size=8388608 \
-        -Wl,-dynamic-linker,/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1 \
-        -Wl,-rpath,/overlayer/syshub/lib \
-        -Wl,-rpath,/overlayer/syshub/x86_64-zainium-linux-musl/lib"
+    export LDFLAGS_NODIST="${LDFLAGS:-} -Wl,-z,stack-size=8388608"
     # No --host="$CHOST" here on purpose: CPython's configure treats a
     # mismatched --host as a real cross-compile (needs a separate
     # PYTHON_FOR_BUILD/--with-build-python for its own codegen steps).
@@ -62,6 +60,15 @@ package() {
     # flatten_prefix hasn't run yet here -- still under overlayer/syshub/
     ln -sf python3 "$PAYLOAD_DIR/overlayer/syshub/bin/python"
     ln -sf python3-config "$PAYLOAD_DIR/overlayer/syshub/bin/python-config"
+
+    # Only the final installed binary/lib get Zainium's interpreter/rpath
+    # (not Programs/_freeze_module or anything else in the build tree).
+    patchelf --set-interpreter \
+        /overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1 \
+        --set-rpath /overlayer/syshub/lib:/overlayer/syshub/x86_64-zainium-linux-musl/lib \
+        "$PAYLOAD_DIR/overlayer/syshub/bin/python3.14"
+    find "$PAYLOAD_DIR/overlayer/syshub/lib" -name 'libpython*.so*' -exec \
+        patchelf --set-rpath /overlayer/syshub/lib:/overlayer/syshub/x86_64-zainium-linux-musl/lib {} \;
 }
 
 dev() {
