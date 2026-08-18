@@ -1,0 +1,19 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=rcairo
+pkgver=1.18.5
+pkgrel=0
+# Real GitHub tag archive (v1.18.5) -- not byte-identical to whatever
+# gem/dist packaging produced the locally-downloaded copy, but this is
+# the real, verified upstream source for the same release.
+source="https://github.com/rcairo/rcairo/archive/refs/tags/v$pkgver.tar.gz"
+sha256sums="c26145ae85ee632734c18613620602c032190011dd3cc37a441acf1eb5716811  v$pkgver.tar.gz"
+makedepends="ruby-dev cairo-dev"
+
+build() {
+    ruby extconf.rb
+    make -j"$(nproc)"
+}
+
+package() {
+    find . -name 'cairo.so' -exec install -Dm755 {} "$PAYLOAD_DIR/lib/ruby/vendor_ruby/cairo.so" \;
+}

@@ -1,0 +1,29 @@
+[package]
+name             = "rcairo"
+version          = "1.18.5"
+description      = "Ruby bindings for the cairo 2D graphics library"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://rcairo.github.io/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["cairo"]
+provides         = ["rcairo"]
+tags             = ["ruby", "graphics", "bindings"]
+
+[install]
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
