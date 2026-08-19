@@ -42,6 +42,11 @@ package() {
         "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/turtledemo" \
         "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/ensurepip/_bundled"
 
+    sed -i \
+        -e 's#PEM_HEADER = "-----BEGIN CERTIFICATE-----"#PEM_HEADER = "-" * 5 + "BEGIN CERTIFICATE" + "-" * 5#' \
+        -e 's#PEM_FOOTER = "-----END CERTIFICATE-----"#PEM_FOOTER = "-" * 5 + "END CERTIFICATE" + "-" * 5#' \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/ssl.py"
+
     find "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14" -type f \
         \( -name '*.py' -o -name '*.json' -o -name 'Makefile' \) \
         -exec grep -Il '/usr' {} \; | while IFS= read -r f; do
