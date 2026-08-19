@@ -44,7 +44,7 @@ package() {
     find "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14" -type f \
         \( -name '*.py' -o -name '*.json' -o -name 'Makefile' \) \
         -exec grep -Il '/usr' {} \; | while IFS= read -r f; do
-        sed -i '/^#!/! s#/usr#/overlayer/syshub#g' "$f"
+        sed -i 's#/usr#/overlayer/syshub#g' "$f"
     done
 
     mkdir -p "$STAGING_ROOT/_python-dev"
