@@ -47,6 +47,8 @@ package() {
         -e 's#PEM_FOOTER = "-----END CERTIFICATE-----"#PEM_FOOTER = "-" * 5 + "END CERTIFICATE" + "-" * 5#' \
         "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/ssl.py"
 
+    find "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14" -type d -name '__pycache__' -exec rm -rf {} +
+
     find "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14" -type f \
         \( -name '*.py' -o -name '*.json' -o -name 'Makefile' \) \
         -exec grep -Il '/usr' {} \; | while IFS= read -r f; do
