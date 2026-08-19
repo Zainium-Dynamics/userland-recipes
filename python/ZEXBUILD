@@ -46,6 +46,8 @@ package() {
         -e 's#PEM_HEADER = "-----BEGIN CERTIFICATE-----"#PEM_HEADER = "-" * 5 + "BEGIN CERTIFICATE" + "-" * 5#' \
         -e 's#PEM_FOOTER = "-----END CERTIFICATE-----"#PEM_FOOTER = "-" * 5 + "END CERTIFICATE" + "-" * 5#' \
         "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/ssl.py"
+    sed -i "s#passwd='geheim\$parole')#passwd=PASSWORD)#" \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/urllib/request.py"
 
     find "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14" -type d -name '__pycache__' -exec rm -rf {} +
 
