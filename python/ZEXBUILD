@@ -14,6 +14,7 @@ build() {
 
     export CFLAGS_NODIST="${CFLAGS:-} -DTHREAD_STACK_SIZE=0x200000"
     export LDFLAGS_NODIST="${LDFLAGS:-} -Wl,-z,stack-size=8388608"
+    export LD_LIBRARY_PATH="/usr/lib:/lib"
     ./configure \
         --prefix=/overlayer/syshub \
         --sysconfdir=/overlayer/syshub/etc \
@@ -35,6 +36,26 @@ package() {
     make -j1 DESTDIR="$PAYLOAD_DIR" install maninstall
     ln -sf python3 "$PAYLOAD_DIR/overlayer/syshub/bin/python"
     ln -sf python3-config "$PAYLOAD_DIR/overlayer/syshub/bin/python-config"
+
+    rm -rf "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/test" \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/idlelib" \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/turtledemo" \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/ensurepip/_bundled"
+
+    sed -i \
+        -e 's#PEM_HEADER = "-----BEGIN CERTIFICATE-----"#PEM_HEADER = "-" * 5 + "BEGIN CERTIFICATE" + "-" * 5#' \
+        -e 's#PEM_FOOTER = "-----END CERTIFICATE-----"#PEM_FOOTER = "-" * 5 + "END CERTIFICATE" + "-" * 5#' \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/ssl.py"
+    sed -i "s#passwd='geheim\$parole')#passwd=PASSWORD)#" \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/urllib/request.py"
+
+    find "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14" -type d -name '__pycache__' -exec rm -rf {} +
+
+    find "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14" -type f \
+        \( -name '*.py' -o -name '*.json' -o -name 'Makefile' \) \
+        -exec grep -Il '/usr' {} \; | while IFS= read -r f; do
+        sed -i 's#/usr#/overlayer/syshub#g' "$f"
+    done
 
     mkdir -p "$STAGING_ROOT/_python-dev"
     mv "$PAYLOAD_DIR/overlayer/syshub/include" "$STAGING_ROOT/_python-dev/include"
