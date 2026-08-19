@@ -39,7 +39,8 @@ package() {
 
     rm -rf "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/test" \
         "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/idlelib" \
-        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/turtledemo"
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/turtledemo" \
+        "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14/ensurepip/_bundled"
 
     find "$PAYLOAD_DIR/overlayer/syshub/lib/python3.14" -type f \
         \( -name '*.py' -o -name '*.json' -o -name 'Makefile' \) \
