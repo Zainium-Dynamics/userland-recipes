@@ -21,7 +21,7 @@ build() {
         --enable-native-toplevel \
         --disable-installing-bytecode-programs \
         CC="${CC:-gcc}"
-    make world.opt
+    LD_LIBRARY_PATH=/usr/lib:/lib make world.opt
     make DESTDIR="$(pwd)/_zexbuild-install" install
 }
 
