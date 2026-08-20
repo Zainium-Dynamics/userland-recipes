@@ -1,0 +1,33 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=ocaml
+pkgver=5.5.0
+pkgrel=0
+source="https://github.com/ocaml/ocaml/archive/$pkgver.tar.gz"
+sha256sums="c018052c8264a3791a8f54f84179e6bcc78ed82eb889bacc2773df445259aed3  $pkgver.tar.gz"
+makedepends="gcc"
+
+# Native compiler (ocamlopt) for x86_64, matching Alpine's own choice
+# for this arch. Testsuite/ocamltest skipped -- we never run check().
+# ocaml-runtime split skipped for a first pass -- ships as one package.
+build() {
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --bindir=/overlayer/syshub/bin \
+        --libdir=/overlayer/syshub/lib/ocaml \
+        --mandir=/overlayer/syshub/share/man \
+        --docdir=/overlayer/syshub/share/doc/ocaml \
+        --disable-installing-source-artifacts \
+        --enable-native-compiler \
+        --enable-native-toplevel \
+        --disable-installing-bytecode-programs \
+        CC="${CC:-gcc}"
+    make world.opt
+    make DESTDIR="$(pwd)/_zexbuild-install" install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/lib"
+    cp -a "$inst"/bin/. "$PAYLOAD_DIR/bin/"
+    cp -a "$inst"/lib/ocaml "$PAYLOAD_DIR/lib/"
+}

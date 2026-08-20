@@ -1,0 +1,29 @@
+[package]
+name             = "ocaml"
+version          = "5.5.0"
+description      = "Main implementation of the Caml programming language"
+license          = "LGPL-2.1-or-later WITH OCaml-LGPL-linking-exception"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://ocaml.org/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+depends          = ["gcc"]
+provides         = ["ocaml"]
+tags             = ["language", "compiler"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
