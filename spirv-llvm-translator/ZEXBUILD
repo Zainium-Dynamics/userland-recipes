@@ -6,16 +6,17 @@ subpackages="spirv-llvm-translator-dev"
 _commit=27afcfe385cf542197dfde8c658e1f5ff53fc2fc
 source="https://github.com/KhronosGroup/SPIRV-LLVM-Translator/archive/$_commit.tar.gz"
 sha256sums="fff5e06429b639be95841044839b779e6896fba7c19987af52d767f0e454767c  $_commit.tar.gz"
-makedepends="cmake samurai"
-needs_toolchain="llvm llvm-dev"
+makedepends="cmake samurai llvm22-dev llvm22-static"
 
 # llvm_release_220 branch HEAD -- no tagged releases upstream.
+# Built against Alpine's own llvm22 (has the static component libs our
+# own llvm-dev doesn't ship) -- llvm stays dynamic/our-own everywhere else.
 build() {
     cd SPIRV-LLVM-Translator-$_commit
     cmake -B build -G Ninja \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/overlayer/syshub \
-        -DLLVM_DIR=/overlayer/zexlib/union/lib/cmake/llvm \
+        -DLLVM_DIR=/usr/lib/llvm22/lib/cmake/llvm \
         -DLLVM_SPIRV_BUILD_EXTERNAL=YES \
         -DLLVM_SPIRV_INCLUDE_TESTS=OFF
     LD_LIBRARY_PATH=/usr/lib:/lib cmake --build build --target llvm-spirv
