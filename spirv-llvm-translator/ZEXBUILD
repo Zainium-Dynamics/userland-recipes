@@ -1,0 +1,39 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=spirv-llvm-translator
+pkgver=22.1.0
+pkgrel=0
+subpackages="spirv-llvm-translator-dev"
+_commit=27afcfe385cf542197dfde8c658e1f5ff53fc2fc
+source="https://github.com/KhronosGroup/SPIRV-LLVM-Translator/archive/$_commit.tar.gz"
+sha256sums="fff5e06429b639be95841044839b779e6896fba7c19987af52d767f0e454767c  $_commit.tar.gz"
+makedepends="cmake samurai"
+needs_toolchain="llvm llvm-dev"
+
+# llvm_release_220 branch HEAD -- no tagged releases upstream.
+build() {
+    cd SPIRV-LLVM-Translator-$_commit
+    cmake -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/overlayer/syshub \
+        -DLLVM_DIR=/overlayer/zexlib/union/lib/cmake/llvm \
+        -DLLVM_SPIRV_BUILD_EXTERNAL=YES \
+        -DLLVM_SPIRV_INCLUDE_TESTS=OFF
+    LD_LIBRARY_PATH=/usr/lib:/lib cmake --build build --target llvm-spirv
+    DESTDIR="$(pwd)/_zexbuild-install" cmake --install build
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/bin"
+    cp -a "$inst/bin/." "$PAYLOAD_DIR/bin/" 2>/dev/null || true
+}
+
+# static lib only -- ships in -dev, not the runtime package.
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    find "$inst/lib" -maxdepth 1 -name 'libLLVMSPIRVLib*' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+    sed -i 's#^prefix=.*#prefix=/overlayer/zexlib/union#' "$PAYLOAD_DIR/lib/pkgconfig/"*.pc
+}
