@@ -1,0 +1,28 @@
+[package]
+name             = "spirv-llvm-translator"
+version          = "22.1.0"
+description      = "LLVM/SPIR-V bi-directional translator (llvm-spirv CLI)"
+license          = "NCSA"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://github.com/KhronosGroup/SPIRV-LLVM-Translator"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+depends          = ["llvm"]
+provides         = ["spirv-llvm-translator"]
+tags             = ["graphics", "compiler"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
