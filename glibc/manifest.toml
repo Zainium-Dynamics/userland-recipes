@@ -1,0 +1,31 @@
+[package]
+name             = "glibc"
+version          = "2.44"
+description      = "GNU C Library compatibility layer"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.gnu.org/software/libc/"
+build_type       = "dynamic"
+libc_target      = "gnu"
+native           = true
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+depends          = []
+provides         = ["glibc"]
+tags             = ["compat", "library"]
+
+[install]
+lib     = "/overlayer/zexlib/union/lib"
+bin     = "/overlayer/zexlib/union/bin"
+etc     = "/overlayer/zexlib/union/etc"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

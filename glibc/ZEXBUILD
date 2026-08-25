@@ -1,0 +1,129 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=glibc
+pkgver=2.44
+pkgrel=0
+subpackages="glibc-dev"
+_gccver=16.1.0
+_target=x86_64-zainium-linux-gnu
+source="https://ftp.gnu.org/gnu/glibc/glibc-$pkgver.tar.xz
+https://ftp.gnu.org/gnu/gcc/gcc-$_gccver/gcc-$_gccver.tar.xz"
+sha256sums=""
+makedepends="gmp-dev mpfr-dev mpc1-dev isl-dev bison flex texinfo gawk python3 perl"
+needs_toolchain="linux-headers gcc-musl"
+
+# stage-1 gcc has no target libc at all (--without-headers) -- its only
+# job is compiling glibc itself, never published as its own package.
+# stage-2 gcc is a full compiler linked against the glibc this recipe
+# just built, used to sanity-check the bootstrap actually closes the
+# loop end to end -- also not published, only glibc/glibc-dev are.
+build() {
+    local bootstrap="$(pwd)/_bootstrap"
+    local sysroot="$bootstrap/sysroot"
+    mkdir -p "$sysroot"
+
+    tar xf gcc-$_gccver.tar.xz
+
+    export CC=/overlayer/syshub/bin/x86_64-zainium-linux-musl-gcc
+    export CXX=/overlayer/syshub/bin/x86_64-zainium-linux-musl-g++
+    export PATH="/overlayer/syshub/bin:$PATH"
+
+    mkdir -p gcc-stage1-build
+    cd gcc-stage1-build
+    ../gcc-$_gccver/configure \
+        --target=$_target \
+        --prefix="$bootstrap" \
+        --without-headers \
+        --enable-initfini-array \
+        --disable-nls \
+        --disable-shared \
+        --disable-multilib \
+        --disable-decimal-float \
+        --disable-threads \
+        --disable-libatomic \
+        --disable-libgomp \
+        --disable-libquadmath \
+        --disable-libssp \
+        --disable-libvtv \
+        --disable-libstdcxx \
+        --enable-languages=c,c++
+    make -j"$(nproc)" all-gcc all-target-libgcc
+    make install-gcc install-target-libgcc
+    cd ..
+
+    export PATH="$bootstrap/bin:$PATH"
+    export CC="$_target-gcc"
+
+    tar xf glibc-$pkgver.tar.xz
+    mkdir -p glibc-headers-build
+    cd glibc-headers-build
+    ../glibc-$pkgver/configure \
+        --prefix=/overlayer/syshub \
+        --host=$_target \
+        --with-headers=/overlayer/syshub/include \
+        --disable-werror
+    make install-headers DESTDIR="$sysroot"
+    cd ..
+
+    "$_target-gcc" -print-file-name=libc.so
+    cd glibc-headers-build
+    make csu/subdir_lib
+    mkdir -p "$sysroot/overlayer/syshub/lib"
+    cp csu/crt1.o csu/crti.o csu/crtn.o "$sysroot/overlayer/syshub/lib/"
+    "$_target-gcc" -nostdlib -nostartfiles -shared -x c /dev/null \
+        -o "$sysroot/overlayer/syshub/lib/libc.so"
+    touch "$sysroot/overlayer/syshub/include/gnu/stubs.h"
+    cd ..
+
+    mkdir -p gcc-full-libgcc-build
+    cd gcc-full-libgcc-build
+    ../gcc-$_gccver/configure \
+        --target=$_target \
+        --prefix="$bootstrap" \
+        --disable-nls \
+        --disable-shared \
+        --disable-multilib \
+        --disable-decimal-float \
+        --disable-threads \
+        --disable-libatomic \
+        --disable-libgomp \
+        --disable-libquadmath \
+        --disable-libssp \
+        --disable-libvtv \
+        --disable-libstdcxx \
+        --enable-languages=c \
+        --with-sysroot="$sysroot"
+    make -j"$(nproc)" all-target-libgcc
+    make install-target-libgcc
+    cd ..
+
+    mkdir -p glibc-build
+    cd glibc-build
+    CC="$_target-gcc" \
+    ../glibc-$pkgver/configure \
+        --prefix=/overlayer/syshub \
+        --host=$_target \
+        --with-headers="$sysroot/overlayer/syshub/include" \
+        --disable-werror \
+        --enable-kernel=6.1.0 \
+        --disable-nscd \
+        --disable-systemtap
+    make -j"$(nproc)"
+    make install DESTDIR="$sysroot"
+    cd ..
+}
+
+package() {
+    local inst="_bootstrap/sysroot/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib" "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/etc"
+    find "$inst/lib" -maxdepth 1 \( -name '*.so*' \) -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
+    cp -a "$inst"/bin/. "$PAYLOAD_DIR/bin/" 2>/dev/null || true
+    cp -a "$inst"/etc/. "$PAYLOAD_DIR/etc/" 2>/dev/null || true
+}
+
+dev() {
+    local inst="_bootstrap/sysroot/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    find "$inst/lib" -maxdepth 1 -name '*.a' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
+    find "$inst/lib" -maxdepth 1 -name '*.o' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
+}

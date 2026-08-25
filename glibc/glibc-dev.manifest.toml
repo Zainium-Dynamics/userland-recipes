@@ -1,0 +1,30 @@
+[package]
+name             = "glibc-dev"
+version          = "2.44"
+description      = "glibc headers, static libs, crt objects"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.gnu.org/software/libc/"
+build_type       = "dynamic"
+libc_target      = "gnu"
+native           = true
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+depends          = ["glibc"]
+provides         = ["glibc-dev"]
+tags             = ["compat", "dev"]
+
+[install]
+include = "/overlayer/zexlib/union/include"
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
