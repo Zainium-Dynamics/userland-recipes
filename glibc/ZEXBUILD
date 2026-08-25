@@ -87,6 +87,7 @@ build() {
     ../gcc-$_gccver/configure \
         --target=$_target \
         --prefix="$bootstrap" \
+        --with-native-system-header-dir=/overlayer/syshub/include \
         --with-gmp=/usr \
         --with-mpfr=/usr \
         --with-mpc=/usr \
