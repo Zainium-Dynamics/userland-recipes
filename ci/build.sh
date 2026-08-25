@@ -276,6 +276,7 @@ PAYLOAD_DIR="$STAGING_ROOT/pkg/payload"
 mkdir -p "$PAYLOAD_DIR"
 package
 flatten_prefix "$PAYLOAD_DIR"
+find "$PAYLOAD_DIR" -name '*.la' -delete
 
 cp "$RECIPE_DIR/manifest.toml" "$STAGING_ROOT/pkg/manifest.toml"
 verify_musl "$PAYLOAD_DIR" "$STAGING_ROOT/pkg/manifest.toml"
@@ -307,6 +308,7 @@ for sub in ${subpackages:-}; do
     PAYLOAD_DIR="$SUBPKG_PAYLOAD_DIR"
     "$subfn"
     flatten_prefix "$SUBPKG_PAYLOAD_DIR"
+    find "$SUBPKG_PAYLOAD_DIR" -name '*.la' -delete
 
     cp "$RECIPE_DIR/$sub.manifest.toml" "$STAGING_ROOT/subpkg/$sub/manifest.toml"
     verify_musl "$SUBPKG_PAYLOAD_DIR" "$STAGING_ROOT/subpkg/$sub/manifest.toml"
