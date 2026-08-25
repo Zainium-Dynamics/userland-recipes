@@ -25,8 +25,6 @@ build() {
     export CC=/overlayer/syshub/bin/x86_64-zainium-linux-musl-gcc
     export CXX=/overlayer/syshub/bin/x86_64-zainium-linux-musl-g++
     export PATH="/overlayer/syshub/bin:$PATH"
-    export CPPFLAGS="-I/usr/include"
-    export LDFLAGS="-L/usr/lib"
 
     mkdir -p gcc-stage1-build
     cd gcc-stage1-build
@@ -34,6 +32,10 @@ build() {
         --target=$_target \
         --prefix="$bootstrap" \
         --without-headers \
+        --with-gmp=/usr \
+        --with-mpfr=/usr \
+        --with-mpc=/usr \
+        --with-isl=/usr \
         --enable-initfini-array \
         --disable-nls \
         --disable-shared \
@@ -79,6 +81,10 @@ build() {
     ../gcc-$_gccver/configure \
         --target=$_target \
         --prefix="$bootstrap" \
+        --with-gmp=/usr \
+        --with-mpfr=/usr \
+        --with-mpc=/usr \
+        --with-isl=/usr \
         --disable-nls \
         --disable-shared \
         --disable-multilib \
