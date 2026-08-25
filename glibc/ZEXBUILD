@@ -22,9 +22,14 @@ build() {
     local sysroot="$bootstrap/sysroot"
     mkdir -p "$sysroot"
 
+    mkdir -p target-binutils
+    for t in as ld ar ranlib nm objcopy objdump strip; do
+        ln -sf "$(command -v $t)" "target-binutils/$_target-$t"
+    done
+
     export CC=/overlayer/syshub/bin/x86_64-zainium-linux-musl-gcc
     export CXX=/overlayer/syshub/bin/x86_64-zainium-linux-musl-g++
-    export PATH="/overlayer/syshub/bin:$PATH"
+    export PATH="$(pwd)/target-binutils:/overlayer/syshub/bin:$PATH"
     export LD_LIBRARY_PATH=/usr/lib:/lib
 
     mkdir -p gcc-stage1-build
