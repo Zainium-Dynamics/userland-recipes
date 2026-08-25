@@ -25,6 +25,7 @@ build() {
     export CC=/overlayer/syshub/bin/x86_64-zainium-linux-musl-gcc
     export CXX=/overlayer/syshub/bin/x86_64-zainium-linux-musl-g++
     export PATH="/overlayer/syshub/bin:$PATH"
+    export LD_LIBRARY_PATH=/usr/lib:/lib
 
     mkdir -p gcc-stage1-build
     cd gcc-stage1-build
