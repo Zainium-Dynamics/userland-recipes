@@ -60,10 +60,10 @@ build() {
     cd ..
 
     export PATH="$bootstrap/bin:$PATH"
-    export CC="$_target-gcc"
 
     mkdir -p glibc-headers-build
     cd glibc-headers-build
+    CC="$_target-gcc" \
     ../glibc-$pkgver/configure \
         --prefix=/overlayer/syshub \
         --host=$_target \
