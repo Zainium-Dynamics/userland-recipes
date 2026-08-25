@@ -113,7 +113,10 @@ build() {
         --disable-libstdcxx \
         --enable-languages=c \
         --with-sysroot="$sysroot"
-    make -j"$(nproc)" all-target-libgcc
+    if ! make -j"$(nproc)" all-target-libgcc; then
+        find . -name config.log -exec sh -c 'echo "=== {} ==="; cat "{}"' \;
+        exit 1
+    fi
     make install-target-libgcc
     cd ..
 
