@@ -17,11 +17,10 @@ needs_toolchain="linux-headers gcc-musl"
 # just built, used to sanity-check the bootstrap actually closes the
 # loop end to end -- also not published, only glibc/glibc-dev are.
 build() {
+    cd ..
     local bootstrap="$(pwd)/_bootstrap"
     local sysroot="$bootstrap/sysroot"
     mkdir -p "$sysroot"
-
-    tar xf gcc-$_gccver.tar.xz
 
     export CC=/overlayer/syshub/bin/x86_64-zainium-linux-musl-gcc
     export CXX=/overlayer/syshub/bin/x86_64-zainium-linux-musl-g++
@@ -53,7 +52,6 @@ build() {
     export PATH="$bootstrap/bin:$PATH"
     export CC="$_target-gcc"
 
-    tar xf glibc-$pkgver.tar.xz
     mkdir -p glibc-headers-build
     cd glibc-headers-build
     ../glibc-$pkgver/configure \
