@@ -82,6 +82,14 @@ build() {
     touch "$sysroot/overlayer/syshub/include/gnu/stubs.h"
     cd ..
 
+    # gcc's target-lib subconfigures also probe the old tooldir-style
+    # $prefix/$target/{include,sys-include} regardless of --with-sysroot;
+    # left missing, $CC -E can't find stdio.h and falls back to a
+    # nonexistent /lib/cpp. Point them at the real sysroot headers.
+    mkdir -p "$bootstrap/$_target"
+    ln -sf "$sysroot/overlayer/syshub/include" "$bootstrap/$_target/include"
+    ln -sf "$sysroot/overlayer/syshub/include" "$bootstrap/$_target/sys-include"
+
     mkdir -p gcc-full-libgcc-build
     cd gcc-full-libgcc-build
     ../gcc-$_gccver/configure \
