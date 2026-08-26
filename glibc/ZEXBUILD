@@ -155,6 +155,22 @@ dev() {
     local inst="_bootstrap/sysroot/overlayer/syshub"
     mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib"
     cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+
+    # glibc's own headers hardcode /usr in a few spots -- real fallback
+    # paths in paths.h, plus two doc comments pointing at /usr/include.
+    # Zainium has no /usr, rewrite all of it to the overlayer prefix.
+    sed -i \
+        -e 's|"/usr/bin:/bin"|"/overlayer/syshub/bin"|' \
+        -e 's|"/usr/bin:/bin:/usr/sbin:/sbin"|"/overlayer/syshub/bin:/overlayer/syshub/sbin"|' \
+        -e 's|"/usr/share/man"|"/overlayer/syshub/share/man"|' \
+        -e 's|"/usr/sbin/sendmail"|"/overlayer/syshub/sbin/sendmail"|' \
+        -e 's|"/usr/bin/vi"|"/overlayer/syshub/bin/vi"|' \
+        "$PAYLOAD_DIR/include/paths.h"
+    sed -i 's|/usr/include/linux|/overlayer/syshub/include/linux|' \
+        "$PAYLOAD_DIR/include/linux/netdevice.h"
+    sed -i 's|/usr/include/linux/fs.h|/overlayer/syshub/include/linux/fs.h|' \
+        "$PAYLOAD_DIR/include/sys/mount.h"
+
     find "$inst/lib" -maxdepth 1 -name '*.a' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
     find "$inst/lib" -maxdepth 1 -name '*.o' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
 }
