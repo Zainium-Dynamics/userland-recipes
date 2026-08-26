@@ -1,0 +1,176 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=glibc
+pkgver=2.44
+pkgrel=0
+subpackages="glibc-dev"
+_gccver=16.1.0
+_target=x86_64-zainium-linux-gnu
+source="https://ftp.gnu.org/gnu/glibc/glibc-$pkgver.tar.xz
+https://ftp.gnu.org/gnu/gcc/gcc-$_gccver/gcc-$_gccver.tar.xz"
+sha256sums=""
+makedepends="gmp-dev mpfr-dev mpc1-dev isl-dev bison flex texinfo gawk python3 perl"
+needs_toolchain="linux-headers gcc-musl"
+
+# stage-1 gcc has no target libc at all (--without-headers) -- its only
+# job is compiling glibc itself, never published as its own package.
+# stage-2 gcc is a full compiler linked against the glibc this recipe
+# just built, used to sanity-check the bootstrap actually closes the
+# loop end to end -- also not published, only glibc/glibc-dev are.
+build() {
+    cd ..
+    local bootstrap="$(pwd)/_bootstrap"
+    local sysroot="$bootstrap/sysroot"
+    mkdir -p "$sysroot"
+
+    mkdir -p target-binutils
+    for t in as ld ar ranlib nm objcopy objdump strip; do
+        ln -sf "$(command -v $t)" "target-binutils/$_target-$t"
+    done
+
+    export CC=/overlayer/syshub/bin/x86_64-zainium-linux-musl-gcc
+    export CXX=/overlayer/syshub/bin/x86_64-zainium-linux-musl-g++
+    export PATH="$(pwd)/target-binutils:/overlayer/syshub/bin:$PATH"
+    export LD_LIBRARY_PATH=/usr/lib:/lib
+
+    mkdir -p gcc-stage1-build
+    cd gcc-stage1-build
+    ../gcc-$_gccver/configure \
+        --target=$_target \
+        --prefix="$bootstrap" \
+        --without-headers \
+        --with-gmp=/usr \
+        --with-mpfr=/usr \
+        --with-mpc=/usr \
+        --with-isl=/usr \
+        --enable-initfini-array \
+        --disable-nls \
+        --disable-shared \
+        --disable-multilib \
+        --disable-decimal-float \
+        --disable-threads \
+        --disable-libatomic \
+        --disable-libgomp \
+        --disable-libquadmath \
+        --disable-libssp \
+        --disable-libvtv \
+        --disable-libstdcxx \
+        --enable-languages=c,c++
+    make -j"$(nproc)" all-gcc all-target-libgcc
+    make install-gcc install-target-libgcc
+    cd ..
+
+    export PATH="$bootstrap/bin:$PATH"
+
+    mkdir -p glibc-headers-build
+    cd glibc-headers-build
+    CC="$_target-gcc" \
+    ../glibc-$pkgver/configure \
+        --prefix=/overlayer/syshub \
+        --host=$_target \
+        --with-headers=/overlayer/syshub/include \
+        --disable-werror
+    make install-headers DESTDIR="$sysroot"
+    cd ..
+
+    # linux-headers (needs_toolchain) unpacked to the real /overlayer/syshub,
+    # not into our sysroot tree -- with --with-sysroot="$sysroot" active for
+    # gcc-full-libgcc-build, cc1 only sees headers inside $sysroot, so glibc's
+    # own <bits/errno.h> etc reaching for <linux/errno.h> can't find it there.
+    for d in linux asm asm-generic mtd rdma scsi sound drm misc xen; do
+        [ -d "/overlayer/syshub/include/$d" ] && \
+            cp -a "/overlayer/syshub/include/$d" "$sysroot/overlayer/syshub/include/"
+    done
+
+    "$_target-gcc" -print-file-name=libc.so
+    cd glibc-headers-build
+    make csu/subdir_lib
+    mkdir -p "$sysroot/overlayer/syshub/lib"
+    cp csu/crt1.o csu/crti.o csu/crtn.o "$sysroot/overlayer/syshub/lib/"
+    "$_target-gcc" -nostdlib -nostartfiles -shared -x c /dev/null \
+        -o "$sysroot/overlayer/syshub/lib/libc.so"
+    touch "$sysroot/overlayer/syshub/include/gnu/stubs.h"
+    cd ..
+
+    mkdir -p gcc-full-libgcc-build
+    cd gcc-full-libgcc-build
+    ../gcc-$_gccver/configure \
+        --target=$_target \
+        --prefix="$bootstrap" \
+        --with-native-system-header-dir=/overlayer/syshub/include \
+        --with-gmp=/usr \
+        --with-mpfr=/usr \
+        --with-mpc=/usr \
+        --with-isl=/usr \
+        --disable-nls \
+        --disable-shared \
+        --disable-multilib \
+        --disable-decimal-float \
+        --disable-threads \
+        --disable-libatomic \
+        --disable-libgomp \
+        --disable-libquadmath \
+        --disable-libssp \
+        --disable-libvtv \
+        --disable-libstdcxx \
+        --enable-languages=c \
+        --with-sysroot="$sysroot"
+    make -j"$(nproc)" all-gcc
+
+    # target-libgcc's own autoconf-generated configure re-probes the C
+    # preprocessor from scratch and its "$CC -E" detection misfires in
+    # this nested cross-build (falls back to a nonexistent /lib/cpp) --
+    # same class of cross-compile answer autoconf can't safely probe as
+    # bash's ZEXBUILD ac_cv_* overrides. Force it directly to xgcc -E,
+    # scoped to just this step so it doesn't leak into all-gcc's own
+    # host-side sub-configures (those need the BUILD machine's cpp).
+    ac_cv_prog_CPP="$bootstrap/bin/$_target-gcc -E" make -j"$(nproc)" all-target-libgcc
+    make install-target-libgcc
+    cd ..
+
+    mkdir -p glibc-build
+    cd glibc-build
+    CC="$_target-gcc" \
+    ../glibc-$pkgver/configure \
+        --prefix=/overlayer/syshub \
+        --host=$_target \
+        --with-headers="$sysroot/overlayer/syshub/include" \
+        --disable-werror \
+        --enable-kernel=6.1.0 \
+        --disable-nscd \
+        --disable-systemtap
+    make -j"$(nproc)"
+    make install DESTDIR="$sysroot"
+    cd ..
+}
+
+package() {
+    local inst="_bootstrap/sysroot/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib" "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/etc"
+    find "$inst/lib" -maxdepth 1 \( -name '*.so*' \) -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
+    cp -a "$inst"/bin/. "$PAYLOAD_DIR/bin/" 2>/dev/null || true
+    cp -a "$inst"/etc/. "$PAYLOAD_DIR/etc/" 2>/dev/null || true
+}
+
+dev() {
+    local inst="_bootstrap/sysroot/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+
+    # glibc's own headers hardcode /usr in a few spots -- real fallback
+    # paths in paths.h, plus two doc comments pointing at /usr/include.
+    # Zainium has no /usr, rewrite all of it to the overlayer prefix.
+    sed -i \
+        -e 's|"/usr/bin:/bin"|"/overlayer/syshub/bin"|' \
+        -e 's|"/usr/bin:/bin:/usr/sbin:/sbin"|"/overlayer/syshub/bin:/overlayer/syshub/sbin"|' \
+        -e 's|"/usr/share/man"|"/overlayer/syshub/share/man"|' \
+        -e 's|"/usr/sbin/sendmail"|"/overlayer/syshub/sbin/sendmail"|' \
+        -e 's|"/usr/bin/vi"|"/overlayer/syshub/bin/vi"|' \
+        "$PAYLOAD_DIR/include/paths.h"
+    sed -i 's|/usr/include/linux|/overlayer/syshub/include/linux|' \
+        "$PAYLOAD_DIR/include/linux/netdevice.h"
+    sed -i 's|/usr/include/linux/fs.h|/overlayer/syshub/include/linux/fs.h|' \
+        "$PAYLOAD_DIR/include/sys/mount.h"
+
+    find "$inst/lib" -maxdepth 1 -name '*.a' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
+    find "$inst/lib" -maxdepth 1 -name '*.o' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
+}
