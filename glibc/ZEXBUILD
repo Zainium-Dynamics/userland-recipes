@@ -82,14 +82,6 @@ build() {
     touch "$sysroot/overlayer/syshub/include/gnu/stubs.h"
     cd ..
 
-    # gcc's target-lib subconfigures also probe the old tooldir-style
-    # $prefix/$target/{include,sys-include} regardless of --with-sysroot;
-    # left missing, $CC -E can't find stdio.h and falls back to a
-    # nonexistent /lib/cpp. Point them at the real sysroot headers.
-    mkdir -p "$bootstrap/$_target"
-    ln -sf "$sysroot/overlayer/syshub/include" "$bootstrap/$_target/include"
-    ln -sf "$sysroot/overlayer/syshub/include" "$bootstrap/$_target/sys-include"
-
     mkdir -p gcc-full-libgcc-build
     cd gcc-full-libgcc-build
     ../gcc-$_gccver/configure \
@@ -113,10 +105,16 @@ build() {
         --disable-libstdcxx \
         --enable-languages=c \
         --with-sysroot="$sysroot"
-    if ! make -j"$(nproc)" all-target-libgcc; then
-        find . -name config.log -exec sh -c 'echo "=== {} ==="; cat "{}"' \;
-        exit 1
-    fi
+    make -j"$(nproc)" all-gcc
+
+    # target-libgcc's own autoconf-generated configure re-probes the C
+    # preprocessor from scratch and its "$CC -E" detection misfires in
+    # this nested cross-build (falls back to a nonexistent /lib/cpp) --
+    # same class of cross-compile answer autoconf can't safely probe as
+    # bash's ZEXBUILD ac_cv_* overrides. Force it directly to xgcc -E,
+    # scoped to just this step so it doesn't leak into all-gcc's own
+    # host-side sub-configures (those need the BUILD machine's cpp).
+    ac_cv_prog_CPP="$bootstrap/bin/$_target-gcc -E" make -j"$(nproc)" all-target-libgcc
     make install-target-libgcc
     cd ..
 
