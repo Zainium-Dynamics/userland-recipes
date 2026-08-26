@@ -72,6 +72,15 @@ build() {
     make install-headers DESTDIR="$sysroot"
     cd ..
 
+    # linux-headers (needs_toolchain) unpacked to the real /overlayer/syshub,
+    # not into our sysroot tree -- with --with-sysroot="$sysroot" active for
+    # gcc-full-libgcc-build, cc1 only sees headers inside $sysroot, so glibc's
+    # own <bits/errno.h> etc reaching for <linux/errno.h> can't find it there.
+    for d in linux asm asm-generic mtd rdma scsi sound drm misc xen; do
+        [ -d "/overlayer/syshub/include/$d" ] && \
+            cp -a "/overlayer/syshub/include/$d" "$sysroot/overlayer/syshub/include/"
+    done
+
     "$_target-gcc" -print-file-name=libc.so
     cd glibc-headers-build
     make csu/subdir_lib
