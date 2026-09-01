@@ -63,28 +63,9 @@ package() {
     DESTDIR="$PAYLOAD_DIR" ninja -C builddir install
 
     rm -f "$PAYLOAD_DIR/overlayer/syshub/bin/bootctl" \
-        "$PAYLOAD_DIR/overlayer/syshub/bin/systemd-bless-boot"
-
-    find "$PAYLOAD_DIR" -type f -exec strip --strip-all {} + 2>/dev/null || true
-
-    python3 - "$PAYLOAD_DIR" <<'PYEOF'
-import os, sys
-root = sys.argv[1]
-for dirpath, _, files in os.walk(root):
-    for name in files:
-        p = os.path.join(dirpath, name)
-        try:
-            with open(p, "r+b") as f:
-                if f.read(4) != b"\x7fELF":
-                    continue
-                f.seek(4)
-                if f.read(1) != b"\x02":
-                    continue
-                f.seek(60)
-                f.write(b"\x00\x00")
-        except OSError:
-            continue
-PYEOF
+        "$PAYLOAD_DIR/overlayer/syshub/bin/systemd-bless-boot" \
+        "$PAYLOAD_DIR/overlayer/syshub/bin/busctl" \
+        "$PAYLOAD_DIR/overlayer/syshub/bin/importctl"
 
     for f in $(grep -rIl "/usr/" "$PAYLOAD_DIR" 2>/dev/null); do
         sed -i \
