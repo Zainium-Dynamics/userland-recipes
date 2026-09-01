@@ -62,6 +62,9 @@ build() {
 package() {
     DESTDIR="$PAYLOAD_DIR" ninja -C builddir install
 
+    rm -f "$PAYLOAD_DIR/overlayer/syshub/bin/bootctl" \
+        "$PAYLOAD_DIR/overlayer/syshub/bin/systemd-bless-boot"
+
     for f in $(grep -rIl "/usr/" "$PAYLOAD_DIR" 2>/dev/null); do
         sed -i \
             -e 's#/usr/lib/#/overlayer/syshub/lib/#g' \
