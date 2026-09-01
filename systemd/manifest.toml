@@ -13,13 +13,13 @@ blake3           = ""
 ed25519_sig      = ""
 ed25519_pubkey   = ""
 
-depends          = ["musl", "libcap", "libseccomp", "kmod", "pcre2", "acl", "xz", "zstd", "zlib", "elfutils", "libarchive", "util-linux", "libxkbcommon", "curl", "openssl"]
+depends          = ["musl", "libcap", "libseccomp", "kmod", "pcre2", "xz", "zstd", "zlib", "elfutils", "libarchive", "util-linux", "libxkbcommon", "curl", "openssl", "libapparmor"]
 provides         = [
     "systemd", "systemctl", "systemd-udevd", "udevadm", "journalctl",
     "systemd-journald", "systemd-logind", "loginctl", "systemd-networkd",
     "networkctl", "systemd-resolved", "resolvectl", "systemd-timesyncd",
     "timedatectl", "hostnamectl", "localectl", "busctl", "coredumpctl",
-    "systemd-analyze", "systemd-nspawn", "systemd-cryptenroll", "homectl"
+    "systemd-analyze", "systemd-nspawn"
 ]
 tags             = ["base", "init", "service-manager"]
 

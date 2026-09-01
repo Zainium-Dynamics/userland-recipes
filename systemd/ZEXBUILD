@@ -5,12 +5,10 @@ pkgrel=0
 source="https://github.com/systemd/systemd/archive/refs/tags/v$pkgver.tar.gz"
 sha256sums="ed1059ff964f5df35b6056434cc17cc83f86dc913f10489948a0b19b6081c5ec  v$pkgver.tar.gz"
 makedepends="meson ninja pkgconf gperf python3 py3-jinja2 build-base linux-headers gettext-dev libucontext-dev coreutils
-    libcap-dev libseccomp-dev kmod-dev pcre2-dev acl-dev
-    xz-dev zstd-dev zlib-dev bzip2-dev lz4-dev
+    libcap-dev libseccomp-dev kmod-dev pcre2-dev
+    xz-dev zstd-dev zlib-dev
     elfutils-dev libarchive-dev util-linux-dev libxkbcommon-dev
-    curl-dev openssl-dev linux-pam-dev libidn2-dev libqrencode-dev
-    libmicrohttpd-dev libpwquality-dev cryptsetup-dev gnutls-dev
-    p11-kit-dev tpm2-tss-dev libfido2-dev libapparmor-dev"
+    curl-dev openssl-dev libapparmor-dev"
 
 build() {
     grep -rl '"/bin/sh"' src/ | xargs -r sed -i 's#"/bin/sh"#"/overlayer/syshub/bin/bash"#g'
@@ -40,6 +38,22 @@ build() {
         -Dpolkit=disabled \
         -Daudit=disabled \
         -Dxenctrl=disabled \
+        -Dacl=disabled \
+        -Dpam=disabled \
+        -Dlibcryptsetup=disabled \
+        -Dlibcryptsetup-plugins=disabled \
+        -Dtpm2=disabled \
+        -Dlibfido2=disabled \
+        -Dgnutls=disabled \
+        -Dp11kit=disabled \
+        -Dqrencode=disabled \
+        -Dmicrohttpd=disabled \
+        -Dpwquality=disabled \
+        -Dpasswdqc=disabled \
+        -Dlibidn2=disabled \
+        -Didn=false \
+        -Dbzip2=disabled \
+        -Dlz4=disabled \
         -Ddbus-interfaces-dir=no \
         -Ddebug-shell=/overlayer/syshub/bin/bash \
         -Ddefault-user-shell=/overlayer/syshub/bin/bash \
