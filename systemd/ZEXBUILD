@@ -4,7 +4,7 @@ pkgver=261.2
 pkgrel=0
 source="https://github.com/systemd/systemd/archive/refs/tags/v$pkgver.tar.gz"
 sha256sums="ed1059ff964f5df35b6056434cc17cc83f86dc913f10489948a0b19b6081c5ec  v$pkgver.tar.gz"
-makedepends="meson ninja pkgconf gperf python3 py3-jinja2 build-base linux-headers gettext-dev libucontext-dev
+makedepends="meson ninja pkgconf gperf python3 py3-jinja2 build-base linux-headers gettext-dev libucontext-dev coreutils
     libcap-dev libseccomp-dev kmod-dev pcre2-dev acl-dev
     xz-dev zstd-dev zlib-dev bzip2-dev lz4-dev
     elfutils-dev libarchive-dev util-linux-dev libxkbcommon-dev
