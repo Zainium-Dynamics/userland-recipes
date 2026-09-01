@@ -1,0 +1,90 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=systemd
+pkgver=261.2
+pkgrel=0
+source="https://github.com/systemd/systemd/archive/refs/tags/v$pkgver.tar.gz"
+sha256sums="ed1059ff964f5df35b6056434cc17cc83f86dc913f10489948a0b19b6081c5ec  v$pkgver.tar.gz"
+makedepends="meson ninja pkgconf gperf python3 py3-jinja2 build-base linux-headers gettext-dev libucontext-dev coreutils
+    libcap-dev libseccomp-dev kmod-dev pcre2-dev
+    xz-dev zstd-dev zlib-dev
+    elfutils-dev libarchive-dev util-linux-dev libxkbcommon-dev
+    curl-dev openssl-dev libapparmor-dev"
+
+build() {
+    grep -rl '"/bin/sh"' src/ | xargs -r sed -i 's#"/bin/sh"#"/overlayer/syshub/bin/bash"#g'
+
+    export LDFLAGS="-Wl,-dynamic-linker=/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1 -Wl,-rpath=/overlayer/syshub/lib"
+
+    meson setup builddir \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --localstatedir=/overlayer/syshub/var \
+        --libdir=/overlayer/syshub/lib \
+        -Dmode=release \
+        -Dlibc=musl \
+        -Dsplit-bin=false \
+        -Dtests=false \
+        -Dman=disabled \
+        -Dhtml=disabled \
+        -Dbootloader=disabled \
+        -Defi=false \
+        -Dukify=disabled \
+        -Dbpf-framework=disabled \
+        -Dselinux=disabled \
+        -Dapparmor=enabled \
+        -Dsmack=false \
+        -Dima=false \
+        -Dipe=false \
+        -Dpolkit=disabled \
+        -Daudit=disabled \
+        -Dxenctrl=disabled \
+        -Dacl=disabled \
+        -Dpam=disabled \
+        -Dlibcryptsetup=disabled \
+        -Dlibcryptsetup-plugins=disabled \
+        -Dtpm2=disabled \
+        -Dlibfido2=disabled \
+        -Dgnutls=disabled \
+        -Dp11kit=disabled \
+        -Dqrencode=disabled \
+        -Dmicrohttpd=disabled \
+        -Dpwquality=disabled \
+        -Dpasswdqc=disabled \
+        -Dlibidn2=disabled \
+        -Didn=false \
+        -Dbzip2=disabled \
+        -Dlz4=disabled \
+        -Ddbus-interfaces-dir=no \
+        -Ddebug-shell=/overlayer/syshub/bin/bash \
+        -Ddefault-user-shell=/overlayer/syshub/bin/bash \
+        -Duser-path=/overlayer/syshub/bin \
+        -Dcertificate-root=/overlayer/syshub/etc/ssl \
+        -Dnologin-path=/overlayer/syshub/bin/nologin \
+        -Dsulogin-path=/overlayer/syshub/bin/sulogin \
+        -Dagetty-path=/overlayer/syshub/bin/agetty \
+        -Dmount-path=/overlayer/syshub/bin/mount \
+        -Dumount-path=/overlayer/syshub/bin/umount \
+        -Dswapon-path=/overlayer/syshub/bin/swapon \
+        -Dswapoff-path=/overlayer/syshub/bin/swapoff \
+        -Dloadkeys-path=/overlayer/syshub/bin/loadkeys \
+        -Dsetfont-path=/overlayer/syshub/bin/setfont \
+        -Dquotaon-path=/overlayer/syshub/bin/quotaon \
+        -Dquotacheck-path=/overlayer/syshub/bin/quotacheck \
+        -Dkmod-path=/overlayer/syshub/bin/kmod \
+        -Dkexec-path=/overlayer/syshub/bin/kexec
+    ninja -C builddir
+}
+
+package() {
+    DESTDIR="$PAYLOAD_DIR" ninja -C builddir install
+
+    for f in $(grep -rIl "/usr/" "$PAYLOAD_DIR" 2>/dev/null); do
+        sed -i \
+            -e 's#/usr/lib/#/overlayer/syshub/lib/#g' \
+            -e 's#/usr/sbin/#/overlayer/syshub/bin/#g' \
+            -e 's#/usr/bin/#/overlayer/syshub/bin/#g' \
+            -e 's#/usr/share/#/overlayer/syshub/share/#g' \
+            -e 's#/usr/#/overlayer/syshub/#g' \
+            "$f"
+    done
+}

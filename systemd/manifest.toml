@@ -1,0 +1,40 @@
+[package]
+name             = "systemd"
+version          = "261.2"
+description      = "System and service manager (PID 1)"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://systemd.io/"
+build_type       = "dynamic"
+libc_target      = "musl"
+native           = true
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+depends          = ["musl", "libcap", "libseccomp", "kmod", "pcre2", "xz", "zstd", "zlib", "elfutils", "libarchive", "util-linux", "libxkbcommon", "curl", "openssl", "libapparmor"]
+provides         = [
+    "systemd", "systemctl", "systemd-udevd", "udevadm", "journalctl",
+    "systemd-journald", "systemd-logind", "loginctl", "systemd-networkd",
+    "networkctl", "systemd-resolved", "resolvectl", "systemd-timesyncd",
+    "timedatectl", "hostnamectl", "localectl", "busctl", "coredumpctl",
+    "systemd-analyze", "systemd-nspawn"
+]
+tags             = ["base", "init", "service-manager"]
+
+[install]
+bin     = "/overlayer/syshub/bin"
+lib     = "/overlayer/syshub/lib"
+etc     = "/overlayer/syshub/etc"
+share   = "/overlayer/syshub/share"
+var     = "/overlayer/syshub/var"
+include = "/overlayer/syshub/include"
+_syshub = true
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
