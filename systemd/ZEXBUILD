@@ -13,7 +13,6 @@ makedepends="meson ninja pkgconf gperf python3 py3-jinja2 build-base linux-heade
     p11-kit-dev tpm2-tss-dev libfido2-dev"
 
 build() {
-    cd "systemd-$pkgver"
     grep -rl '"/bin/sh"' src/ | xargs -r sed -i 's#"/bin/sh"#"/overlayer/syshub/bin/bash"#g'
 
     meson setup builddir \
@@ -60,7 +59,6 @@ build() {
 }
 
 package() {
-    cd "systemd-$pkgver"
     DESTDIR="$PAYLOAD_DIR" ninja -C builddir install
 
     for f in $(grep -rIl "/usr/" "$PAYLOAD_DIR" 2>/dev/null); do
