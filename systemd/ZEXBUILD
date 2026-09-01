@@ -15,6 +15,8 @@ makedepends="meson ninja pkgconf gperf python3 py3-jinja2 build-base linux-heade
 build() {
     grep -rl '"/bin/sh"' src/ | xargs -r sed -i 's#"/bin/sh"#"/overlayer/syshub/bin/bash"#g'
 
+    export LDFLAGS="-Wl,-dynamic-linker=/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1 -Wl,-rpath=/overlayer/syshub/lib"
+
     meson setup builddir \
         --prefix=/overlayer/syshub \
         --sysconfdir=/overlayer/syshub/etc \
@@ -61,10 +63,6 @@ build() {
 
 package() {
     DESTDIR="$PAYLOAD_DIR" ninja -C builddir install
-
-    for b in bootctl systemd-bless-boot busctl importctl coredumpctl; do
-        rm -f "$PAYLOAD_DIR/overlayer/syshub/bin/$b"
-    done
 
     for f in $(grep -rIl "/usr/" "$PAYLOAD_DIR" 2>/dev/null); do
         sed -i \

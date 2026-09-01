@@ -7,6 +7,7 @@ maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
 homepage         = "https://systemd.io/"
 build_type       = "dynamic"
 libc_target      = "musl"
+native           = true
 
 blake3           = ""
 ed25519_sig      = ""
