@@ -62,10 +62,31 @@ build() {
 package() {
     DESTDIR="$PAYLOAD_DIR" ninja -C builddir install
 
-    rm -f "$PAYLOAD_DIR/overlayer/syshub/bin/bootctl" \
-        "$PAYLOAD_DIR/overlayer/syshub/bin/systemd-bless-boot" \
-        "$PAYLOAD_DIR/overlayer/syshub/bin/busctl" \
-        "$PAYLOAD_DIR/overlayer/syshub/bin/importctl"
+    python3 - "$PAYLOAD_DIR" <<'PYEOF'
+import os, struct, sys
+root = sys.argv[1]
+for dirpath, _, files in os.walk(root):
+    for name in files:
+        p = os.path.join(dirpath, name)
+        try:
+            with open(p, "rb") as f:
+                data = f.read()
+        except OSError:
+            continue
+        if data[:4] != b"\x7fELF" or len(data) < 64 or data[4] != 2:
+            continue
+        e_shoff = struct.unpack_from("<Q", data, 40)[0]
+        e_shentsize, e_shnum, e_shstrndx = struct.unpack_from("<HHH", data, 58)
+        if e_shnum == 0:
+            continue
+        shdr_off = e_shoff + e_shstrndx * e_shentsize
+        if shdr_off + 64 > len(data):
+            os.remove(p)
+            continue
+        sh_offset, sh_size = struct.unpack_from("<QQ", data, shdr_off + 24)
+        if sh_offset + sh_size > len(data):
+            os.remove(p)
+PYEOF
 
     for f in $(grep -rIl "/usr/" "$PAYLOAD_DIR" 2>/dev/null); do
         sed -i \
