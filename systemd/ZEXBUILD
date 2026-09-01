@@ -38,6 +38,7 @@ build() {
         -Dpolkit=disabled \
         -Daudit=disabled \
         -Dxenctrl=disabled \
+        -Ddbus-interfaces-dir=no \
         -Ddebug-shell=/overlayer/syshub/bin/bash \
         -Ddefault-user-shell=/overlayer/syshub/bin/bash \
         -Duser-path=/overlayer/syshub/bin \
