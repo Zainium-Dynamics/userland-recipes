@@ -1,0 +1,33 @@
+# manifest.toml — cosmic-store
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "cosmic-store"
+version          = "1.9.0"
+description      = "COSMIC app store for Flatpak apps"
+license          = "GPL-3.0-only"
+maintainer       = "Ali Zain <alizain@zainiumdynamics.tech>"
+homepage         = "https://github.com/pop-os/cosmic-store"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "flatpak"]
+provides         = ["cosmic-store"]
+tags             = ["desktop", "cosmic", "store", "flatpak"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
