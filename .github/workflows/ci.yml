@@ -24,15 +24,16 @@ on:
   push:
     branches: [main]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
-
 jobs:
+  # PR validation: every PR checks in parallel with the others. Only a
+  # newer push to the *same* PR cancels that PR's own stale run.
   check:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     container: alpine:latest
+    concurrency:
+      group: check-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     steps:
       - name: Container prerequisites (glibc shim for actions' Node runtime)
         run: |
@@ -108,8 +109,39 @@ jobs:
           path: .zexbuild-staging/
           retention-days: 1
 
-  release:
+  # FIFO release queue. GitHub concurrency groups keep only ONE pending
+  # run and cancel the older pending ones, so with 3+ quick merges only the
+  # first and last would ever release. Instead every push run starts
+  # immediately, waits here until every earlier push run on main has
+  # finished (by run_number), then pauses 60s and lets release go. No
+  # run is ever cancelled, and they publish strictly in merge order.
+  wait-turn:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    permissions:
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Wait for earlier releases to finish
+        run: |
+          waited=0
+          while :; do
+            earlier="$(gh api "repos/${{ github.repository }}/actions/workflows/ci.yml/runs?branch=main&event=push&per_page=100" \
+              --jq '[.workflow_runs[] | select(.status != "completed" and .run_number < ${{ github.run_number }})] | length')"
+            [ "$earlier" = 0 ] && break
+            echo "waiting for $earlier earlier release run(s)"
+            waited=1
+            sleep 20
+          done
+          if [ "$waited" = 1 ]; then
+            echo "previous release finished, waiting 60s"
+            sleep 60
+          fi
+
+  release:
+    needs: wait-turn
     runs-on: ubuntu-latest
     container: alpine:latest
     env:
@@ -120,12 +152,6 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
     steps:
-      # cancel-in-progress is off above so a merge never kills a release
-      # mid-publish -- this just spaces consecutive queued runs out a
-      # little instead of firing back-to-back the instant one finishes.
-      - name: Wait 60s before starting
-        run: sleep 60
-
       - name: Container prerequisites (glibc shim for actions' Node runtime)
         run: |
           apk add --no-cache libc6-compat git bash
