@@ -1,0 +1,16 @@
+--- a/src/appstream_cache.rs
++++ b/src/appstream_cache.rs
+@@ -24,7 +24,12 @@
+ 
+ use crate::{AppIcon, AppId, AppInfo, stats};
+ 
+-const PREFIXES: &[&str] = &["/usr/share", "/var/lib", "/var/cache"];
++const PREFIXES: &[&str] = &[
++    "/overlayer/syshub/share",
++    "/overlayer/zexlib/union/share",
++    "/overlayer/zexlib/union/var/lib",
++    "/overlayer/zexlib/union/var/cache",
++];
+ const CATALOGS: &[&str] = &["swcatalog", "app-info"];
+ 
+ #[derive(

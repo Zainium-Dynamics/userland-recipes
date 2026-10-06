@@ -1,0 +1,23 @@
+maintainer="Ali Zain <alizain@zainiumdynamics.tech>"
+pkgname=cosmic-store
+pkgver=1.9.0
+pkgrel=0
+source="https://github.com/pop-os/cosmic-store/archive/refs/tags/epoch-$pkgver.tar.gz
+0001-appstream-zainium-paths.patch"
+sha256sums="4c736700bbca173ca7d06738fe6f2e74c053abbea676bf083303a72984469a09  epoch-$pkgver.tar.gz"
+makedepends="cargo just pkgconf cmake flatpak-dev glib-dev libxkbcommon-dev wayland-dev"
+
+# Upstream default features: flatpak is the only backend compiled in.
+build() {
+    cd cosmic-store-epoch-$pkgver
+
+    # appstream catalogs: share from syshub and the union, var/lib and var/cache from the union
+    patch -p1 < ../0001-appstream-zainium-paths.patch
+
+    cargo build --release --target x86_64-unknown-linux-musl
+}
+
+package() {
+    just rootdir="$PAYLOAD_DIR" prefix=/overlayer/syshub \
+        cargo-target-dir=target/x86_64-unknown-linux-musl install
+}

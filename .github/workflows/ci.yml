@@ -53,13 +53,22 @@ jobs:
 
       - name: Install build deps
         run: |
-          apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo flex bison rsync elfutils-dev openssl llvm22-dev llvm22-static llvm22-gtest llvm22-test-utils cmake samurai
+          apk add --no-cache build-base curl texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo flex bison rsync elfutils-dev openssl llvm22-dev llvm22-static llvm22-gtest llvm22-test-utils cmake samurai
           # `cargo install` puts binaries in ~/.cargo/bin — the ubuntu-latest
           # setup had dtolnay/rust-toolchain adding this to PATH for free;
           # switching to Alpine's own apk rust/cargo dropped that, so
           # `substrate` (installed below) wasn't found once the CI got far
           # enough to actually call it. GITHUB_PATH persists for every
           # later step in this job, not just this one.
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      # Rust recipes build with --target x86_64-unknown-linux-musl, which
+      # Alpine's apk rust does not ship std for -- real rustup (nightly)
+      # + that target is the fix. Goes ahead of apk's cargo on PATH.
+      - name: Install rustup + x86_64-unknown-linux-musl target
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+            --default-toolchain nightly --target x86_64-unknown-linux-musl --profile minimal
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
       # cargo install/build were recompiling substrate + all its deps
@@ -74,6 +83,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cargo/bin
+            ~/.rustup
           key: cargo-check-${{ runner.os }}-v1
 
       # substrate is published on crates.io (substrate-zainium, binary
@@ -170,13 +180,22 @@ jobs:
 
       - name: Install build deps
         run: |
-          apk add --no-cache build-base texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo flex bison rsync elfutils-dev openssl llvm22-dev llvm22-static llvm22-gtest llvm22-test-utils cmake samurai
+          apk add --no-cache build-base curl texinfo xz zlib-dev curl-dev expat-dev linux-headers rust cargo flex bison rsync elfutils-dev openssl llvm22-dev llvm22-static llvm22-gtest llvm22-test-utils cmake samurai
           # `cargo install` puts binaries in ~/.cargo/bin — the ubuntu-latest
           # setup had dtolnay/rust-toolchain adding this to PATH for free;
           # switching to Alpine's own apk rust/cargo dropped that, so
           # `substrate` (installed below) wasn't found once the CI got far
           # enough to actually call it. GITHUB_PATH persists for every
           # later step in this job, not just this one.
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      # Rust recipes build with --target x86_64-unknown-linux-musl, which
+      # Alpine's apk rust does not ship std for -- real rustup (nightly)
+      # + that target is the fix. Goes ahead of apk's cargo on PATH.
+      - name: Install rustup + x86_64-unknown-linux-musl target
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+            --default-toolchain nightly --target x86_64-unknown-linux-musl --profile minimal
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
       # cargo install/build were recompiling substrate, zex-ports, and
@@ -193,6 +212,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cargo/bin
+            ~/.rustup
             /tmp/zex-ports-src/target
           key: cargo-release-${{ runner.os }}-v1
 
