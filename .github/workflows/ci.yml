@@ -62,6 +62,15 @@ jobs:
           # later step in this job, not just this one.
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
+      # Rust recipes build with --target x86_64-unknown-linux-musl, which
+      # Alpine's apk rust does not ship std for -- real rustup (nightly)
+      # + that target is the fix. Goes ahead of apk's cargo on PATH.
+      - name: Install rustup + x86_64-unknown-linux-musl target
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+            --default-toolchain nightly --target x86_64-unknown-linux-musl --profile minimal
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
       # cargo install/build were recompiling substrate + all its deps
       # from zero on every single run — several minutes wasted on every
       # retry regardless of whether any Rust source actually changed.
@@ -74,6 +83,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cargo/bin
+            ~/.rustup
           key: cargo-check-${{ runner.os }}-v1
 
       # substrate is published on crates.io (substrate-zainium, binary
@@ -179,6 +189,15 @@ jobs:
           # later step in this job, not just this one.
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
+      # Rust recipes build with --target x86_64-unknown-linux-musl, which
+      # Alpine's apk rust does not ship std for -- real rustup (nightly)
+      # + that target is the fix. Goes ahead of apk's cargo on PATH.
+      - name: Install rustup + x86_64-unknown-linux-musl target
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+            --default-toolchain nightly --target x86_64-unknown-linux-musl --profile minimal
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
       # cargo install/build were recompiling substrate, zex-ports, and
       # every dependency (aws-sdk-s3 alone took 6+ minutes) from zero on
       # every single run — most of this job's time regardless of whether
@@ -193,6 +212,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cargo/bin
+            ~/.rustup
             /tmp/zex-ports-src/target
           key: cargo-release-${{ runner.os }}-v1
 

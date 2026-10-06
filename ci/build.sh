@@ -24,6 +24,11 @@
 
 set -eu
 
+# Upstream repos may ship a rust-toolchain.toml pinning an older channel;
+# RUSTUP_TOOLCHAIN overrides it so every crate builds on the nightly
+# the CI installs.
+export RUSTUP_TOOLCHAIN=nightly
+
 PKGDIR="${1:?usage: ci/build.sh <pkgdir>}"
 : "${CHOST:=x86_64-zainium-linux-musl}"
 : "${SUBSTRATE:=substrate}"
@@ -135,7 +140,7 @@ install_toolchain_deps
 # musl is real now (just unpacked above) — safe to point every
 # recipe's LDFLAGS/RUSTFLAGS at Zainium's actual loader.
 export LDFLAGS="${LDFLAGS:-} -Wl,-dynamic-linker=$ZAINIUM_LDSO -Wl,-rpath=/overlayer/syshub/lib"
-export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="${CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS:-} -C link-arg=-Wl,-dynamic-linker=$ZAINIUM_LDSO -C link-arg=-Wl,-rpath=/overlayer/syshub/lib"
+export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="${CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS:-} -C target-feature=-crt-static -C relocation-model=dynamic-no-pic -C link-arg=-Wl,-dynamic-linker=$ZAINIUM_LDSO -C link-arg=-Wl,-rpath=/overlayer/syshub/lib"
 
 # Some builds run their own just-compiled tool mid-build (wayland's
 # wayland-scanner generating protocol headers, e.g.) — that tool now

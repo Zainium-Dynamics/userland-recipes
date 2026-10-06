@@ -14,12 +14,10 @@ build() {
     # appstream catalogs: share from syshub and the union, var/lib and var/cache from the union
     patch -p1 < ../0001-appstream-zainium-paths.patch
 
-    # Alpine's rust only ships std for its own triple; reuse ci/build.sh's loader/rpath flags for it
-    export CARGO_TARGET_X86_64_ALPINE_LINUX_MUSL_RUSTFLAGS="${CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS:-}"
-    cargo build --release --target x86_64-alpine-linux-musl
+    cargo build --release --target x86_64-unknown-linux-musl
 }
 
 package() {
     just rootdir="$PAYLOAD_DIR" prefix=/overlayer/syshub \
-        cargo-target-dir=target/x86_64-alpine-linux-musl install
+        cargo-target-dir=target/x86_64-unknown-linux-musl install
 }
