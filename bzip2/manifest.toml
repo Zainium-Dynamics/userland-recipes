@@ -1,0 +1,33 @@
+# manifest.toml — bzip2
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "bzip2"
+version          = "1.0.8"
+description      = "High-quality block-sorting file compressor"
+license          = "bzip2-1.0.6"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://sourceware.org/bzip2/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["bzip2"]
+tags             = ["compression", "library"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

@@ -1,0 +1,52 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=gnupg
+pkgver=2.4.9
+pkgrel=0
+source="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-$pkgver.tar.bz2"
+sha256sums="dd17ab2e9a04fd79d39d853f599cbc852062ddb9ab52a4ddeb4176fd8b302964  gnupg-$pkgver.tar.bz2"
+makedepends="libgpg-error-dev libassuan-dev libgcrypt-dev libksba-dev npth-dev"
+needs_toolchain="zlib zlib-dev"
+
+# Only gpg itself: smartcards, keyservers, gpgsm, keyboxd, ldap and tofu off
+build() {
+    export CPPFLAGS="-I/overlayer/syshub/include ${CPPFLAGS:-}"
+    export LDFLAGS="-L/overlayer/syshub/lib ${LDFLAGS:-}"
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --includedir=/overlayer/syshub/include \
+        --sysconfdir=/overlayer/syshub/etc \
+        --localstatedir=/overlayer/syshub/var \
+        --disable-static \
+        --disable-gpgsm \
+        --disable-scdaemon \
+        --disable-dirmngr \
+        --disable-keyboxd \
+        --disable-tpm2d \
+        --disable-gpgtar \
+        --disable-wks-tools \
+        --disable-card-support \
+        --disable-ccid-driver \
+        --disable-photo-viewers \
+        --disable-sqlite \
+        --disable-ldap \
+        --disable-gnutls \
+        --disable-ntbtls \
+        --disable-bzip2 \
+        --without-readline \
+        --disable-doc \
+        --disable-nls
+    make -j"$(nproc)"
+    make install DESTDIR="$(pwd)/_zexbuild-install"
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    for d in bin libexec sbin share; do
+        if [ -d "$inst/$d" ]; then
+            mkdir -p "$PAYLOAD_DIR/$d"
+            cp -a "$inst/$d"/. "$PAYLOAD_DIR/$d/"
+        fi
+    done
+    rm -rf "$PAYLOAD_DIR/share/man" "$PAYLOAD_DIR/share/info" "$PAYLOAD_DIR/share/doc"
+}
