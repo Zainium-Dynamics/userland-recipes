@@ -1,0 +1,43 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=libgcrypt
+pkgver=1.12.2
+pkgrel=0
+subpackages="libgcrypt-dev"
+source="https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-$pkgver.tar.bz2"
+sha256sums="7ce33c2492221a0436f96a8500215e9f3e3dcb5fd26a757cd415e7a843babd5e  libgcrypt-$pkgver.tar.bz2"
+makedepends="libgpg-error-dev"
+
+build() {
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --includedir=/overlayer/syshub/include \
+        --sysconfdir=/overlayer/syshub/etc \
+        --localstatedir=/overlayer/syshub/var \
+        --disable-static \
+        --disable-doc
+    make -j"$(nproc)"
+    make install DESTDIR="$(pwd)/_zexbuild-install"
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib"
+    cp -P "$inst"/lib/libgcrypt.so.* "$PAYLOAD_DIR/lib/"
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/libgcrypt.so "$PAYLOAD_DIR/lib/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+    if [ -d "$inst/share/aclocal" ]; then
+        mkdir -p "$PAYLOAD_DIR/share"
+        cp -a "$inst"/share/aclocal "$PAYLOAD_DIR/share/"
+    fi
+    if [ -e "$inst/bin/libgcrypt-config" ]; then
+        mkdir -p "$PAYLOAD_DIR/bin"
+        cp -a "$inst"/bin/libgcrypt-config "$PAYLOAD_DIR/bin/"
+    fi
+}
