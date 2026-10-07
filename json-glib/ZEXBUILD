@@ -1,0 +1,46 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=json-glib
+pkgver=1.10.8
+pkgrel=0
+subpackages="json-glib-dev"
+source="https://download.gnome.org/sources/json-glib/${pkgver%.*}/json-glib-$pkgver.tar.xz"
+sha256sums="55c5c141a564245b8f8fbe7698663c87a45a7333c2a2c56f06f811ab73b212dd  json-glib-$pkgver.tar.xz"
+makedepends="meson gettext"
+needs_toolchain="glib glib-dev pcre2 libffi zlib gettext"
+
+build() {
+    # glib-dev's python tools (glib-mkenums, gdbus-codegen) start with #!/overlayer/syshub/bin/env
+    [ -e /overlayer/syshub/bin/env ] || ln -s /usr/bin/env /overlayer/syshub/bin/env
+    export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+    meson setup builddir \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --sysconfdir=/overlayer/syshub/etc \
+        -Dintrospection=disabled \
+        -Ddocumentation=disabled \
+        -Dgtk_doc=disabled \
+        -Dman=false \
+        -Dtests=false \
+        -Dinstalled_tests=false
+    ninja -C builddir
+    DESTDIR="$(pwd)/_zexbuild-install" ninja -C builddir install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/lib"
+    cp -a "$inst"/bin/. "$PAYLOAD_DIR/bin/"
+    cp -P "$inst"/lib/libjson-glib-1.0.so.* "$PAYLOAD_DIR/lib/"
+    if [ -d "$inst/share/locale" ]; then
+        mkdir -p "$PAYLOAD_DIR/share"
+        cp -a "$inst"/share/locale "$PAYLOAD_DIR/share/"
+    fi
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/libjson-glib-1.0.so "$PAYLOAD_DIR/lib/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+}
