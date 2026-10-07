@@ -47,8 +47,7 @@ dev() {
         mkdir -p "$PAYLOAD_DIR/share"
         cp -a "$inst"/share/aclocal "$PAYLOAD_DIR/share/"
     fi
-    if [ -e "$inst/bin/gpgme-config" ]; then
-        mkdir -p "$PAYLOAD_DIR/bin"
-        cp -a "$inst"/bin/gpgme-config "$PAYLOAD_DIR/bin/"
-    fi
+    # gpgme-config is deprecated (use pkg-config) and hardcodes /usr/{include,lib} checks
+    # m4 macro only mentions /usr in comments
+    grep -rIl '/usr' "$PAYLOAD_DIR" | xargs -r sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g'
 }
