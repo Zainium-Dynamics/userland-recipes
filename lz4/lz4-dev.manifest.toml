@@ -1,0 +1,33 @@
+# manifest.toml — lz4-dev
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "lz4-dev"
+version          = "1.10.0"
+description      = "lz4 headers, pkgconfig"
+license          = "BSD-2-Clause AND GPL-2.0-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://github.com/lz4/lz4"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["lz4"]
+provides         = ["lz4-dev"]
+tags             = ["compression", "library", "dev"]
+
+[install]
+include = "/overlayer/zexlib/union/include"
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

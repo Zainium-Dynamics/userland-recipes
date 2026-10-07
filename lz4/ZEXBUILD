@@ -1,0 +1,28 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=lz4
+pkgver=1.10.0
+pkgrel=0
+subpackages="lz4-dev"
+source="https://github.com/lz4/lz4/releases/download/v$pkgver/lz4-$pkgver.tar.gz"
+sha256sums="537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b  lz4-$pkgver.tar.gz"
+makedepends="build-base"
+
+build() {
+    make BUILD_STATIC=no PREFIX=/overlayer/syshub libdir=/overlayer/syshub/lib
+    make install BUILD_STATIC=no PREFIX=/overlayer/syshub libdir=/overlayer/syshub/lib DESTDIR="$(pwd)/_zexbuild-install"
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/lib"
+    cp -a "$inst"/bin/. "$PAYLOAD_DIR/bin/"
+    cp -P "$inst"/lib/liblz4.so.* "$PAYLOAD_DIR/lib/"
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/liblz4.so "$PAYLOAD_DIR/lib/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+}
