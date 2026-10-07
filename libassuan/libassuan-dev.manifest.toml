@@ -1,0 +1,35 @@
+# manifest.toml — libassuan-dev
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "libassuan-dev"
+version          = "3.0.2"
+description      = "libassuan headers, pkgconfig"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.gnupg.org/software/libassuan/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["libassuan"]
+provides         = ["libassuan-dev"]
+tags             = ["library", "gnupg", "dev"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+include = "/overlayer/zexlib/union/include"
+lib     = "/overlayer/zexlib/union/lib"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

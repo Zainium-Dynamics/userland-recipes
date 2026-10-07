@@ -1,0 +1,43 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=libassuan
+pkgver=3.0.2
+pkgrel=0
+subpackages="libassuan-dev"
+source="https://gnupg.org/ftp/gcrypt/libassuan/libassuan-$pkgver.tar.bz2"
+sha256sums="d2931cdad266e633510f9970e1a2f346055e351bb19f9b78912475b8074c36f6  libassuan-$pkgver.tar.bz2"
+makedepends="libgpg-error-dev"
+
+build() {
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --includedir=/overlayer/syshub/include \
+        --sysconfdir=/overlayer/syshub/etc \
+        --localstatedir=/overlayer/syshub/var \
+        --disable-static \
+        --disable-doc
+    make -j"$(nproc)"
+    make install DESTDIR="$(pwd)/_zexbuild-install"
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib"
+    cp -P "$inst"/lib/libassuan.so.* "$PAYLOAD_DIR/lib/"
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/libassuan.so "$PAYLOAD_DIR/lib/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+    if [ -d "$inst/share/aclocal" ]; then
+        mkdir -p "$PAYLOAD_DIR/share"
+        cp -a "$inst"/share/aclocal "$PAYLOAD_DIR/share/"
+    fi
+    if [ -e "$inst/bin/libassuan-config" ]; then
+        mkdir -p "$PAYLOAD_DIR/bin"
+        cp -a "$inst"/bin/libassuan-config "$PAYLOAD_DIR/bin/"
+    fi
+}
