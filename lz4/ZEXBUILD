@@ -8,8 +8,8 @@ sha256sums="537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b  lz
 makedepends="build-base"
 
 build() {
-    make BUILD_STATIC=no PREFIX=/overlayer/syshub LIBDIR=/overlayer/syshub/lib
-    make install BUILD_STATIC=no PREFIX=/overlayer/syshub LIBDIR=/overlayer/syshub/lib DESTDIR="$(pwd)/_zexbuild-install"
+    make BUILD_STATIC=no PREFIX=/overlayer/syshub libdir=/overlayer/syshub/lib
+    make install BUILD_STATIC=no PREFIX=/overlayer/syshub libdir=/overlayer/syshub/lib DESTDIR="$(pwd)/_zexbuild-install"
 }
 
 package() {
