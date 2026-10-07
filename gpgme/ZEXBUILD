@@ -16,6 +16,7 @@ build() {
         --sysconfdir=/overlayer/syshub/etc \
         --localstatedir=/overlayer/syshub/var \
         --disable-static \
+        --disable-linux-getdents \
         --enable-fixed-path=/overlayer/syshub/bin \
         --disable-gpg-test \
         --disable-gpgsm-test \
