@@ -6,13 +6,14 @@ subpackages="libxmlb-dev"
 source="https://github.com/hughsie/libxmlb/releases/download/$pkgver/libxmlb-$pkgver.tar.xz"
 sha256sums="63fa0275f7454d77c10e0af37f79dfdb071821caf429a57dbd9598ea3a9defd6  libxmlb-$pkgver.tar.xz"
 makedepends="meson"
-needs_toolchain="glib glib-dev pcre2 libffi zlib gettext xz xz-dev zstd zstd-dev"
+needs_toolchain="glib glib-dev pcre2 pcre2-dev libffi libffi-dev zlib zlib-dev gettext xz xz-dev zstd zstd-dev"
 
 build() {
     # glib-dev's python tools (glib-mkenums, gdbus-codegen) start with #!/overlayer/syshub/bin/env
     [ -e /overlayer/syshub/bin/env ] || ln -s /usr/bin/env /overlayer/syshub/bin/env
     export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
     meson setup builddir \
+        --wrap-mode=nofallback \
         --prefix=/overlayer/syshub \
         --libdir=/overlayer/syshub/lib \
         --libexecdir=/overlayer/syshub/libexec \
