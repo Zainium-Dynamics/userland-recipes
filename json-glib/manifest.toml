@@ -1,0 +1,34 @@
+# manifest.toml — json-glib
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "json-glib"
+version          = "1.10.8"
+description      = "JSON library built on GLib"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://gitlab.gnome.org/GNOME/json-glib"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "glib"]
+provides         = ["json-glib"]
+tags             = ["library", "gnome", "json"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
