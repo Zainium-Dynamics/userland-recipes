@@ -1,0 +1,32 @@
+# manifest.toml — libgcrypt
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "libgcrypt"
+version          = "1.12.2"
+description      = "General purpose cryptographic library from GnuPG"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.gnupg.org/software/libgcrypt/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "libgpg-error"]
+provides         = ["libgcrypt"]
+tags             = ["library", "gnupg", "crypto"]
+
+[install]
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

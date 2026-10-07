@@ -1,0 +1,44 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=npth
+pkgver=1.8
+pkgrel=0
+subpackages="npth-dev"
+source="https://gnupg.org/ftp/gcrypt/npth/npth-$pkgver.tar.bz2"
+sha256sums="8bd24b4f23a3065d6e5b26e98aba9ce783ea4fd781069c1b35d149694e90ca3e  npth-$pkgver.tar.bz2"
+makedepends="build-base"
+
+build() {
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --includedir=/overlayer/syshub/include \
+        --sysconfdir=/overlayer/syshub/etc \
+        --localstatedir=/overlayer/syshub/var \
+        --disable-static
+    make -j"$(nproc)"
+    make install DESTDIR="$(pwd)/_zexbuild-install"
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib"
+    cp -P "$inst"/lib/libnpth.so.* "$PAYLOAD_DIR/lib/"
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/libnpth.so "$PAYLOAD_DIR/lib/"
+    if [ -d "$inst/lib/pkgconfig" ]; then
+        cp -a "$inst"/lib/pkgconfig "$PAYLOAD_DIR/lib/"
+    fi
+    if [ -d "$inst/share/aclocal" ]; then
+        mkdir -p "$PAYLOAD_DIR/share"
+        cp -a "$inst"/share/aclocal "$PAYLOAD_DIR/share/"
+    fi
+    if [ -e "$inst/bin/npth-config" ]; then
+        mkdir -p "$PAYLOAD_DIR/bin"
+        cp -a "$inst"/bin/npth-config "$PAYLOAD_DIR/bin/"
+    fi
+}

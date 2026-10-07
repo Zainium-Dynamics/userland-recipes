@@ -1,0 +1,34 @@
+# manifest.toml — libgpg-error
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "libgpg-error"
+version          = "1.61"
+description      = "Common error values for GnuPG components"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.gnupg.org/software/libgpg-error/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["libgpg-error"]
+tags             = ["library", "gnupg"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
