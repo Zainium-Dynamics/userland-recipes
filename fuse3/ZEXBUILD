@@ -1,0 +1,51 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=fuse3
+pkgver=3.18.3
+pkgrel=0
+subpackages="fuse3-dev"
+source="https://github.com/libfuse/libfuse/releases/download/fuse-$pkgver/fuse-$pkgver.tar.gz"
+sha256sums="bcd19582c5e30f7fe45dd86a5540e998590aa01903afc7ebcbeea6c8ac5421ee  fuse-$pkgver.tar.gz"
+makedepends="meson linux-headers"
+
+# mtab updates off: that path execs /bin/mount and /bin/umount, which Zainium doesn't have
+build() {
+    cd fuse-$pkgver
+    sed -i 's#"/bin/sh"#"/overlayer/syshub/bin/sh"#g' util/mount.fuse.c
+
+    meson setup builddir \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --sysconfdir=/overlayer/syshub/etc \
+        -Dudevrulesdir=/overlayer/syshub/lib/udev/rules.d \
+        -Dinitscriptdir= \
+        -Ddisable-mtab=true \
+        -Duseroot=false \
+        -Denable-io-uring=false \
+        -Dexamples=false \
+        -Dtests=false
+    ninja -C builddir
+    DESTDIR="$(pwd)/_zexbuild-install" ninja -C builddir install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    for d in bin sbin etc; do
+        if [ -d "$inst/$d" ]; then
+            mkdir -p "$PAYLOAD_DIR/$d"
+            cp -a "$inst/$d"/. "$PAYLOAD_DIR/$d/"
+        fi
+    done
+    mkdir -p "$PAYLOAD_DIR/lib"
+    cp -P "$inst"/lib/libfuse3.so.* "$PAYLOAD_DIR/lib/"
+    if [ -d "$inst/lib/udev" ]; then
+        cp -a "$inst"/lib/udev "$PAYLOAD_DIR/lib/"
+    fi
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/libfuse3.so "$PAYLOAD_DIR/lib/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+}

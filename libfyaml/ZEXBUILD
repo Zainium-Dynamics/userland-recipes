@@ -1,0 +1,35 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=libfyaml
+pkgver=0.9.5
+pkgrel=0
+subpackages="libfyaml-dev"
+source="https://github.com/pantoniou/libfyaml/releases/download/v$pkgver/libfyaml-$pkgver.tar.gz"
+sha256sums="9acbc9737808b2833a51be0d4b361987ab6bbbb19cbda7c0c5c83148c8addd8a  libfyaml-$pkgver.tar.gz"
+makedepends="build-base"
+
+build() {
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --includedir=/overlayer/syshub/include \
+        --sysconfdir=/overlayer/syshub/etc \
+        --localstatedir=/overlayer/syshub/var \
+        --disable-static
+    make -j"$(nproc)"
+    make install DESTDIR="$(pwd)/_zexbuild-install"
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/lib"
+    cp -a "$inst"/bin/. "$PAYLOAD_DIR/bin/"
+    cp -P "$inst"/lib/libfyaml.so.* "$PAYLOAD_DIR/lib/"
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/libfyaml.so "$PAYLOAD_DIR/lib/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+}

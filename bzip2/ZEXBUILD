@@ -1,0 +1,42 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=bzip2
+pkgver=1.0.8
+pkgrel=0
+subpackages="bzip2-dev"
+source="https://sourceware.org/pub/bzip2/bzip2-$pkgver.tar.gz"
+sha256sums="ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269  bzip2-$pkgver.tar.gz"
+makedepends="build-base"
+
+build() {
+    # soname libbz2.so.1, same as every other distro (libarchive links that)
+    sed -i 's/-soname -Wl,libbz2.so.1.0 /-soname -Wl,libbz2.so.1 /' Makefile-libbz2_so
+    grep -q 'soname -Wl,libbz2.so.1 ' Makefile-libbz2_so
+    make -f Makefile-libbz2_so
+    make bzip2 bzip2recover LDFLAGS="$LDFLAGS"
+}
+
+package() {
+    mkdir -p "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/lib"
+    install -m755 bzip2 bzip2recover "$PAYLOAD_DIR/bin/"
+    ln -s bzip2 "$PAYLOAD_DIR/bin/bunzip2"
+    ln -s bzip2 "$PAYLOAD_DIR/bin/bzcat"
+    install -m755 libbz2.so.$pkgver "$PAYLOAD_DIR/lib/"
+    ln -s libbz2.so.$pkgver "$PAYLOAD_DIR/lib/libbz2.so.1"
+}
+
+dev() {
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    install -m644 bzlib.h "$PAYLOAD_DIR/include/"
+    ln -s libbz2.so.$pkgver "$PAYLOAD_DIR/lib/libbz2.so"
+    cat > "$PAYLOAD_DIR/lib/pkgconfig/bzip2.pc" <<EOF
+prefix=/overlayer/syshub
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: bzip2
+Description: A file compression library
+Version: $pkgver
+Libs: -L\${libdir} -lbz2
+Cflags: -I\${includedir}
+EOF
+}

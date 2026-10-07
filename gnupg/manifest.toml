@@ -1,0 +1,35 @@
+# manifest.toml — gnupg
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "gnupg"
+version          = "2.4.9"
+description      = "GNU Privacy Guard (gpg, gpgv, gpgconf, gpg-agent)"
+license          = "GPL-3.0-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.gnupg.org/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "libgpg-error", "libassuan", "libgcrypt", "npth", "zlib"]
+provides         = ["gnupg"]
+tags             = ["gnupg", "crypto"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+libexec = "/overlayer/zexlib/union/libexec"
+sbin    = "/overlayer/zexlib/union/sbin"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
