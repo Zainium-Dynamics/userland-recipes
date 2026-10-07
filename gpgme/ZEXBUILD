@@ -1,0 +1,53 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=gpgme
+pkgver=2.0.1
+pkgrel=0
+subpackages="gpgme-dev"
+source="https://gnupg.org/ftp/gcrypt/gpgme/gpgme-$pkgver.tar.bz2"
+sha256sums="821ab0695c842eab51752a81980c92b0410c7eadd04103f791d5d2a526784966  gpgme-$pkgver.tar.bz2"
+makedepends="libgpg-error-dev libassuan-dev"
+
+build() {
+    # look for gpg/gpgconf only in Zainium's bin, not $PATH or /usr/bin
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --includedir=/overlayer/syshub/include \
+        --sysconfdir=/overlayer/syshub/etc \
+        --localstatedir=/overlayer/syshub/var \
+        --disable-static \
+        --disable-linux-getdents \
+        --enable-fixed-path=/overlayer/syshub/bin \
+        --disable-gpg-test \
+        --disable-gpgsm-test \
+        --disable-gpgconf-test \
+        --disable-g13-test
+    make -j"$(nproc)"
+    make install DESTDIR="$(pwd)/_zexbuild-install"
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib"
+    cp -P "$inst"/lib/libgpgme.so.* "$PAYLOAD_DIR/lib/"
+    if [ -d "$inst/bin" ]; then
+        mkdir -p "$PAYLOAD_DIR/bin"
+        cp -a "$inst"/bin/. "$PAYLOAD_DIR/bin/"
+        rm -f "$PAYLOAD_DIR/bin/gpgme-config"
+    fi
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/libgpgme.so "$PAYLOAD_DIR/lib/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+    if [ -d "$inst/share/aclocal" ]; then
+        mkdir -p "$PAYLOAD_DIR/share"
+        cp -a "$inst"/share/aclocal "$PAYLOAD_DIR/share/"
+    fi
+    # gpgme-config is deprecated (use pkg-config) and hardcodes /usr/{include,lib} checks
+    # m4 macro only mentions /usr in comments
+    grep -rIl '/usr' "$PAYLOAD_DIR" | xargs -r sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g'
+}
