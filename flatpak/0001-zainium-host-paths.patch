@@ -1,0 +1,248 @@
+--- a/common/flatpak-dir.c
++++ b/common/flatpak-dir.c
+@@ -2808,7 +2808,7 @@
+ 
+   g_clear_pointer (&path, g_free);
+ 
+-  path = g_strdup ("/var/tmp/flatpak-cache-XXXXXX");
++  path = g_strdup ("/tmp/flatpak-cache-XXXXXX");
+ 
+   if (g_mkdtemp_full (path, 0755) == NULL)
+     {
+--- a/common/flatpak-exports.c
++++ b/common/flatpak-exports.c
+@@ -545,10 +545,10 @@
+       if (exports->host_os == FLATPAK_FILESYSTEM_MODE_READ_ONLY)
+         os_bind_mode = "--ro-bind";
+ 
+-      if (flatpak_exports_stat_in_host (exports, "/usr", &buf, 0, NULL) &&
++      if (flatpak_exports_stat_in_host (exports, "/overlayer/syshub", &buf, 0, NULL) &&
+           S_ISDIR (buf.st_mode))
+         flatpak_bwrap_add_args (bwrap,
+-                                os_bind_mode, "/usr", "/run/host/usr", NULL);
++                                os_bind_mode, "/overlayer/syshub", "/run/host/usr", NULL);
+ 
+       /* /usr/local points to ../var/usrlocal on ostree systems,
+ 	 so bind-mount that too. */
+@@ -638,10 +638,10 @@
+       if (exports->host_etc == FLATPAK_FILESYSTEM_MODE_READ_ONLY)
+         etc_bind_mode = "--ro-bind";
+ 
+-      if (flatpak_exports_stat_in_host (exports, "/etc", &buf, 0, NULL) &&
++      if (flatpak_exports_stat_in_host (exports, "/overlayer/syshub/etc", &buf, 0, NULL) &&
+           S_ISDIR (buf.st_mode))
+         flatpak_bwrap_add_args (bwrap,
+-                                etc_bind_mode, "/etc", "/run/host/etc", NULL);
++                                etc_bind_mode, "/overlayer/syshub/etc", "/run/host/etc", NULL);
+     }
+ 
+   g_assert (exports->host_root >= FLATPAK_FILESYSTEM_MODE_NONE);
+@@ -661,10 +661,10 @@
+   /* As per the os-release specification https://www.freedesktop.org/software/systemd/man/os-release.html
+    * always read-only bind-mount /etc/os-release if it exists, or /usr/lib/os-release as a fallback from
+    * the host into the application's /run/host */
+-  if (flatpak_exports_stat_in_host (exports, "/etc/os-release", &buf, 0, NULL))
+-    flatpak_bwrap_add_args (bwrap, "--ro-bind", "/etc/os-release", "/run/host/os-release", NULL);
+-  else if (flatpak_exports_stat_in_host (exports, "/usr/lib/os-release", &buf, 0, NULL))
+-    flatpak_bwrap_add_args (bwrap, "--ro-bind", "/usr/lib/os-release", "/run/host/os-release", NULL);
++  if (flatpak_exports_stat_in_host (exports, "/overlayer/syshub/etc/os-release", &buf, 0, NULL))
++    flatpak_bwrap_add_args (bwrap, "--ro-bind", "/overlayer/syshub/etc/os-release", "/run/host/os-release", NULL);
++  else if (flatpak_exports_stat_in_host (exports, "/overlayer/syshub/lib/os-release", &buf, 0, NULL))
++    flatpak_bwrap_add_args (bwrap, "--ro-bind", "/overlayer/syshub/lib/os-release", "/run/host/os-release", NULL);
+ }
+ 
+ /* Returns FLATPAK_FILESYSTEM_MODE_NONE if not visible */
+--- a/common/flatpak-glib-backports.c
++++ b/common/flatpak-glib-backports.c
+@@ -566,7 +566,7 @@
+   if (g_once_init_enter (&alias_table))
+     {
+       GHashTable *table = g_hash_table_new (g_str_hash, g_str_equal);
+-      read_aliases ("/usr/share/locale/locale.alias", table);
++      read_aliases ("/overlayer/syshub/share/locale/locale.alias", table);
+       g_once_init_leave (&alias_table, table);
+     }
+ 
+--- a/common/flatpak-oci-registry.c
++++ b/common/flatpak-oci-registry.c
+@@ -613,7 +613,7 @@
+   if (tmpdir)
+     return tmpdir;
+ 
+-  return "/var/tmp";
++  return "/tmp";
+ }
+ 
+ static GLnxTmpDir *
+--- a/common/flatpak-run.c
++++ b/common/flatpak-run.c
+@@ -1175,10 +1175,10 @@
+   g_autofree gchar *user_icons_path = NULL;
+   g_autoptr(GFile) user_icons = NULL;
+ 
+-  if (g_file_test ("/usr/share/icons", G_FILE_TEST_IS_DIR))
++  if (g_file_test ("/overlayer/syshub/share/icons", G_FILE_TEST_IS_DIR))
+     {
+       flatpak_bwrap_add_args (bwrap,
+-                              "--ro-bind", "/usr/share/icons", "/run/host/share/icons",
++                              "--ro-bind", "/overlayer/syshub/share/icons", "/run/host/share/icons",
+                               NULL);
+     }
+ 
+@@ -1874,21 +1874,21 @@
+     }
+   else
+     {
+-      if (g_file_test ("/etc/resolv.conf", G_FILE_TEST_EXISTS))
++      if (g_file_test ("/overlayer/syshub/etc/resolv.conf", G_FILE_TEST_EXISTS))
+         flatpak_bwrap_add_args (bwrap,
+-                                "--ro-bind", "/etc/resolv.conf", "/etc/resolv.conf",
++                                "--ro-bind", "/overlayer/syshub/etc/resolv.conf", "/etc/resolv.conf",
+                                 NULL);
+-      if (g_file_test ("/etc/host.conf", G_FILE_TEST_EXISTS))
++      if (g_file_test ("/overlayer/syshub/etc/host.conf", G_FILE_TEST_EXISTS))
+         flatpak_bwrap_add_args (bwrap,
+-                                "--ro-bind", "/etc/host.conf", "/etc/host.conf",
++                                "--ro-bind", "/overlayer/syshub/etc/host.conf", "/etc/host.conf",
+                                 NULL);
+-      if (g_file_test ("/etc/hosts", G_FILE_TEST_EXISTS))
++      if (g_file_test ("/overlayer/syshub/etc/hosts", G_FILE_TEST_EXISTS))
+         flatpak_bwrap_add_args (bwrap,
+-                                "--ro-bind", "/etc/hosts", "/etc/hosts",
++                                "--ro-bind", "/overlayer/syshub/etc/hosts", "/etc/hosts",
+                                 NULL);
+-      if (g_file_test ("/etc/gai.conf", G_FILE_TEST_EXISTS))
++      if (g_file_test ("/overlayer/syshub/etc/gai.conf", G_FILE_TEST_EXISTS))
+         flatpak_bwrap_add_args (bwrap,
+-                                "--ro-bind", "/etc/gai.conf", "/etc/gai.conf",
++                                "--ro-bind", "/overlayer/syshub/etc/gai.conf", "/etc/gai.conf",
+                                 NULL);
+     }
+ }
+@@ -2489,10 +2489,10 @@
+   if (!flatpak_bwrap_add_args_data (bwrap, "pkcs11.conf", pkcs11_conf_contents, -1, "/etc/pkcs11/pkcs11.conf", error))
+     return FALSE;
+ 
+-  if (g_file_test ("/etc/machine-id", G_FILE_TEST_EXISTS))
+-    flatpak_bwrap_add_args (bwrap, "--ro-bind", "/etc/machine-id", "/etc/machine-id", NULL);
+-  else if (g_file_test ("/var/lib/dbus/machine-id", G_FILE_TEST_EXISTS))
+-    flatpak_bwrap_add_args (bwrap, "--ro-bind", "/var/lib/dbus/machine-id", "/etc/machine-id", NULL);
++  if (g_file_test ("/overlayer/syshub/etc/machine-id", G_FILE_TEST_EXISTS))
++    flatpak_bwrap_add_args (bwrap, "--ro-bind", "/overlayer/syshub/etc/machine-id", "/etc/machine-id", NULL);
++  else if (g_file_test ("/overlayer/syshub/var/lib/dbus/machine-id", G_FILE_TEST_EXISTS))
++    flatpak_bwrap_add_args (bwrap, "--ro-bind", "/overlayer/syshub/var/lib/dbus/machine-id", "/etc/machine-id", NULL);
+ 
+   if (runtime_fd >= 0
+       && (flags & FLATPAK_RUN_FLAG_WRITABLE_ETC) == 0)
+--- a/common/flatpak-run-dbus.c
++++ b/common/flatpak-run-dbus.c
+@@ -334,8 +334,8 @@
+ 
+   if (dbus_address != NULL)
+     dbus_system_socket = extract_unix_path_from_dbus_address (dbus_address);
+-  else if (g_file_test ("/var/run/dbus/system_bus_socket", G_FILE_TEST_EXISTS))
+-    dbus_system_socket = g_strdup ("/var/run/dbus/system_bus_socket");
++  else if (g_file_test ("/overlayer/syshub/var/run/dbus/system_bus_socket", G_FILE_TEST_EXISTS))
++    dbus_system_socket = g_strdup ("/overlayer/syshub/var/run/dbus/system_bus_socket");
+ 
+   if (dbus_system_socket != NULL && unrestricted)
+     {
+--- a/common/flatpak-run-pulseaudio.c
++++ b/common/flatpak-run-pulseaudio.c
+@@ -105,7 +105,7 @@
+   if (pulse_server)
+     return pulse_server;
+ 
+-  pulse_server = flatpak_run_get_pulseaudio_server_user_config ("/etc/pulse/client.conf");
++  pulse_server = flatpak_run_get_pulseaudio_server_user_config ("/overlayer/syshub/etc/pulse/client.conf");
+   if (pulse_server)
+     return pulse_server;
+ 
+@@ -164,8 +164,8 @@
+ {
+   static const char * const machine_ids[] =
+   {
+-    "/etc/machine-id",
+-    "/var/lib/dbus/machine-id",
++    "/overlayer/syshub/etc/machine-id",
++    "/overlayer/syshub/var/lib/dbus/machine-id",
+   };
+   gsize i;
+ 
+--- a/common/flatpak-utils-base.c
++++ b/common/flatpak-utils-base.c
+@@ -37,7 +37,7 @@
+   if (tzdir)
+     return tzdir;
+ 
+-  return "/usr/share/zoneinfo";
++  return "/overlayer/syshub/share/zoneinfo";
+ }
+ 
+ char *
+@@ -46,7 +46,7 @@
+   g_autofree gchar *symlink = NULL;
+   gchar *etc_timezone = NULL;
+ 
+-  symlink = flatpak_resolve_link ("/etc/localtime", NULL);
++  symlink = flatpak_resolve_link ("/overlayer/syshub/etc/localtime", NULL);
+   if (symlink != NULL)
+     {
+       /* Resolve relative path */
+@@ -65,7 +65,7 @@
+         }
+     }
+ 
+-  if (g_file_get_contents ("/etc/timezone", &etc_timezone,
++  if (g_file_get_contents ("/overlayer/syshub/etc/timezone", &etc_timezone,
+                            NULL, NULL))
+     {
+       g_strchomp (etc_timezone);
+--- a/common/flatpak-utils.c
++++ b/common/flatpak-utils.c
+@@ -473,7 +473,7 @@
+ get_os_release_value (const char *key,
+                       const char *default_value)
+ {
+-  const char *file = "/etc/os-release";
++  const char *file = "/overlayer/syshub/etc/os-release";
+   g_autofree char *contents = NULL;
+   g_autoptr(GKeyFile) keyfile = g_key_file_new ();
+   g_autoptr(GString) str = NULL;
+@@ -481,7 +481,7 @@
+   g_autofree char *unquoted = NULL;
+ 
+   if (!g_file_test (file, G_FILE_TEST_EXISTS))
+-    file = "/usr/lib/os-release";
++    file = "/overlayer/syshub/lib/os-release";
+ 
+   if (!g_file_get_contents (file, &contents, NULL, NULL))
+     return g_strdup (default_value);
+--- a/session-helper/flatpak-session-helper.c
++++ b/session-helper/flatpak-session-helper.c
+@@ -624,7 +624,7 @@
+   update_real_monitor (data);
+   copy_file (data->source, monitor_dir);
+ 
+-  if (strcmp (data->source, "/etc/localtime") == 0)
++  if (strcmp (data->source, "/overlayer/syshub/etc/localtime") == 0)
+     {
+       /* We can't update the /etc/localtime symlink at runtime, nor can we make it a of the
+        * correct form "../usr/share/zoneinfo/$timezone". So, instead we use the old debian
+@@ -868,11 +868,11 @@
+       exit (1);
+     }
+ 
+-  m_resolv_conf = setup_file_monitor ("/etc/resolv.conf");
+-  m_host_conf   = setup_file_monitor ("/etc/host.conf");
+-  m_hosts       = setup_file_monitor ("/etc/hosts");
+-  m_gai_conf    = setup_file_monitor ("/etc/gai.conf");
+-  m_localtime   = setup_file_monitor ("/etc/localtime");
++  m_resolv_conf = setup_file_monitor ("/overlayer/syshub/etc/resolv.conf");
++  m_host_conf   = setup_file_monitor ("/overlayer/syshub/etc/host.conf");
++  m_hosts       = setup_file_monitor ("/overlayer/syshub/etc/hosts");
++  m_gai_conf    = setup_file_monitor ("/overlayer/syshub/etc/gai.conf");
++  m_localtime   = setup_file_monitor ("/overlayer/syshub/etc/localtime");
+ 
+   flags = G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT;
+   if (replace)

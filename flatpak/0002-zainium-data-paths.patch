@@ -1,0 +1,57 @@
+--- a/profile/flatpak.csh
++++ b/profile/flatpak.csh
+@@ -2,8 +2,8 @@
+ if ( ${%_flatpak} > 0 ) then
+     if ( ! ${?XDG_DATA_HOME} ) setenv XDG_DATA_HOME "$HOME/.local/share"
+     if ( ${%XDG_DATA_HOME} == 0 ) setenv XDG_DATA_HOME "$HOME/.local/share"
+-    if ( ! ${?XDG_DATA_DIRS} ) setenv XDG_DATA_DIRS /usr/local/share:/usr/share
+-    if ( ${%XDG_DATA_DIRS} == 0 ) setenv XDG_DATA_DIRS /usr/local/share:/usr/share
++    if ( ! ${?XDG_DATA_DIRS} ) setenv XDG_DATA_DIRS /overlayer/syshub/share
++    if ( ${%XDG_DATA_DIRS} == 0 ) setenv XDG_DATA_DIRS /overlayer/syshub/share
+     set _new_dirs=""
+     foreach _line (`(unset G_MESSAGES_DEBUG; echo "${XDG_DATA_HOME}"/flatpak; setenv GIO_USE_VFS local; flatpak --installations)`)
+         set _line=${_line}/exports/share
+--- a/profile/flatpak.fish
++++ b/profile/flatpak.fish
+@@ -7,7 +7,7 @@
+     set -q XDG_DATA_HOME; and set __flatpak_xdg_data_home $XDG_DATA_HOME
+ 
+     if not contains -- "$__flatpak_xdg_data_home/flatpak/exports/share" $XDG_DATA_DIRS
+-        set -q XDG_DATA_DIRS[1]; or set XDG_DATA_DIRS /usr/local/share /usr/share
++        set -q XDG_DATA_DIRS[1]; or set XDG_DATA_DIRS /overlayer/syshub/share
+         set -q XDG_DATA_HOME; or set -l XDG_DATA_HOME $HOME/.local/share
+ 
+         set -l installations $XDG_DATA_HOME/flatpak
+--- a/profile/flatpak.sh
++++ b/profile/flatpak.sh
+@@ -23,7 +23,7 @@
+     )
+ 
+     export XDG_DATA_DIRS
+-    XDG_DATA_DIRS="${new_dirs:+${new_dirs}:}${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
++    XDG_DATA_DIRS="${new_dirs:+${new_dirs}:}${XDG_DATA_DIRS:-/overlayer/syshub/share}"
+ 
+     unset new_dirs
+ fi
+--- a/system-helper/flatpak-system-helper.service.in
++++ b/system-helper/flatpak-system-helper.service.in
+@@ -3,7 +3,7 @@
+ 
+ [Service]
+ BusName=org.freedesktop.Flatpak.SystemHelper
+-Environment=XDG_DATA_DIRS=@localstatedir@/lib/flatpak/exports/share/:/usr/local/share/:/usr/share/
++Environment=XDG_DATA_DIRS=/overlayer/zexlib/union/var/lib/flatpak/exports/share/:/overlayer/syshub/share/
+ ExecStart=@libexecdir@/flatpak-system-helper
+ Type=dbus
+ IOSchedulingClass=idle
+--- a/triggers/gtk-icon-cache.trigger
++++ b/triggers/gtk-icon-cache.trigger
+@@ -1,7 +1,7 @@
+ #!/bin/sh
+ 
+ if command -v gtk-update-icon-cache >/dev/null && test -d "$1/exports/share/icons/hicolor"; then
+-    cp /usr/share/icons/hicolor/index.theme "$1/exports/share/icons/hicolor/"
++    cp /overlayer/syshub/share/icons/hicolor/index.theme "$1/exports/share/icons/hicolor/"
+     for dir in "$1"/exports/share/icons/*; do
+         if test -f "$dir/index.theme"; then
+             if ! gtk-update-icon-cache --quiet "$dir"; then

@@ -1,0 +1,38 @@
+# manifest.toml — flatpak
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "flatpak"
+version          = "1.18.4"
+description      = "Application deployment framework for desktop apps"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://flatpak.org/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "glib", "libostree", "appstream", "libarchive", "curl", "libxml2",
+                    "libcap", "libseccomp", "zstd", "polkit", "gdk-pixbuf", "libjpeg-turbo", "systemd",
+                    "gnupg", "gpgme", "json-glib", "fuse3", "bzip2", "lz4", "libfyaml", "libxmlb"]
+provides         = ["flatpak"]
+tags             = ["desktop", "sandboxing", "apps"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+share   = "/overlayer/zexlib/union/share"
+etc     = "/overlayer/zexlib/union/etc"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

@@ -1,0 +1,78 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=flatpak
+pkgver=1.18.4
+pkgrel=0
+subpackages="flatpak-dev"
+source="https://github.com/flatpak/flatpak/releases/download/$pkgver/flatpak-$pkgver.tar.xz
+0001-zainium-host-paths.patch
+0002-zainium-data-paths.patch"
+sha256sums="b899a7a00c48d2c626cb8ec33fe556720b376c25805d7222430c0fdca4c6ac8d  flatpak-$pkgver.tar.xz"
+makedepends="meson bison git gettext"
+needs_toolchain="glib glib-dev pcre2 libffi zlib gettext xz openssl acl expat libucontext
+    libcap libcap-dev libarchive libarchive-dev curl curl-dev libxml2 libxml2-dev
+    zstd zstd-dev libseccomp libseccomp-dev polkit polkit-dev systemd systemd-dev
+    libostree libostree-dev appstream appstream-dev gdk-pixbuf gdk-pixbuf-dev libpng libjpeg-turbo
+    libgpg-error libassuan gnupg gpgme gpgme-dev json-glib json-glib-dev fuse3 fuse3-dev
+    bzip2 lz4 libfyaml libxmlb"
+
+# dconf, malcontent, xauth, wayland security context and selinux off: nothing on
+# Zainium uses them. bubblewrap and xdg-dbus-proxy come from meson's subprojects.
+# System installation (apps, runtimes, exported icons) lives in the union.
+build() {
+    # glib-dev's python tools (glib-mkenums, gdbus-codegen) start with #!/overlayer/syshub/bin/env
+    [ -e /overlayer/syshub/bin/env ] || ln -s /usr/bin/env /overlayer/syshub/bin/env
+    export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+
+    # host files flatpak reads or binds into the sandbox: Zainium has them under /overlayer/syshub
+    patch -p1 < ../0001-zainium-host-paths.patch
+    # profile.d, icon cache trigger and system helper unit: no /usr on Zainium
+    patch -p1 < ../0002-zainium-data-paths.patch
+
+    meson setup builddir \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --localstatedir=/overlayer/zexlib/union/var \
+        --libdir=/overlayer/syshub/lib \
+        -Dsystem_fonts_dir=/overlayer/syshub/share/fonts \
+        -Dsystem_font_cache_dirs=/overlayer/syshub/var/cache/fontconfig \
+        -Dsystem_fusermount=/overlayer/syshub/bin/fusermount3 \
+        -Dsystemd=enabled \
+        -Dsystem_helper=enabled \
+        -Dseccomp=enabled \
+        -Dlibzstd=enabled \
+        -Ddconf=disabled \
+        -Dmalcontent=disabled \
+        -Dxauth=disabled \
+        -Dwayland_security_context=disabled \
+        -Dselinux_module=disabled \
+        -Dauto_sideloading=false \
+        -Dgdm_env_file=false \
+        -Dtests=false \
+        -Dinstalled_tests=false \
+        -Dinternal_tests=false \
+        -Dinternal_checks=false \
+        -Dman=disabled \
+        -Ddocbook_docs=disabled \
+        -Dgtkdoc=disabled \
+        -Dgir=disabled \
+        -Ddbus_config_dir=/overlayer/syshub/share/dbus-1/system.d \
+        -Ddbus_service_dir=/overlayer/syshub/share/dbus-1/services \
+        -Dprivileged_group=wheel
+    ninja -C builddir
+    DESTDIR="$(pwd)/_zexbuild-install" ninja -C builddir install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR"
+    cp -a "$inst"/. "$PAYLOAD_DIR/"
+    rm -rf "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig" "$PAYLOAD_DIR/share/gtk-doc"
+    rm -f "$PAYLOAD_DIR/bin/flatpak-bisect" "$PAYLOAD_DIR/bin/flatpak-coredumpctl"
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+}
