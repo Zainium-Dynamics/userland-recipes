@@ -21,6 +21,7 @@ needs_toolchain="glib glib-dev pcre2 pcre2-dev libffi libffi-dev zlib zlib-dev g
 build() {
     # glib-dev's python tools (glib-mkenums, gdbus-codegen) start with #!/overlayer/syshub/bin/env
     [ -e /overlayer/syshub/bin/env ] || ln -s /usr/bin/env /overlayer/syshub/bin/env
+    export CFLAGS="${CFLAGS:-} -include limits.h"
     export GETTEXTDATADIRS="/overlayer/syshub/share/gettext${GETTEXTDATADIRS:+:$GETTEXTDATADIRS}"
     export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
 
