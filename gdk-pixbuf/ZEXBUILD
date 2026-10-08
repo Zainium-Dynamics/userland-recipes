@@ -1,0 +1,49 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=gdk-pixbuf
+pkgver=2.44.8
+pkgrel=0
+subpackages="gdk-pixbuf-dev"
+source="https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/archive/$pkgver/gdk-pixbuf-$pkgver.tar.gz"
+sha256sums="115046cd8f84b703da9d20f1527a8d21685c17090eae0afb6bf25ca1ccd4e430  gdk-pixbuf-$pkgver.tar.gz"
+makedepends="meson shared-mime-info"
+needs_toolchain="glib glib-dev pcre2 pcre2-dev libffi libffi-dev zlib zlib-dev gettext gettext-dev libpng libpng-dev libjpeg-turbo libjpeg-turbo-dev"
+
+build() {
+    [ -e /overlayer/syshub/bin/env ] || ln -s /usr/bin/env /overlayer/syshub/bin/env
+    export PATH="/overlayer/syshub/bin:$PATH"
+    export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+    meson setup builddir \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --includedir=/overlayer/syshub/include \
+        --sysconfdir=/overlayer/syshub/etc \
+        --wrap-mode=nofallback \
+        -Dglycin=disabled \
+        -Dintrospection=disabled \
+        -Dpng=enabled \
+        -Djpeg=enabled \
+        -Dgif=disabled \
+        -Dtiff=disabled \
+        -Dothers=disabled \
+        -Dtests=false \
+        -Dinstalled_tests=false \
+        -Dman=false \
+        -Ddocumentation=false
+    ninja -C builddir
+    DESTDIR="$(pwd)/_zexbuild-install" ninja -C builddir install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib" "$PAYLOAD_DIR/bin"
+    find "$inst/lib" -maxdepth 1 -name 'libgdk_pixbuf*.so*' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
+    cp -a "$inst/lib/gdk-pixbuf-2.0" "$PAYLOAD_DIR/lib/" 2>/dev/null || true
+    cp -a "$inst/bin/." "$PAYLOAD_DIR/bin/" 2>/dev/null || true
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+}
