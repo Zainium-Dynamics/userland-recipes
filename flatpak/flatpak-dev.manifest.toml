@@ -1,0 +1,33 @@
+# manifest.toml — flatpak-dev
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "flatpak-dev"
+version          = "1.18.4"
+description      = "flatpak headers, pkgconfig"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://flatpak.org/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["flatpak"]
+provides         = ["flatpak-dev"]
+tags             = ["sandboxing", "dev"]
+
+[install]
+include = "/overlayer/zexlib/union/include"
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
