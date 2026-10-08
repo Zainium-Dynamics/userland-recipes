@@ -1,0 +1,33 @@
+# manifest.toml — libxmlb-dev
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "libxmlb-dev"
+version          = "0.3.27"
+description      = "libxmlb headers, pkgconfig"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://github.com/hughsie/libxmlb"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["libxmlb"]
+provides         = ["libxmlb-dev"]
+tags             = ["library", "xml", "dev"]
+
+[install]
+include = "/overlayer/zexlib/union/include"
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

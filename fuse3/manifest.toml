@@ -1,0 +1,35 @@
+# manifest.toml — fuse3
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "fuse3"
+version          = "3.18.3"
+description      = "Filesystem in Userspace library and fusermount3"
+license          = "LGPL-2.1-only AND GPL-2.0-only"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://github.com/libfuse/libfuse"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["fuse3"]
+tags             = ["library", "filesystem"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+sbin    = "/overlayer/zexlib/union/sbin"
+lib     = "/overlayer/zexlib/union/lib"
+etc     = "/overlayer/zexlib/union/etc"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
