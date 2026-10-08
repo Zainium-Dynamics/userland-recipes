@@ -70,6 +70,7 @@ package() {
     cp -a "$inst"/. "$PAYLOAD_DIR/"
     rm -rf "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig" "$PAYLOAD_DIR/share/gtk-doc"
     rm -f "$PAYLOAD_DIR/bin/flatpak-bisect" "$PAYLOAD_DIR/bin/flatpak-coredumpctl"
+    grep -rIl '/usr' "$PAYLOAD_DIR" | xargs -r sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g'
 }
 
 dev() {
