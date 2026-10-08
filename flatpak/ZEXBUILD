@@ -12,8 +12,8 @@ needs_toolchain="glib glib-dev pcre2 pcre2-dev libffi libffi-dev zlib zlib-dev g
     libcap libcap-dev libarchive libarchive-dev curl curl-dev libxml2 libxml2-dev
     zstd zstd-dev libseccomp libseccomp-dev polkit polkit-dev systemd systemd-dev
     libostree libostree-dev appstream appstream-dev gdk-pixbuf gdk-pixbuf-dev libpng libjpeg-turbo
-    libgpg-error libassuan gnupg gpgme gpgme-dev json-glib json-glib-dev fuse3 fuse3-dev
-    bzip2 lz4 libfyaml libxmlb"
+    libgpg-error libgpg-error-dev libassuan libassuan-dev libgcrypt libgcrypt-dev gnupg gpgme gpgme-dev json-glib json-glib-dev fuse3 fuse3-dev
+    bzip2 bzip2-dev lz4 lz4-dev libfyaml libfyaml-dev libxmlb libxmlb-dev"
 
 # dconf, malcontent, xauth, wayland security context and selinux off: nothing on
 # Zainium uses them. bubblewrap and xdg-dbus-proxy come from meson's subprojects.
