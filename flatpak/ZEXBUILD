@@ -7,7 +7,7 @@ source="https://github.com/flatpak/flatpak/releases/download/$pkgver/flatpak-$pk
 0001-zainium-host-paths.patch
 0002-zainium-data-paths.patch"
 sha256sums="b899a7a00c48d2c626cb8ec33fe556720b376c25805d7222430c0fdca4c6ac8d  flatpak-$pkgver.tar.xz"
-makedepends="meson bison git gettext shared-mime-info"
+makedepends="meson bison git gettext shared-mime-info py3-parsing"
 needs_toolchain="glib glib-dev pcre2 pcre2-dev libffi libffi-dev zlib zlib-dev gettext gettext-dev xz xz-dev openssl acl expat libucontext
     libcap libcap-dev libarchive libarchive-dev curl curl-dev libxml2 libxml2-dev
     zstd zstd-dev libseccomp libseccomp-dev polkit polkit-dev systemd systemd-dev
