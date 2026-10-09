@@ -1,0 +1,30 @@
+[package]
+name             = "libostree"
+version          = "2026.4"
+description      = "Operating system and container binary deployment and upgrades"
+license          = "LGPL-2.0-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://ostreedev.github.io/ostree/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "glib", "curl", "libarchive", "e2fsprogs", "gpgme", "openssl"]
+provides         = ["libostree", "ostree"]
+tags             = ["library", "system"]
+
+[install]
+lib     = "/overlayer/zexlib/union/lib"
+bin     = "/overlayer/zexlib/union/bin"
+share   = "/overlayer/zexlib/union/share"
+etc     = "/overlayer/zexlib/union/etc"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
