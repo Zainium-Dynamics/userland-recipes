@@ -1,7 +1,7 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=flatpak
 pkgver=1.18.4
-pkgrel=0
+pkgrel=1
 subpackages="flatpak-dev"
 source="https://github.com/flatpak/flatpak/releases/download/$pkgver/flatpak-$pkgver.tar.xz
 0001-zainium-host-paths.patch
@@ -70,7 +70,11 @@ package() {
     cp -a "$inst"/. "$PAYLOAD_DIR/"
     rm -rf "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig" "$PAYLOAD_DIR/share/gtk-doc"
     rm -f "$PAYLOAD_DIR/bin/flatpak-bisect" "$PAYLOAD_DIR/bin/flatpak-coredumpctl"
-    grep -rIl '/usr' "$PAYLOAD_DIR" | xargs -r sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g'
+    find "$PAYLOAD_DIR" -type f | while read -r f; do
+        grep -q '/usr' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
     chmod 4755 "$PAYLOAD_DIR/libexec/flatpak-bwrap"
 }
 
