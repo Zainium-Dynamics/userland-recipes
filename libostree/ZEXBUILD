@@ -10,6 +10,13 @@ makedepends="glib-dev bison curl-dev e2fsprogs-dev fuse3-dev gpgme-dev gtk-doc l
 needs_toolchain="openssl openssl-dev"
 
 build() {
+    for lib in libglib-2.0.so.0 libgobject-2.0.so.0 libgio-2.0.so.0 libgmodule-2.0.so.0 libintl.so.8 libpcre2-8.so.0 libffi.so.8 libmount.so.1 libblkid.so.1; do
+        [ -e "/overlayer/syshub/lib/$lib" ] && continue
+        src="$(find /usr/lib /lib -maxdepth 1 -name "$lib" 2>/dev/null | head -1)"
+        [ -n "$src" ] || continue
+        mkdir -p /overlayer/syshub/lib
+        cp -L "$src" "/overlayer/syshub/lib/$lib"
+    done
     export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
     export CPPFLAGS="-I/overlayer/syshub/include ${CPPFLAGS:-}"
     export LDFLAGS="-L/overlayer/syshub/lib ${LDFLAGS:-}"
