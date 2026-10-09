@@ -49,5 +49,9 @@ dev() {
         cp -a "$inst"/bin/gpgrt-config "$PAYLOAD_DIR/bin/"
     fi
     # gpgrt-config and the m4 macros only mention /usr in comments and system-path filters
-    grep -rIl '/usr' "$PAYLOAD_DIR" | xargs -r sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g'
+    find "$PAYLOAD_DIR" -type f | while read -r f; do
+        grep -q '/usr' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
 }
