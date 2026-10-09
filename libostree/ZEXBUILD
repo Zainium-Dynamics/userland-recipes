@@ -46,6 +46,7 @@ package() {
     cp -a "$inst/bin/." "$PAYLOAD_DIR/bin/" 2>/dev/null || true
     cp -a "$inst/share/." "$PAYLOAD_DIR/share/" 2>/dev/null || true
     cp -a "$inst/etc/." "$PAYLOAD_DIR/etc/" 2>/dev/null || true
+    grep -rIl '/usr' "$PAYLOAD_DIR" | xargs -r sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g'
 }
 
 dev() {
@@ -53,4 +54,5 @@ dev() {
     mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
     cp -a "$inst"/include/. "$PAYLOAD_DIR/include/" 2>/dev/null || true
     cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/" 2>/dev/null || true
+    grep -rIl '/usr' "$PAYLOAD_DIR" | xargs -r sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g'
 }
