@@ -16,7 +16,7 @@ ed25519_sig      = ""
 ed25519_pubkey   = ""
 
 requires_syshub  = ""
-depends          = ["musl"]
+depends          = ["musl", "ncurses"]
 provides         = ["htop"]
 tags             = ["monitor", "system", "terminal"]
 
