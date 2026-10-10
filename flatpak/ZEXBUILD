@@ -1,7 +1,7 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=flatpak
 pkgver=1.18.4
-pkgrel=1
+pkgrel=2
 subpackages="flatpak-dev"
 source="https://github.com/flatpak/flatpak/releases/download/$pkgver/flatpak-$pkgver.tar.xz
 0001-zainium-host-paths.patch
@@ -76,6 +76,8 @@ package() {
         sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
     done
     chmod 4755 "$PAYLOAD_DIR/libexec/flatpak-bwrap"
+    # Flathub as a static system remote, applied on first system-wide use
+    install -Dm644 "$RECIPE_DIR/flathub.flatpakrepo" "$PAYLOAD_DIR/etc/flatpak/remotes.d/flathub.flatpakrepo"
 }
 
 dev() {
