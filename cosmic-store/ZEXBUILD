@@ -1,9 +1,10 @@
 maintainer="Ali Zain <alizain@zainiumdynamics.tech>"
 pkgname=cosmic-store
 pkgver=1.10.0
-pkgrel=0
+pkgrel=1
 source="https://github.com/pop-os/cosmic-store/archive/refs/tags/epoch-$pkgver.tar.gz
-0001-appstream-zainium-paths.patch"
+0001-appstream-zainium-paths.patch
+0002-system-remote-appstream-update.patch"
 makedepends="cargo just pkgconf cmake flatpak-dev glib-dev libxkbcommon-dev wayland-dev"
 
 # Upstream default features: flatpak is the only backend compiled in.
@@ -12,6 +13,8 @@ build() {
 
     # appstream catalogs: share from syshub and the union, var/lib and var/cache from the union
     patch -p1 < ../0001-appstream-zainium-paths.patch
+    # system remotes were refreshed by display id "flathub (system)", which flatpak doesn't know
+    patch -p1 < ../0002-system-remote-appstream-update.patch
 
     cargo build --release --target x86_64-unknown-linux-musl
 }
