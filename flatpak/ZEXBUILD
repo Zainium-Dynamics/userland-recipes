@@ -1,7 +1,7 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=flatpak
 pkgver=1.18.4
-pkgrel=2
+pkgrel=3
 subpackages="flatpak-dev"
 source="https://github.com/flatpak/flatpak/releases/download/$pkgver/flatpak-$pkgver.tar.xz
 0001-zainium-host-paths.patch
@@ -17,7 +17,8 @@ needs_toolchain="glib glib-dev pcre2 pcre2-dev libffi libffi-dev zlib zlib-dev g
 
 # dconf, malcontent, xauth, wayland security context and selinux off: nothing on
 # Zainium uses them. bubblewrap and xdg-dbus-proxy come from meson's subprojects.
-# System installation (apps, runtimes, exported icons) lives in the union.
+# System installation (apps, runtimes, exported icons) is written through the merged
+# /overlayer/syshub/var, so it lands in the union and the overlay sees it at once.
 build() {
     # glib-dev's python tools (glib-mkenums, gdbus-codegen) start with #!/overlayer/syshub/bin/env
     [ -e /overlayer/syshub/bin/env ] || ln -s /usr/bin/env /overlayer/syshub/bin/env
@@ -33,7 +34,7 @@ build() {
     meson setup builddir \
         --prefix=/overlayer/syshub \
         --sysconfdir=/overlayer/syshub/etc \
-        --localstatedir=/overlayer/zexlib/union/var \
+        --localstatedir=/overlayer/syshub/var \
         --libdir=/overlayer/syshub/lib \
         -Dsystem_fonts_dir=/overlayer/syshub/share/fonts \
         -Dsystem_font_cache_dirs=/overlayer/syshub/var/cache/fontconfig \
