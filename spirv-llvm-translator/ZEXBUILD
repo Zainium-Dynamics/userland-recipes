@@ -8,9 +8,7 @@ source="https://github.com/KhronosGroup/SPIRV-LLVM-Translator/archive/$_commit.t
 sha256sums="fff5e06429b639be95841044839b779e6896fba7c19987af52d767f0e454767c  $_commit.tar.gz"
 makedepends="cmake samurai llvm22-dev llvm22-static"
 
-# llvm_release_220 branch HEAD -- no tagged releases upstream.
-# Built against Alpine's own llvm22 (has the static component libs our
-# own llvm-dev doesn't ship) -- llvm stays dynamic/our-own everywhere else.
+# llvm_release_220 branch HEAD, no tagged releases upstream.
 build() {
     cd SPIRV-LLVM-Translator-$_commit
     cmake -B build -G Ninja \
@@ -36,5 +34,4 @@ dev() {
     cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
     find "$inst/lib" -maxdepth 1 -name 'libLLVMSPIRVLib*' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
     cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
-    sed -i 's#^prefix=.*#prefix=/overlayer/zexlib/union#' "$PAYLOAD_DIR/lib/pkgconfig/"*.pc
 }
