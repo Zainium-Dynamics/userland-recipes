@@ -1,7 +1,7 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=fuse3
 pkgver=3.18.3
-pkgrel=0
+pkgrel=1
 subpackages="fuse3-dev"
 source="https://github.com/libfuse/libfuse/releases/download/fuse-$pkgver/fuse-$pkgver.tar.gz"
 sha256sums="bcd19582c5e30f7fe45dd86a5540e998590aa01903afc7ebcbeea6c8ac5421ee  fuse-$pkgver.tar.gz"
@@ -11,6 +11,8 @@ makedepends="meson linux-headers"
 build() {
     cd fuse-$pkgver
     sed -i 's#"/bin/sh"#"/overlayer/syshub/bin/sh"#g' util/mount.fuse.c
+    # no /etc/mtab at Zainium's root and setuid ignores LD_PRELOAD: users' unmounts check /proc/mounts
+    sed -i 's#_PATH_MOUNTED#"/proc/mounts"#g' util/fusermount.c
 
     meson setup builddir \
         --prefix=/overlayer/syshub \
@@ -35,6 +37,8 @@ package() {
             cp -a "$inst/$d"/. "$PAYLOAD_DIR/$d/"
         fi
     done
+    # -Duseroot=false skips libfuse's own chmod; users (flatpak's revokefs) mount through it
+    chmod 4755 "$PAYLOAD_DIR/bin/fusermount3"
     mkdir -p "$PAYLOAD_DIR/lib"
     cp -P "$inst"/lib/libfuse3.so.* "$PAYLOAD_DIR/lib/"
     if [ -d "$inst/lib/udev" ]; then
