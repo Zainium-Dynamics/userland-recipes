@@ -53,6 +53,9 @@ mkdir -p "$SRCDIR"
 : "${pkgrel:=0}"
 
 echo "== $pkgname $pkgver-$pkgrel =="
+# a recipe rebuild (pkgrel bump) is a new package version, so zex sees it as an upgrade
+version="$pkgver"
+[ "$pkgrel" != 0 ] && version="$pkgver-r$pkgrel"
 
 # Alpine-style: each recipe declares its own extra apk deps instead of
 # CI growing a global list.
@@ -292,8 +295,8 @@ echo "-- packing $pkgname --"
 # succeeds), so a failing `pack` would be silently swallowed and the
 # script would carry on to publish a .zex that was never produced.
 pack_log="$STAGING_ROOT/pack-$pkgname.log"
-if ! "$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" \
-    "$STAGING_ROOT/pkg" -o "$OUT_DIR/$pkgname-$pkgver.zex" \
+if ! "$SUBSTRATE" pack -v "$version" --requires-syshub "${REQUIRES_SYSHUB:-}" \
+    "$STAGING_ROOT/pkg" -o "$OUT_DIR/$pkgname-$version.zex" \
     > "$pack_log" 2>&1
 then
     tail -30 "$pack_log"
@@ -320,8 +323,8 @@ for sub in ${subpackages:-}; do
 
     echo "-- packing $sub --"
     sub_pack_log="$STAGING_ROOT/pack-$sub.log"
-    if ! "$SUBSTRATE" pack -v "$pkgver" --requires-syshub "${REQUIRES_SYSHUB:-}" \
-        "$STAGING_ROOT/subpkg/$sub" -o "$OUT_DIR/$sub-$pkgver.zex" \
+    if ! "$SUBSTRATE" pack -v "$version" --requires-syshub "${REQUIRES_SYSHUB:-}" \
+        "$STAGING_ROOT/subpkg/$sub" -o "$OUT_DIR/$sub-$version.zex" \
         > "$sub_pack_log" 2>&1
     then
         tail -30 "$sub_pack_log"
@@ -331,7 +334,7 @@ for sub in ${subpackages:-}; do
 done
 
 if [ "${PUBLISH:-}" = "1" ]; then
-    for zex in "$pkgname-$pkgver.zex" ${subpackages:+$(for s in $subpackages; do echo "$s-$pkgver.zex"; done)}; do
+    for zex in "$pkgname-$version.zex" ${subpackages:+$(for s in $subpackages; do echo "$s-$version.zex"; done)}; do
         echo "-- publishing $zex --"
         zex-ports publish "$OUT_DIR/$zex"
     done
