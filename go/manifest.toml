@@ -1,0 +1,30 @@
+[package]
+name             = "go"
+version          = "1.27.2"
+description      = "The Go programming language toolchain"
+license          = "BSD-3-Clause"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://go.dev"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["go", "gofmt"]
+tags             = ["development", "go", "compiler"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
