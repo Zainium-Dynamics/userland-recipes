@@ -1,7 +1,7 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=rustc
 pkgver=1.96.1
-pkgrel=0
+pkgrel=1
 source="https://static.rust-lang.org/dist/rustc-$pkgver-src.tar.gz
 0001-zainium-targets.patch"
 sha256sums="d0a9b5198c41868538ae12af28064163551d06dcceab11ef0b1bc9aa6e98b7a7  rustc-$pkgver-src.tar.gz"
@@ -13,6 +13,15 @@ build() {
     patch -p1 < "$SRCDIR/0001-zainium-targets.patch"
 
     local sysroot=/overlayer/syshub
+
+    for sub in "src/doc/book:https://github.com/rust-lang/book.git" "src/doc/reference:https://github.com/rust-lang/reference.git" "src/tools/rustc-perf:https://github.com/rust-lang/rustc-perf.git"; do
+        dest="${sub%%:*}"
+        url="${sub#*:}"
+        if [ -z "$(ls -A "$dest" 2>/dev/null)" ]; then
+            rm -rf "$dest"
+            git clone -q --depth 1 "$url" "$dest"
+        fi
+    done
 
     for pair in "libstdc++.so.6:libstdc++.so.6.0.*" "libstdc++.so:libstdc++.so.6.0.*" "libatomic.so.1:libatomic.so.1.*"; do
         link="${pair%%:*}"
@@ -44,7 +53,7 @@ submodules = false
 locked-deps = true
 vendor = false
 extended = true
-tools = ["rustdoc", "clippy", "rustfmt", "src"]
+tools = ["rustdoc", "clippy", "rustfmt", "rust-analyzer", "rust-analyzer-proc-macro-srv", "src"]
 sanitizers = false
 profiler = false
 build-stage = 2
