@@ -1,12 +1,12 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=git
-pkgver=2.55.0
-pkgrel=2
+pkgver=2.56.0
+pkgrel=0
 source="https://mirrors.edge.kernel.org/pub/software/scm/git/git-$pkgver.tar.xz"
 # sha256 verified 2026-08-11 against kernel.org's own published
 # sha256sums.asc for this release, and independently re-checked via a
 # separate direct download + sha256sum.
-sha256sums="457fdb04dc8728e007d4688695e6912e6f680727920f2a40bf11eacc17505357  git-$pkgver.tar.xz"
+sha256sums="26c56c296b38c0695b26fa95f475f1d01704d2d38e73465ca30b0b2f5dc789d3  git-$pkgver.tar.xz"
 
 # Git's own release tarball ships configure.ac but no pre-generated
 # ./configure (that only exists in the git.org "full" tarball, not this
@@ -28,6 +28,9 @@ build() {
     # Alpine's bash package lands wherever that image's /bin symlink
     # policy puts it — detect it instead of hardcoding /bin/bash.
     HOST_BASH="$(command -v bash)"
+
+    sed -i 's#"/usr/local/bin:/usr/bin:/bin"#"/overlayer/syshub/bin"#' git-compat-util.h
+    sed -i 's#/etc/mailname#/overlayer/syshub/etc/mailname#g' ident.c
     cat > config.mak <<CFG
 prefix = /overlayer/syshub
 sysconfdir = /overlayer/syshub/etc
@@ -93,4 +96,9 @@ CFG
 
 package() {
     make DESTDIR="$PAYLOAD_DIR" install
+    find "$PAYLOAD_DIR" -type f | while read -r f; do
+        grep -q '/usr' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
 }
