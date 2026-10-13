@@ -1,0 +1,71 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=go
+pkgver=1.27.2
+pkgrel=0
+source="https://go.dev/dl/go$pkgver.src.tar.gz"
+sha256sums="03495da2ba64894d40f5c4992e49454fa78b50690604ff92b6afff5081b76e62  go$pkgver.src.tar.gz"
+makedepends="build-base bash go"
+
+build() {
+    cd "$SRCDIR/go/src"
+
+    sed -i \
+        -e 's#"/usr/share/zoneinfo/"#"/overlayer/syshub/share/zoneinfo/"#' \
+        -e 's#"/usr/share/lib/zoneinfo/"#"/overlayer/syshub/share/lib/zoneinfo/"#' \
+        -e 's#"/usr/lib/locale/TZ/"#"/overlayer/syshub/lib/locale/TZ/"#' \
+        -e 's#"/etc/zoneinfo"#"/overlayer/syshub/etc/zoneinfo"#' \
+        -e 's#"/etc/localtime"#"/overlayer/syshub/etc/localtime"#' \
+        time/zoneinfo_unix.go
+    sed -i -e 's#"/etc/passwd"#"/overlayer/syshub/etc/passwd"#' -e 's#"/etc/group"#"/overlayer/syshub/etc/group"#' os/user/lookup.go
+    sed -i 's#"/etc/services"#"/overlayer/syshub/etc/services"#' net/port_unix.go
+    sed -i 's#"/etc/hosts"#"/overlayer/syshub/etc/hosts"#' net/hook_unix.go
+    sed -i 's#"/etc/protocols"#"/overlayer/syshub/etc/protocols"#' net/lookup_unix.go
+    sed -i 's#"/etc/resolv.conf"#"/overlayer/syshub/etc/resolv.conf"#g' net/dnsclient_unix.go
+    sed -i 's#"/etc/mdns.allow"#"/overlayer/syshub/etc/mdns.allow"#' net/conf.go
+    sed -i 's#"/etc/nsswitch.conf"#"/overlayer/syshub/etc/nsswitch.conf"#g' net/nss.go
+    sed -i \
+        -e 's#"/usr/local/share/mime/globs2"#"/overlayer/syshub/share/mime/globs2"#' \
+        -e 's#"/usr/share/mime/globs2"#"/overlayer/syshub/share/mime/globs2"#' \
+        -e 's#"/etc/mime.types"#"/overlayer/syshub/etc/mime.types"#' \
+        -e 's#"/etc/apache2/mime.types"#"/overlayer/syshub/etc/apache2/mime.types"#' \
+        -e 's#"/etc/apache/mime.types"#"/overlayer/syshub/etc/apache/mime.types"#' \
+        -e 's#"/etc/httpd/conf/mime.types"#"/overlayer/syshub/etc/httpd/conf/mime.types"#' \
+        mime/type_unix.go
+    sed -i \
+        -e 's#"/etc/ssl/certs/ca-certificates.crt"#"/overlayer/syshub/etc/ssl/certs/ca-certificates.crt"#' \
+        -e 's#"/etc/pki/tls/certs/ca-bundle.crt"#"/overlayer/syshub/etc/pki/tls/certs/ca-bundle.crt"#' \
+        -e 's#"/etc/ssl/ca-bundle.pem"#"/overlayer/syshub/etc/ssl/ca-bundle.pem"#' \
+        -e 's#"/etc/pki/tls/cacert.pem"#"/overlayer/syshub/etc/pki/tls/cacert.pem"#' \
+        -e 's#"/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"#"/overlayer/syshub/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"#' \
+        -e 's#"/etc/ssl/cert.pem"#"/overlayer/syshub/etc/ssl/cert.pem"#' \
+        -e 's#"/etc/ssl/certs"#"/overlayer/syshub/etc/ssl/certs"#' \
+        -e 's#"/etc/pki/tls/certs"#"/overlayer/syshub/etc/pki/tls/certs"#' \
+        crypto/x509/root_linux.go
+    sed -i 's#LinuxdynldMusl: "/lib/ld-musl-x86_64.so.1"#LinuxdynldMusl: "/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1"#' cmd/link/internal/amd64/obj.go
+    grep -q '/overlayer/syshub/x86_64-zainium-linux-musl' cmd/link/internal/amd64/obj.go
+    grep -q '/overlayer/syshub/etc/ssl/certs/ca-certificates.crt' crypto/x509/root_linux.go
+
+    export GOROOT_BOOTSTRAP=/usr/lib/go
+    export GOOS=linux GOARCH=amd64 CGO_ENABLED=1
+    export GOROOT_FINAL=/overlayer/zexlib/union/lib/go
+    bash ./make.bash
+}
+
+package() {
+    local goroot="$SRCDIR/go"
+    mkdir -p "$PAYLOAD_DIR/lib" "$PAYLOAD_DIR/bin"
+    cp -a "$goroot" "$PAYLOAD_DIR/lib/go"
+
+    rm -rf "$PAYLOAD_DIR/lib/go/pkg/obj" "$PAYLOAD_DIR/lib/go/.git" "$PAYLOAD_DIR/lib/go/test" "$PAYLOAD_DIR/lib/go/misc" "$PAYLOAD_DIR/lib/go/doc"
+    find "$PAYLOAD_DIR/lib/go" -type d -name testdata -prune -exec rm -rf {} +
+    find "$PAYLOAD_DIR/lib/go" -type f -name '*_test.go' -delete
+
+    ln -sf ../lib/go/bin/go "$PAYLOAD_DIR/bin/go"
+    ln -sf ../lib/go/bin/gofmt "$PAYLOAD_DIR/bin/gofmt"
+
+    find "$PAYLOAD_DIR" -type f | while read -r f; do
+        grep -q '/usr' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
+}

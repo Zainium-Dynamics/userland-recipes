@@ -1,0 +1,99 @@
+diff --git a/compiler/rustc_target/src/spec/mod.rs b/compiler/rustc_target/src/spec/mod.rs
+index 0601f9d..d4167d8 100644
+--- a/compiler/rustc_target/src/spec/mod.rs
++++ b/compiler/rustc_target/src/spec/mod.rs
+@@ -1492,8 +1492,10 @@ supported_targets! {
+     ("armv7-unknown-linux-musleabihf", armv7_unknown_linux_musleabihf),
+     ("aarch64-unknown-linux-gnu", aarch64_unknown_linux_gnu),
+     ("aarch64-unknown-linux-musl", aarch64_unknown_linux_musl),
++    ("aarch64-zainium-linux-musl", aarch64_zainium_linux_musl),
+     ("aarch64_be-unknown-linux-musl", aarch64_be_unknown_linux_musl),
+     ("x86_64-unknown-linux-musl", x86_64_unknown_linux_musl),
++    ("x86_64-zainium-linux-musl", x86_64_zainium_linux_musl),
+     ("i686-unknown-linux-musl", i686_unknown_linux_musl),
+     ("i586-unknown-linux-musl", i586_unknown_linux_musl),
+     ("mips-unknown-linux-musl", mips_unknown_linux_musl),
+diff --git a/b/compiler/rustc_target/src/spec/targets/aarch64_zainium_linux_musl.rs b/compiler/rustc_target/src/spec/targets/aarch64_zainium_linux_musl.rs
+new file mode 100644
+index 0000000..b2cb1c2
+--- /dev/null
++++ b/compiler/rustc_target/src/spec/targets/aarch64_zainium_linux_musl.rs
+@@ -0,0 +1,37 @@
++use crate::spec::{
++    Arch, FramePointer, SanitizerSet, StackProbeType, Target, TargetMetadata, TargetOptions, base,
++};
++
++pub(crate) fn target() -> Target {
++    let mut base = base::linux_musl::opts();
++    base.max_atomic_width = Some(128);
++    base.supports_xray = true;
++    base.features = "+v8a,+outline-atomics".into();
++    base.stack_probes = StackProbeType::Inline;
++    base.supported_sanitizers = SanitizerSet::ADDRESS
++        | SanitizerSet::CFI
++        | SanitizerSet::LEAK
++        | SanitizerSet::MEMORY
++        | SanitizerSet::THREAD;
++    base.crt_static_default = false;
++
++    Target {
++        llvm_target: "aarch64-zainium-linux-musl".into(),
++        metadata: TargetMetadata {
++            description: Some("ARM64 Linux (ZainiumOS) with musl 1.2.6-zainium".into()),
++            tier: Some(2),
++            host_tools: Some(true),
++            std: Some(true),
++        },
++        pointer_width: 64,
++        data_layout: "e-m:e-p270:32:32-p271:32:32-p272:64:64-i8:8:32-i16:16:32-i64:64-i128:128-n32:64-S128-Fn32".into(),
++        arch: Arch::AArch64,
++        options: TargetOptions {
++            // the AAPCS64 expects use of non-leaf frame pointers per
++            // https://github.com/ARM-software/abi-aa/blob/4492d1570eb70c8fd146623e0db65b2d241f12e7/aapcs64/aapcs64.rst#the-frame-pointer
++            // and we tend to encounter interesting bugs in AArch64 unwinding code if we do not
++            frame_pointer: FramePointer::NonLeaf,
++             mcount: "\u{1}_mcount".into(), ..base
++         },
++    }
++}
+diff --git a/b/compiler/rustc_target/src/spec/targets/x86_64_zainium_linux_musl.rs b/compiler/rustc_target/src/spec/targets/x86_64_zainium_linux_musl.rs
+new file mode 100644
+index 0000000..546a8fc
+--- /dev/null
++++ b/compiler/rustc_target/src/spec/targets/x86_64_zainium_linux_musl.rs
+@@ -0,0 +1,35 @@
++use crate::spec::{
++    Arch, Cc, LinkerFlavor, Lld, SanitizerSet, StackProbeType, Target, TargetMetadata, base,
++};
++
++pub(crate) fn target() -> Target {
++    let mut base = base::linux_musl::opts();
++    base.cpu = "x86-64".into();
++    base.plt_by_default = false;
++    base.max_atomic_width = Some(64);
++    base.add_pre_link_args(LinkerFlavor::Gnu(Cc::Yes, Lld::No), &["-m64"]);
++    base.stack_probes = StackProbeType::Inline;
++    base.static_position_independent_executables = true;
++    base.supported_sanitizers = SanitizerSet::ADDRESS
++        | SanitizerSet::CFI
++        | SanitizerSet::LEAK
++        | SanitizerSet::MEMORY
++        | SanitizerSet::THREAD;
++    base.supports_xray = true;
++    base.crt_static_default = false;
++
++    Target {
++        llvm_target: "x86_64-zainium-linux-musl".into(),
++        metadata: TargetMetadata {
++            description: Some("64-bit Linux (ZainiumOS) with musl 1.2.6-zainium".into()),
++            tier: Some(2),
++            host_tools: Some(true),
++            std: Some(true),
++        },
++        pointer_width: 64,
++        data_layout:
++            "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128".into(),
++        arch: Arch::X86_64,
++        options: base,
++    }
++}
