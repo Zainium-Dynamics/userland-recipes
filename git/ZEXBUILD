@@ -1,7 +1,7 @@
 maintainer="Ali Zain <heyalizain@gmail.com>"
 pkgname=git
 pkgver=2.56.0
-pkgrel=0
+pkgrel=1
 source="https://mirrors.edge.kernel.org/pub/software/scm/git/git-$pkgver.tar.xz"
 sha256sums="26c56c296b38c0695b26fa95f475f1d01704d2d38e73465ca30b0b2f5dc789d3  git-$pkgver.tar.xz"
 
@@ -13,6 +13,10 @@ build() {
     cat > config.mak <<CFG
 prefix = /overlayer/syshub
 sysconfdir = /overlayer/syshub/etc
+# zex installs git into the userland union: find libexec/git-core and templates next to the binary
+RUNTIME_PREFIX = YesPlease
+# symlinks instead of hard links: the package stored every git-* link as a full 4.8 MB copy
+INSTALL_SYMLINKS = YesPlease
 NO_GETTEXT = YesPlease
 NO_PERL = YesPlease
 NO_PYTHON = YesPlease
