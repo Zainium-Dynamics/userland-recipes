@@ -33,6 +33,7 @@ profile = "dist"
 
 [llvm]
 download-ci-llvm = false
+link-shared = true
 
 [build]
 host = ["$triple"]
