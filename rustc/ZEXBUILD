@@ -13,6 +13,13 @@ build() {
     patch -p1 < "$SRCDIR/0001-zainium-targets.patch"
 
     local sysroot=/overlayer/syshub
+
+    for pair in "libstdc++.so.6:libstdc++.so.6.0.*" "libstdc++.so:libstdc++.so.6.0.*" "libatomic.so.1:libatomic.so.1.*"; do
+        link="${pair%%:*}"
+        [ -e "$sysroot/lib/$link" ] && continue
+        real="$(ls "$sysroot"/lib/${pair#*:} 2>/dev/null | grep -v -e '-gdb.py' | head -1)"
+        [ -n "$real" ] && ln -s "$(basename "$real")" "$sysroot/lib/$link"
+    done
     local triple=x86_64-zainium-linux-musl
     local musl_root="$sysroot/$triple"
     local gccver
