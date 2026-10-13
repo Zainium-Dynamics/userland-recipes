@@ -1,0 +1,68 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=cargo
+pkgver=0.97.2
+pkgrel=0
+source="https://github.com/rust-lang/cargo/archive/refs/tags/$pkgver.tar.gz"
+sha256sums="5a18618e2d159fed15ff9516aea07ed8232d8cb3cac02224c0f9f8490debe68c  $pkgver.tar.gz"
+makedepends="build-base rustup perl make"
+needs_toolchain="musl gcc-musl binutils rustc cmake curl curl-dev pkgconf linux-headers llvm llvm-dev openssl openssl-dev xz xz-dev zlib zlib-dev libffi libffi-dev zstd zstd-dev libxml2 libxml2-dev ncurses ncurses-dev"
+
+build() {
+    local sysroot=/overlayer/syshub
+    local triple=x86_64-zainium-linux-musl
+    local gccver
+    gccver="$(ls "$sysroot/$triple/lib/gcc/$triple" | head -1)"
+    local gcc_prefix="$sysroot/$triple/lib/gcc/$triple/$gccver/"
+    local gcc="$sysroot/bin/$triple-gcc"
+
+    for pair in "libstdc++.so.6:libstdc++.so.6.0.*" "libstdc++.so:libstdc++.so.6.0.*" "libatomic.so.1:libatomic.so.1.*"; do
+        link="${pair%%:*}"
+        [ -e "$sysroot/lib/$link" ] && continue
+        real="$(ls "$sysroot"/lib/${pair#*:} 2>/dev/null | grep -v -e '-gdb.py' | head -1)"
+        [ -n "$real" ] && ln -s "$(basename "$real")" "$sysroot/lib/$link"
+    done
+
+    cd "$SRCDIR/cargo-$pkgver"
+    sed -i 's#\.unwrap_or_else(|| gctx\.home()\.clone()))#.unwrap_or_else(|| Filesystem::new(PathBuf::from("/overlayer/zexlib/union"))))#' src/cargo/ops/common_for_install_and_uninstall.rs
+    grep -q '/overlayer/zexlib/union' src/cargo/ops/common_for_install_and_uninstall.rs
+
+    export LD_LIBRARY_PATH=/usr/lib:/lib
+    rustup-init -y -q --default-toolchain "1.96.1" --profile minimal
+    export PATH="$HOME/.cargo/bin:$PATH:$sysroot/bin"
+    export RUSTC="$sysroot/bin/rustc"
+
+    export PKG_CONFIG_ALLOW_CROSS=1
+    export PKG_CONFIG_PATH="$sysroot/lib/pkgconfig:$sysroot/share/pkgconfig"
+    export OPENSSL_DIR="$sysroot"
+    export OPENSSL_LIB_DIR="$sysroot/lib"
+    export OPENSSL_INCLUDE_DIR="$sysroot/include"
+    export CC_x86_64_zainium_linux_musl="$gcc"
+    export CXX_x86_64_zainium_linux_musl="$sysroot/bin/$triple-g++"
+    export AR_x86_64_zainium_linux_musl="$sysroot/bin/$triple-ar"
+    export CFLAGS_x86_64_zainium_linux_musl="-O2 -pipe -fPIC -B$gcc_prefix -I$sysroot/include"
+    export CARGO_TARGET_X86_64_ZAINIUM_LINUX_MUSL_LINKER="$gcc"
+    export CARGO_TARGET_X86_64_ZAINIUM_LINUX_MUSL_AR="$sysroot/bin/$triple-ar"
+    export RUSTFLAGS="-C target-feature=-crt-static -C link-arg=-B$gcc_prefix -C link-arg=-L$sysroot/lib -C link-arg=-Wl,-rpath,\$ORIGIN/../lib"
+
+    cargo update -p openssl-sys
+    cargo build --release --target "$triple" -p cargo --features vendored-libgit2
+}
+
+package() {
+    cd "$SRCDIR/cargo-$pkgver"
+    mkdir -p "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/share/man/man1" "$PAYLOAD_DIR/share/bash-completion/completions" "$PAYLOAD_DIR/share/zsh/site-functions"
+
+    cp target/x86_64-zainium-linux-musl/release/cargo "$PAYLOAD_DIR/bin/cargo"
+    strip "$PAYLOAD_DIR/bin/cargo" 2>/dev/null || true
+    chmod 755 "$PAYLOAD_DIR/bin/cargo"
+
+    cp src/etc/man/*.1 "$PAYLOAD_DIR/share/man/man1/"
+    cp src/etc/cargo.bashcomp.sh "$PAYLOAD_DIR/share/bash-completion/completions/cargo"
+    cp src/etc/_cargo "$PAYLOAD_DIR/share/zsh/site-functions/_cargo"
+
+    find "$PAYLOAD_DIR" -type f | while read -r f; do
+        grep -q '/usr' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
+}
