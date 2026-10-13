@@ -1,0 +1,46 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=cargo
+pkgver=0.100.0
+pkgrel=0
+_nightly=nightly-2026-10-01
+source="https://github.com/rust-lang/cargo/archive/refs/tags/$pkgver.tar.gz
+x86_64-zainium-linux-musl.json"
+sha256sums="336cb96ea30f717a46f435257fad331591724bbd2c5aca39433910ea1e4cc4a3  $pkgver.tar.gz"
+makedepends="rustup perl make cmake pkgconf"
+
+build() {
+    local target="$SRCDIR/x86_64-zainium-linux-musl.json"
+    cd "$SRCDIR/cargo-$pkgver"
+
+    export LD_LIBRARY_PATH=/usr/lib:/lib
+    rustup-init -y -q --default-toolchain none --profile minimal
+    export PATH="$HOME/.cargo/bin:$PATH"
+    rustup toolchain install "$_nightly" --profile minimal --component rust-src
+
+    RUSTFLAGS="-C target-feature=-crt-static -C link-arg=-Wl,-dynamic-linker=/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1 -C link-arg=-Wl,-rpath=/overlayer/syshub/lib" \
+        cargo "+$_nightly" build --release --locked \
+        -p cargo --features all-static \
+        -Z json-target-spec \
+        --target "$target" \
+        -Z build-std=core,alloc,std,panic_abort \
+        --config 'target.x86_64-zainium-linux-musl.linker="cc"'
+}
+
+package() {
+    cd "$SRCDIR/cargo-$pkgver"
+    mkdir -p "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/share/man/man1" "$PAYLOAD_DIR/share/bash-completion/completions" "$PAYLOAD_DIR/share/zsh/site-functions"
+
+    cp target/x86_64-zainium-linux-musl/release/cargo "$PAYLOAD_DIR/bin/cargo"
+    strip "$PAYLOAD_DIR/bin/cargo" 2>/dev/null || true
+    chmod 755 "$PAYLOAD_DIR/bin/cargo"
+
+    cp etc/man/*.1 "$PAYLOAD_DIR/share/man/man1/"
+    cp etc/cargo.bashcomp.sh "$PAYLOAD_DIR/share/bash-completion/completions/cargo"
+    cp etc/_cargo "$PAYLOAD_DIR/share/zsh/site-functions/_cargo"
+
+    find "$PAYLOAD_DIR" -type f | while read -r f; do
+        grep -q '/usr' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
+}

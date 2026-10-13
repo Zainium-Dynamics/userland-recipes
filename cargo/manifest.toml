@@ -1,0 +1,30 @@
+[package]
+name             = "cargo"
+version          = "0.100.0"
+description      = "Rust package manager and build tool"
+license          = "MIT OR Apache-2.0"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://doc.rust-lang.org/cargo/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["cargo"]
+tags             = ["development", "rust"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
