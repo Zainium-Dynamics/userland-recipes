@@ -1,0 +1,32 @@
+[package]
+name             = "rustc"
+version          = "1.96.1"
+description      = "Rust compiler, standard library, rustdoc, clippy and rustfmt with the x86_64-zainium-linux-musl target"
+license          = "MIT OR Apache-2.0"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.rust-lang.org/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "gcc-musl", "zlib", "zstd"]
+provides         = ["rustc", "rustdoc", "rust-std", "clippy", "rustfmt", "rust-src"]
+tags             = ["development", "rust", "compiler"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
