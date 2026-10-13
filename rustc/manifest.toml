@@ -13,7 +13,7 @@ ed25519_sig      = ""
 ed25519_pubkey   = ""
 
 requires_syshub  = ""
-depends          = ["musl", "llvm", "zlib", "zstd"]
+depends          = ["musl", "llvm", "libffi", "zlib", "zstd"]
 provides         = ["rustc", "rustdoc", "rust-std", "clippy", "rustfmt", "rust-src"]
 tags             = ["development", "rust", "compiler"]
 
