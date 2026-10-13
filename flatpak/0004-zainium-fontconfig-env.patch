@@ -1,0 +1,12 @@
+--- a/common/flatpak-run.c	2026-10-13 10:02:04.198696332 +0500
++++ b/common/flatpak-run.c	2026-10-13 10:02:04.246698383 +0500
+@@ -701,6 +701,9 @@
+   {"GST_REGISTRY_1_0", NULL},
+   {"GST_PLUGIN_PATH", NULL},
+   {"GST_PLUGIN_SYSTEM_PATH", NULL},
++  /* Zainium: the host fonts.conf path (set for COSMIC) does not exist in the runtime */
++  {"FONTCONFIG_FILE", NULL},
++  {"FONTCONFIG_PATH", NULL},
+   {"GST_PLUGIN_SCANNER", NULL},
+   {"GST_PLUGIN_SCANNER_1_0", NULL},
+   {"GST_PLUGIN_SYSTEM_PATH_1_0", NULL},
