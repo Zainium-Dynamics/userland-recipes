@@ -1,6 +1,3 @@
-# manifest.toml — git
-# See substrate's USAGE.md for the full field reference.
-
 [package]
 name             = "git"
 version          = "2.56.0"
