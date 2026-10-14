@@ -1,0 +1,30 @@
+[package]
+name             = "nano"
+version          = "9.2"
+description      = "Small, friendly text editor inspired by Pico"
+license          = "GPL-3.0-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.nano-editor.org"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "ncurses"]
+provides         = ["nano", "rnano"]
+tags             = ["editor", "terminal"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

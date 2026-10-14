@@ -1,0 +1,39 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=nano
+pkgver=9.2
+pkgrel=0
+source="https://www.nano-editor.org/dist/v9/nano-$pkgver.tar.xz"
+sha256sums="05ecb99247b782e8a5b3a25ed4101dd034b0236902f7449bc9795b717642f7e9  nano-$pkgver.tar.xz"
+makedepends="build-base"
+needs_toolchain="musl ncurses ncurses-dev pkgconf"
+
+build() {
+    sed -i 's#"/bin/sh"#"/overlayer/syshub/bin/bash"#' src/files.c
+    grep -q '/overlayer/syshub/bin/bash' src/files.c
+
+    export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig:/overlayer/syshub/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+    export CPPFLAGS="-I/overlayer/syshub/include -I/overlayer/syshub/include/ncursesw ${CPPFLAGS:-}"
+    export LDFLAGS="-L/overlayer/syshub/lib ${LDFLAGS:-}"
+
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --localstatedir=/overlayer/syshub/var \
+        --enable-utf8 \
+        --disable-nls \
+        --disable-libmagic
+    make -j"$(nproc)"
+    make install DESTDIR="$(pwd)/_zexbuild-install"
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR"
+    cp -a "$inst"/. "$PAYLOAD_DIR/"
+
+    find "$PAYLOAD_DIR" -type f | while read -r f; do
+        grep -q '/usr' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
+}
