@@ -1,0 +1,143 @@
+--- a/i18n/en/cosmic_store.ftl
++++ b/i18n/en/cosmic_store.ftl
+@@ -7,6 +7,8 @@
+ check-for-updates = Check for updates
+ checking-for-updates = Checking for updates...
+ loading = Loading...
++downloading-catalog = Downloading the app catalog from Flathub. The first time takes a few minutes...
++catalog-failed = Couldn't download the app catalog from Flathub. Check the internet connection and open the Store again.
+ close = Close
+ install = Install
+ no-installed-applications = No installed applications.
+--- a/src/backend/flatpak.rs
++++ b/src/backend/flatpak.rs
+@@ -8,7 +8,7 @@
+     fmt::Write,
+     fs, ptr,
+     rc::Rc,
+-    sync::Arc,
++    sync::{Arc, atomic::Ordering},
+ };
+ 
+ use super::{Backend, Package};
+@@ -64,7 +64,8 @@
+             };
+ 
+             // Update appstream if not found
+-            let mut update_appstream = !appstream_dir.is_dir();
++            let first_download = !appstream_dir.is_dir();
++            let mut update_appstream = first_download;
+             if !update_appstream
+                 && let Some(age) = remote
+                     .appstream_timestamp(None)
+@@ -80,16 +81,29 @@
+ 
+             if update_appstream {
+                 log::info!("updating appstream data for remote {:?}", remote);
+-                match inst.update_appstream_sync(&remote_name, None, Cancellable::NONE) {
+-                    Ok(()) => {}
+-                    Err(err) => {
+-                        log::warn!(
+-                            "failed to update appstream data for remote {:?}: {}",
+-                            remote,
+-                            err
+-                        );
++                // without a first catalog there is nothing to show, so a network hiccup gets retried
++                let attempts = if first_download { 3 } else { 1 };
++                if first_download {
++                    super::CATALOG_DOWNLOADS.fetch_add(1, Ordering::SeqCst);
++                }
++                for attempt in 1..=attempts {
++                    match inst.update_appstream_sync(&remote_name, None, Cancellable::NONE) {
++                        Ok(()) => break,
++                        Err(err) => {
++                            log::warn!(
++                                "failed to update appstream data for remote {:?} (attempt {attempt}/{attempts}): {}",
++                                remote,
++                                err
++                            );
++                            if first_download && attempt == attempts {
++                                super::CATALOG_FAILED.store(true, Ordering::SeqCst);
++                            }
++                        }
+                     }
+                 }
++                if first_download {
++                    super::CATALOG_DOWNLOADS.fetch_sub(1, Ordering::SeqCst);
++                }
+             }
+ 
+             let mut paths = Vec::new();
+--- a/src/backend/mod.rs
++++ b/src/backend/mod.rs
+@@ -4,10 +4,18 @@
+     collections::{BTreeMap, HashMap},
+     error::Error,
+     fmt,
+-    sync::Arc,
++    sync::{
++        Arc,
++        atomic::{AtomicBool, AtomicUsize},
++    },
+     time::Instant,
+ };
+ 
++/// Remotes downloading their app catalog for the first time (nothing to show until done)
++pub static CATALOG_DOWNLOADS: AtomicUsize = AtomicUsize::new(0);
++/// A first catalog download failed, so a remote has no apps to show
++pub static CATALOG_FAILED: AtomicBool = AtomicBool::new(false);
++
+ use crate::{AppId, AppInfo, AppstreamCache, GStreamerCodec, Operation};
+ 
+ /// Enum representing the available backend types
+--- a/src/view.rs
++++ b/src/view.rs
+@@ -161,6 +161,21 @@
+ }
+ 
+ impl App {
++    /// Explore and category pages wait for app catalogs: say which, or that the download failed
++    fn catalog_indicator(&self) -> Element<'_, Message> {
++        use std::sync::atomic::Ordering;
++        if crate::backend::CATALOG_DOWNLOADS.load(Ordering::SeqCst) > 0 {
++            self.loading_indicator(&fl!("downloading-catalog"))
++        } else if crate::backend::CATALOG_FAILED.load(Ordering::SeqCst) {
++            widget::text(fl!("catalog-failed"))
++                .apply(widget::container)
++                .center(Length::Fill)
++                .into()
++        } else {
++            self.loading_indicator(&fl!("loading"))
++        }
++    }
++
+     fn loading_indicator(&self, text: &str) -> Element<'_, Message> {
+         widget::column::with_capacity(2)
+             .push(widget::indeterminate_circular())
+@@ -874,7 +889,7 @@
+                                     None => {
+                                         // Show loading indicator
+                                         return column
+-                                            .push(self.loading_indicator(&fl!("loading")))
++                                            .push(self.catalog_indicator())
+                                             .height(Length::Fixed(size.height))
+                                             .into();
+                                     }
+@@ -884,7 +899,7 @@
+                             None => {
+                                 // Show loading indicator if no results yet
+                                 if self.explore_results.is_empty() {
+-                                    widget::container(self.loading_indicator(&fl!("loading")))
++                                    widget::container(self.catalog_indicator())
+                                         .height(Length::Fixed(size.height))
+                                         .into()
+                                 } else {
+@@ -1192,7 +1207,7 @@
+                                     widget::container(widget::text::title2(nav_page.title()))
+                                         .padding(title_padding),
+                                 )
+-                                .push(self.loading_indicator(&fl!("loading")))
++                                .push(self.catalog_indicator())
+                                 .into();
+                         }
+ 
