@@ -36,3 +36,5 @@ dirs     = []
 symlinks = []
 
 [hooks]
+# app catalogs (Flathub's appstream) download right after install, in the background, so the Store has them when opened
+post_install = "setsid -f flock -n /run/zex-flatpak-appstream.lock flatpak update --appstream --system --noninteractive >/dev/null 2>&1 </dev/null"
