@@ -10,7 +10,7 @@ makedepends="meson ninja pkgconf python3 glib-dev wayland-dev gperf itstool gobj
 # needs a runnable libwayland-client.so.0 mid-build, and this is one we
 # already publish ourselves.
 # libxmlb and libfyaml: Zainium's own userland packages, not Alpine's
-needs_toolchain="wayland libxmlb libxmlb-dev libfyaml libfyaml-dev"
+needs_toolchain="wayland libxml2 libxml2-dev libxmlb libxmlb-dev libfyaml libfyaml-dev"
 
 # gnome-software's hard AppStream dependency. systemd is a real build
 # option here (unlike gnome-software's own optional flatpak-only use)
