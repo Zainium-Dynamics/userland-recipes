@@ -1,0 +1,113 @@
+diff -ru a/src/as-cache.c b/src/as-cache.c
+--- a/src/as-cache.c
++++ b/src/as-cache.c
+@@ -66,7 +66,7 @@
+ #define GET_PRIVATE(o) (as_cache_get_instance_private (o))
+ 
+ /* location of the system-wide cache */
+-static const gchar *AS_APPSTREAM_SYS_CACHE_DIR = "/var/cache/swcatalog/cache";
++static const gchar *AS_APPSTREAM_SYS_CACHE_DIR = "/overlayer/syshub/var/cache/swcatalog/cache";
+ 
+ typedef struct {
+ 	gboolean is_os_data;
+diff -ru a/src/as-distro-extras.c b/src/as-distro-extras.c
+--- a/src/as-distro-extras.c
++++ b/src/as-distro-extras.c
+@@ -45,10 +45,10 @@
+ #define YAML_SEPARATOR_LEN strlen (YAML_SEPARATOR)
+ 
+ static const gchar *apt_lists_dir = "/var/lib/apt/lists/";
+-static const gchar *appstream_yaml_target = "/var/lib/swcatalog/yaml";
+-static const gchar *appstream_icons_target = "/var/lib/swcatalog/icons";
+-static const gchar *appstream_catalog_root = "/var/lib/swcatalog";
+-static const gchar *appstream_catalog_legacy_root = "/var/lib/app-info";
++static const gchar *appstream_yaml_target = "/overlayer/syshub/var/lib/swcatalog/yaml";
++static const gchar *appstream_icons_target = "/overlayer/syshub/var/lib/swcatalog/icons";
++static const gchar *appstream_catalog_root = "/overlayer/syshub/var/lib/swcatalog";
++static const gchar *appstream_catalog_legacy_root = "/overlayer/syshub/var/lib/app-info";
+ 
+ static const gchar *const default_icon_sizes[] = { "48x48",   "48x48@2",   "64x64", "64x64@2",
+ 						   "128x128", "128x128@2", NULL };
+diff -ru a/src/as-pool.c b/src/as-pool.c
+--- a/src/as-pool.c
++++ b/src/as-pool.c
+@@ -103,16 +103,16 @@
+ /* Prefixes of locations where system-wide AppStream catalog metadata can be found.
+  * TODO: We should really parse $XDG_DATA_DIRS for the /usr location in a safe way,
+  * instead of hardcoding one canonical path here. */
+-static const gchar *SYSTEM_CATALOG_METADATA_PREFIXES[] = { "/usr/share",
+-							   "/var/lib",
+-							   "/var/cache",
++static const gchar *SYSTEM_CATALOG_METADATA_PREFIXES[] = { "/overlayer/syshub/share",
++							   "/overlayer/syshub/var/lib",
++							   "/overlayer/syshub/var/cache",
+ 							   NULL };
+ 
+ /* where .desktop files are installed to by packages to be registered with the system */
+-static gchar *APPLICATIONS_DIR = "/usr/share/applications";
++static gchar *APPLICATIONS_DIR = "/overlayer/syshub/share/applications";
+ 
+ /* where metainfo files can be found */
+-static gchar *METAINFO_DIR = "/usr/share/metainfo";
++static gchar *METAINFO_DIR = "/overlayer/syshub/share/metainfo";
+ 
+ /* cache key used for local metainfo / desktop-entry data */
+ static gchar *LOCAL_METAINFO_CACHE_KEY = "local-metainfo";
+@@ -773,7 +773,7 @@
+ 	/* Add directories belonging to the Flatpak bundling system */
+ 	if (as_flags_contains (priv->flags, AS_POOL_FLAG_LOAD_FLATPAK)) {
+ 		as_pool_register_flatpak_dir (pool,
+-					      "/var/lib/flatpak/appstream/",
++					      "/overlayer/syshub/var/lib/flatpak/appstream/",
+ 					      AS_COMPONENT_SCOPE_SYSTEM);
+ 		if (include_user_data) {
+ 			g_autofree gchar *flatpak_user_dir = g_build_filename (
+diff -ru a/src/as-reviews-client.c b/src/as-reviews-client.c
+--- a/src/as-reviews-client.c
++++ b/src/as-reviews-client.c
+@@ -271,8 +271,8 @@
+ 	if (priv->user_hash != NULL)
+ 		return priv->user_hash;
+ 
+-	if (!g_file_get_contents ("/etc/machine-id", &machine_id, NULL, NULL))
+-		g_file_get_contents ("/var/lib/dbus/machine-id", &machine_id, NULL, NULL);
++	if (!g_file_get_contents ("/overlayer/syshub/etc/machine-id", &machine_id, NULL, NULL))
++		g_file_get_contents ("/overlayer/syshub/var/lib/dbus/machine-id", &machine_id, NULL, NULL);
+ 	if (machine_id == NULL)
+ 		machine_id = g_strdup (g_get_host_name ());
+ 	g_strstrip (machine_id);
+diff -ru a/src/as-system-info.c b/src/as-system-info.c
+--- a/src/as-system-info.c
++++ b/src/as-system-info.c
+@@ -228,10 +228,10 @@
+ 		return;
+ 
+ 	if (os_release_fname == NULL) {
+-		if (g_file_test ("/etc/os-release", G_FILE_TEST_EXISTS))
+-			os_release_fname = "/etc/os-release";
++		if (g_file_test ("/overlayer/syshub/etc/os-release", G_FILE_TEST_EXISTS))
++			os_release_fname = "/overlayer/syshub/etc/os-release";
+ 		else
+-			os_release_fname = "/usr/lib/os-release";
++			os_release_fname = "/overlayer/syshub/lib/os-release";
+ 	}
+ 
+ 	/* get details about the distribution we are running on */
+diff -ru a/src/as-utils.c b/src/as-utils.c
+--- a/src/as-utils.c
++++ b/src/as-utils.c
+@@ -2492,11 +2492,11 @@
+ as_metadata_location_get_prefix (AsMetadataLocation location)
+ {
+ 	if (location == AS_METADATA_LOCATION_SHARED)
+-		return "/usr/share";
++		return "/overlayer/syshub/share";
+ 	if (location == AS_METADATA_LOCATION_CACHE)
+-		return "/var/cache";
++		return "/overlayer/syshub/var/cache";
+ 	if (location == AS_METADATA_LOCATION_STATE)
+-		return "/var/lib";
++		return "/overlayer/syshub/var/lib";
+ 	if (location == AS_METADATA_LOCATION_USER)
+ 		return g_get_user_data_dir ();
+ 	return NULL;

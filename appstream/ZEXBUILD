@@ -1,0 +1,65 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=appstream
+pkgver=1.1.6
+pkgrel=0
+subpackages="appstream-dev"
+source="https://www.freedesktop.org/software/appstream/releases/AppStream-$pkgver.tar.xz"
+sha256sums="e298929f39729e84a70f6be6941f3e7f3fc2ee3c83cb3ea1b1b5b280a8fe3a24  AppStream-$pkgver.tar.xz"
+makedepends="glib-dev wayland-dev gperf itstool gobject-introspection-dev"
+# Real Zainium wayland package (not borrowed from Alpine) -- g-ir-scanner
+# needs a runnable libwayland-client.so.0 mid-build, and this is one we
+# already publish ourselves.
+# libxmlb and libfyaml: Zainium's own userland packages, not Alpine's
+needs_toolchain="wayland libxmlb libxmlb-dev libfyaml libfyaml-dev"
+
+# gnome-software's hard AppStream dependency. systemd is a real build
+# option here (unlike gnome-software's own optional flatpak-only use)
+# but gates nothing we need -- disabled. stemming stays off, matching
+# Alpine's own APKBUILD (-Dstemming=false there too, not a shortcut).
+# gir enabled -- matches Alpine's -Dgir=true. Needs the full runtime
+# closure bootstrapped (see ci/build.sh) since g-ir-scanner dlopens the
+# freshly-built libappstream.so mid-build.
+build() {
+    cd AppStream-$pkgver
+    patch -p1 < "$RECIPE_DIR/0001-skip-news-to-metainfo.patch"
+    # catalog, cache, flatpak, os-release and machine-id paths are hardcoded to /usr, /var and /etc
+    patch -p1 < "$RECIPE_DIR/0002-zainium-paths.patch"
+    export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+    # appstream's own test programs include libfyaml.h without its pkg-config cflags
+    export CFLAGS="-I/overlayer/syshub/include ${CFLAGS:-}"
+    meson setup builddir \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --includedir=/overlayer/syshub/include \
+        --sysconfdir=/overlayer/syshub/etc \
+        -Dsystemd=false \
+        -Dstemming=false \
+        -Dgir=true \
+        -Dvapi=false \
+        -Dqt=false \
+        -Dcompose=false \
+        -Ddisplay-detection=wayland \
+        -Ddocs=false \
+        -Dapidocs=false \
+        -Dman=false \
+        -Dbash-completion=false
+    LD_LIBRARY_PATH=/usr/lib:/lib ninja -C builddir
+    DESTDIR="$(pwd)/_zexbuild-install" ninja -C builddir install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib" "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/share"
+    find "$inst/lib" -maxdepth 1 -name 'libappstream.so*' -exec cp -P {} "$PAYLOAD_DIR/lib/" \;
+    cp -a "$inst/bin/appstreamcli" "$PAYLOAD_DIR/bin/" 2>/dev/null || true
+    cp -a "$inst/share/appstream" "$PAYLOAD_DIR/share/" 2>/dev/null || true
+    cp -a "$inst/lib/girepository-1.0" "$PAYLOAD_DIR/lib/" 2>/dev/null || true
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig" "$PAYLOAD_DIR/share/gir-1.0"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+    cp -a "$inst"/share/gir-1.0/. "$PAYLOAD_DIR/share/gir-1.0/" 2>/dev/null || true
+}

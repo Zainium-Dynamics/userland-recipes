@@ -1,0 +1,30 @@
+[package]
+name             = "appstream"
+version          = "1.1.6"
+description      = "Software metadata library used by app-store/software-center tools"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://www.freedesktop.org/software/appstream/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+depends          = ["glib", "libxmlb", "libfyaml"]
+provides         = ["appstream"]
+tags             = ["library", "gnome"]
+
+[install]
+lib     = "/overlayer/zexlib/union/lib"
+bin     = "/overlayer/zexlib/union/bin"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

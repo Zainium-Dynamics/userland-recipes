@@ -1,0 +1,21 @@
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -18,11 +18,13 @@
+ # If you do want to give translators a chance to translate them,
+ # ascli news-to-metainfo needs to produce a temporary file to translate
+ # prior to running (x)gettext on the file.
+-metainfo_with_relinfo = custom_target('gen-output',
+-    input : ['../NEWS', 'org.freedesktop.appstream.cli.metainfo.xml'],
+-    output : ['nol10n_withrelinfo_org.freedesktop.appstream.cli.metainfo.xml'],
+-    command : [ascli_exe, 'news-to-metainfo', '--limit=6', '@INPUT0@', '@INPUT1@', '@OUTPUT@']
+-)
++# Zainium: skip the news-to-metainfo build-time codegen step -- it
++# runs the freshly-built appstreamcli mid-build purely to splice release
++# notes into this one cosmetic metainfo file, which would otherwise
++# require bootstrapping curl/openssl/c-ares/nghttp2/... under
++# /overlayer/syshub/lib just for a build-time-only tool. Use the plain
++# metainfo file directly instead.
++metainfo_with_relinfo = files('org.freedesktop.appstream.cli.metainfo.xml')
+ 
+ metainfo_i18n = i18n.itstool_join(
+     input:  metainfo_with_relinfo,
