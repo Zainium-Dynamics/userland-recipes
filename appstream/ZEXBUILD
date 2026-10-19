@@ -5,7 +5,7 @@ pkgrel=0
 subpackages="appstream-dev"
 source="https://www.freedesktop.org/software/appstream/releases/AppStream-$pkgver.tar.xz"
 sha256sums="e298929f39729e84a70f6be6941f3e7f3fc2ee3c83cb3ea1b1b5b280a8fe3a24  AppStream-$pkgver.tar.xz"
-makedepends="glib-dev wayland-dev gperf itstool gobject-introspection-dev"
+makedepends="meson ninja pkgconf python3 glib-dev wayland-dev gperf itstool gobject-introspection-dev"
 # Real Zainium wayland package (not borrowed from Alpine) -- g-ir-scanner
 # needs a runnable libwayland-client.so.0 mid-build, and this is one we
 # already publish ourselves.
