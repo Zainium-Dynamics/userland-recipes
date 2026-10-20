@@ -1,8 +1,8 @@
 maintainer="Ali Zain <alizain@zainiumdynamics.tech>"
 pkgname=screenfetch
 pkgver=0.1.0
-pkgrel=1
-source="https://github.com/Zainium-Dynamics/screenfetch/archive/189c147bf698c0435c3b4c933f4fceb1f9b5d2b6.tar.gz"
+pkgrel=2
+source="https://github.com/Zainium-Dynamics/screenfetch/archive/4a2b7bfd00ddebb2910df6ffe5873f29470f0b7e.tar.gz"
 sha256sums="74c904acb30b788ae0953084d21f0c5075209e229ec2054b186ceb14d3b41aab  189c147bf698c0435c3b4c933f4fceb1f9b5d2b6.tar.gz"
 makedepends="cargo"
 
