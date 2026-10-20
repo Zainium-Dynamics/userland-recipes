@@ -1,0 +1,11 @@
+--- a/src/shell/mod.rs	2026-10-20 11:55:15.086022111 +0500
++++ b/src/shell/mod.rs	2026-10-20 11:55:15.092811846 +0500
+@@ -245,7 +245,7 @@
+                                     .map(|s| IonFileCompleter::new(Some(s), dirs_ptr, vars_ptr))
+                                     .collect()
+                             } else {
+-                                vec![IonFileCompleter::new(Some("/bin/"), dirs_ptr, vars_ptr)]
++                                vec![IonFileCompleter::new(Some("/overlayer/syshub/bin/"), dirs_ptr, vars_ptr)]
+                             };
+ 
+                             // Also add files/directories in the current directory to the completion list.

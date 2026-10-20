@@ -1,0 +1,19 @@
+maintainer="Ali Zain <alizain@zainiumdynamics.tech>"
+pkgname=ion
+pkgver=1.0.5
+pkgrel=0
+source="https://github.com/redox-os/ion/archive/refs/tags/$pkgver.tar.gz
+0001-zainium-paths.patch"
+sha256sums="7c7f696060a82669cb9c73cf0ec1d07d4ffefbfd54fc60acad0179ca3f46716d  $pkgver.tar.gz"
+makedepends="cargo"
+
+build() {
+    cd ion-$pkgver
+    patch -p1 < ../0001-zainium-paths.patch
+    cargo build --release --target x86_64-unknown-linux-musl
+}
+
+package() {
+    cd ion-$pkgver
+    install -Dm755 target/x86_64-unknown-linux-musl/release/ion "$PAYLOAD_DIR/bin/ion"
+}
