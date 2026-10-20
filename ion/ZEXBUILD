@@ -9,6 +9,11 @@ makedepends="cargo"
 
 build() {
     patch -p1 < ../0001-zainium-paths.patch
+    cargo fetch --locked
+    sed -i \
+        -e 's/^\( *\)let ed = try!(Editor::new/\1let key_bindings = self.key_bindings;\n&/' \
+        -e 's/match self\.key_bindings {/match key_bindings {/' \
+        "${CARGO_HOME:-$HOME/.cargo}"/registry/src/*/liner-*/src/context.rs
     cargo build --release --target x86_64-unknown-linux-musl
 }
 
