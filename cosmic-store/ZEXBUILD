@@ -1,7 +1,7 @@
 maintainer="Ali Zain <alizain@zainiumdynamics.tech>"
 pkgname=cosmic-store
 pkgver=1.10.0
-pkgrel=2
+pkgrel=3
 source="https://github.com/pop-os/cosmic-store/archive/refs/tags/epoch-$pkgver.tar.gz
 0001-appstream-zainium-paths.patch
 0002-system-remote-appstream-update.patch

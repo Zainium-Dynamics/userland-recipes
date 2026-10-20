@@ -1,13 +1,17 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=gpgme
 pkgver=2.0.1
-pkgrel=0
+pkgrel=1
 subpackages="gpgme-dev"
-source="https://gnupg.org/ftp/gcrypt/gpgme/gpgme-$pkgver.tar.bz2"
+source="https://gnupg.org/ftp/gcrypt/gpgme/gpgme-$pkgver.tar.bz2
+0001-empty-display.patch"
 sha256sums="821ab0695c842eab51752a81980c92b0410c7eadd04103f791d5d2a526784966  gpgme-$pkgver.tar.bz2"
 makedepends="libgpg-error-dev libassuan-dev"
 
 build() {
+    # DISPLAY= (no Xwayland) became gpg --display=, which gpg rejects: every signature check failed
+    patch -p1 < ../0001-empty-display.patch
+
     # look for gpg/gpgconf only in Zainium's bin, not $PATH or /usr/bin
     ./configure \
         --prefix=/overlayer/syshub \
