@@ -80,3 +80,7 @@ GitHub Actions workflow `.github/workflows/ci.yml` has two jobs:
 - `release` runs on every push to `main`, then builds and publishes.
 
 Only packages whose directory changed are built.
+
+## License
+
+The recipes in this repository are licensed under GPL-3.0-only. See `LICENSE`. Upstream software keeps its own license.
