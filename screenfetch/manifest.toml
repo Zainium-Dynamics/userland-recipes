@@ -1,0 +1,29 @@
+[package]
+name             = "screenfetch"
+version          = "0.1.0"
+description      = "Fast system info with the distro SVG logo drawn in the terminal"
+license          = "MIT"
+maintainer       = "Ali Zain <alizain@zainiumdynamics.tech>"
+homepage         = "https://github.com/Zainium-Dynamics/screenfetch"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["screenfetch"]
+tags             = ["cli", "system", "info"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

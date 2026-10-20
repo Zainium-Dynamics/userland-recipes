@@ -1,0 +1,20 @@
+maintainer="Ali Zain <alizain@zainiumdynamics.tech>"
+pkgname=screenfetch
+pkgver=0.1.0
+pkgrel=0
+source="https://github.com/Zainium-Dynamics/screenfetch/archive/8455b08689a191f2df86e2a06c4fcda7170fdab2.tar.gz"
+sha256sums="193b51242ab632ba8d5d4968fba2027c2b1ad7f5260d14930506236b6bc6ad44  8455b08689a191f2df86e2a06c4fcda7170fdab2.tar.gz"
+makedepends="cargo"
+
+build() {
+    cd screenfetch-*/
+    SCREENFETCH_DISTRO=zainium \
+    SCREENFETCH_LOGO=assets/logos/zainium_logo.svg \
+    SCREENFETCH_SHARE_DIR=/overlayer/syshub/share \
+    cargo build --release --target x86_64-unknown-linux-musl
+}
+
+package() {
+    cd screenfetch-*/
+    install -Dm755 target/x86_64-unknown-linux-musl/release/screenfetch "$PAYLOAD_DIR/bin/screenfetch"
+}
