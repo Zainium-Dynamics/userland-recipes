@@ -1,0 +1,36 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=gawk
+pkgver=5.4.1
+pkgrel=0
+source="https://ftp.gnu.org/gnu/gawk/gawk-$pkgver.tar.xz"
+sha256sums="07f6f7342b7febe4313fc2c2542ad93d64fe20ad8717200109f105a826f5fd37  gawk-$pkgver.tar.xz"
+
+# GNU awk, also installed as awk. The persistent memory allocator is off so
+# gawk keeps musl's malloc; readline (debugger only) and MPFR (-M) are left out.
+build() {
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --mandir=/overlayer/syshub/share/man \
+        --infodir=/overlayer/syshub/share/info \
+        --localstatedir=/overlayer/syshub/var \
+        --disable-nls \
+        --disable-pma \
+        --disable-mpfr \
+        --without-readline
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+    local root="$PAYLOAD_DIR/overlayer/syshub"
+    # install-exec-hook hard-links gawk-$pkgver to gawk; awk -> gawk is enough.
+    # gawkbug mails reports through /usr/lib/sendmail; info pages have no reader here
+    rm -rf "$root/bin/gawk-$pkgver" "$root/bin/gawkbug" "$root/share/man/man1/gawkbug.1" "$root/share/info"
+    # AWKPATH, extension and libexec paths for this prefix instead of upstream's /usr/local
+    sed -i -e 's#/usr/local/libexec/awk#/overlayer/syshub/libexec/awk#g' \
+        -e 's#/usr/local/share/awk#/overlayer/syshub/share/awk#g' \
+        -e 's#/usr/local/lib/gawk#/overlayer/syshub/lib/gawk#g' \
+        "$root/share/awk/ns_passwd.awk" "$root/share/man/man1/gawk.1"
+}
