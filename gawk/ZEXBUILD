@@ -1,0 +1,32 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=gawk
+pkgver=5.4.1
+pkgrel=0
+source="https://ftp.gnu.org/gnu/gawk/gawk-$pkgver.tar.xz"
+sha256sums="07f6f7342b7febe4313fc2c2542ad93d64fe20ad8717200109f105a826f5fd37  gawk-$pkgver.tar.xz"
+
+# GNU awk, also installed as awk. The persistent memory allocator is off so
+# gawk keeps musl's malloc; readline (debugger only) and MPFR (-M) are left out.
+build() {
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --mandir=/overlayer/syshub/share/man \
+        --infodir=/overlayer/syshub/share/info \
+        --localstatedir=/overlayer/syshub/var \
+        --disable-nls \
+        --disable-pma \
+        --disable-mpfr \
+        --without-readline
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+    local root="$PAYLOAD_DIR/overlayer/syshub"
+    # install-exec-hook hard-links gawk-$pkgver to gawk; awk -> gawk is enough
+    rm -f "$root/bin/gawk-$pkgver" "$root/share/info/dir"
+    # gawkbug starts with #!/bin/sh, which Zainium doesn't have
+    sed -i '1s|^#![[:space:]]*/bin/sh|#!/overlayer/syshub/bin/sh|' "$root/bin/gawkbug"
+}

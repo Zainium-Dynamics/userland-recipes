@@ -1,0 +1,34 @@
+[package]
+name             = "gawk"
+version          = "5.4.1"
+description      = "GNU awk — pattern scanning and text processing language (gawk, awk)"
+license          = "GPL-3.0-or-later"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://www.gnu.org/software/gawk/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["gawk", "awk"]
+tags             = ["utility", "cli", "text"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+etc     = "/overlayer/zexlib/union/etc"
+share   = "/overlayer/zexlib/union/share"
+var     = "/overlayer/zexlib/union/var"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
