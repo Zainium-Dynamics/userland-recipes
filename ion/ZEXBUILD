@@ -8,12 +8,15 @@ sha256sums="7c7f696060a82669cb9c73cf0ec1d07d4ffefbfd54fc60acad0179ca3f46716d  $p
 makedepends="cargo"
 
 build() {
-    cd ion-$pkgver
     patch -p1 < ../0001-zainium-paths.patch
+    cargo fetch --locked
+    sed -i \
+        -e 's/^\( *\)let ed = try!(Editor::new/\1let key_bindings = self.key_bindings;\n&/' \
+        -e 's/match self\.key_bindings {/match key_bindings {/' \
+        "${CARGO_HOME:-$HOME/.cargo}"/registry/src/*/liner-*/src/context.rs
     cargo build --release --target x86_64-unknown-linux-musl
 }
 
 package() {
-    cd ion-$pkgver
     install -Dm755 target/x86_64-unknown-linux-musl/release/ion "$PAYLOAD_DIR/bin/ion"
 }
