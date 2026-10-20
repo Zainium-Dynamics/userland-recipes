@@ -1,22 +1,20 @@
 # userland-recipes
 
-Community package recipes for Zainium OS userland — fork, add a recipe, open a pull request. Review *is* the PR review; once it's merged, CI builds it, packs it with [`substrate`](https://gitlab.com/alizain.arch/substrate), and publishes it to the package repository. No separate website upload/approval step.
+Community package recipes for the userland of Zainium OS, an immutable Linux distribution built on musl.
 
-Modeled on Alpine's [aports](https://gitlab.alpinelinux.org/alpine/aports) — a `ZEXBUILD` here plays the same role an `APKBUILD` plays there.
+Fork the repo, add a recipe and open a pull request. Once it is merged, CI builds the package, packs it with [substrate](https://crates.io/crates/substrate-zainium) and publishes it to the package repository. A `ZEXBUILD` plays the role an `APKBUILD` plays in Alpine's aports.
 
 ## Adding a package
 
 1. Fork this repo.
-2. Create `<pkgname>/ZEXBUILD` (see format below) and `<pkgname>/manifest.toml`.
-3. If you need to patch upstream source, drop `*.patch` files flat next to `ZEXBUILD` (see `htop/` for the layout — not a subfolder, matching aports convention) and apply them explicitly inside `ZEXBUILD`.
-4. Open a pull request. CI runs a build-only check automatically.
-5. On merge, CI builds, packs, and publishes for real.
+2. Create `<pkgname>/ZEXBUILD` and `<pkgname>/manifest.toml`. See `htop/` for a complete example.
+3. Put any `*.patch` files next to `ZEXBUILD` and apply them inside it.
+4. Open a pull request. CI runs a build-only check.
+5. After the merge, CI builds and publishes the package.
 
-See `htop/` for a complete working example.
+## ZEXBUILD
 
-## `ZEXBUILD` format
-
-A plain POSIX shell script, sourced by CI — not parsed by `substrate` or anything else. Two required functions:
+A POSIX shell script sourced by CI.
 
 ```sh
 maintainer="Your Name <you@example.com>"
@@ -26,122 +24,59 @@ pkgrel=0
 source="https://github.com/htop-dev/htop/releases/download/$pkgver/htop-$pkgver.tar.xz"
 sha256sums="<hash>  htop-$pkgver.tar.xz"
 
-# Runs in the extracted source tree. Produce a normal build. See "Why
-# --prefix=/overlayer/syshub" below — this is correct even though the
-# package itself is userland (_syshub = false in manifest.toml).
 build() {
     ./configure \
         --host="$CHOST" \
         --prefix=/overlayer/syshub \
         --sysconfdir=/overlayer/syshub/etc \
-        --mandir=/overlayer/syshub/share/man \
-        --infodir=/overlayer/syshub/share/info \
         --localstatedir=/overlayer/syshub/var
     make
 }
 
-# Runs after build(). Stage installed files into $PAYLOAD_DIR — this
-# becomes payload/ in the final .zex, laid out exactly as manifest.toml's
-# [install] table expects (payload/bin -> [install].bin, etc.), same
-# contract `substrate pack` already reads today.
 package() {
     make DESTDIR="$PAYLOAD_DIR" install
 }
 ```
 
-| Variable | Meaning |
-|---|---|
-| `maintainer` | Who maintains *this recipe* (not necessarily upstream) — `Name <email>`, same convention as Alpine's APKBUILD. |
-| `pkgname` | Must match `manifest.toml`'s `package.name`. |
-| `pkgver` | Upstream version. |
-| `pkgrel` | Recipe revision — bump on a rebuild with no upstream version change. |
-| `subpackages` | Optional, space-separated. **Only a `-dev` split is a thing here** — no `-doc`/`-doc`-style subpackages. Use it for a *library* package that ships headers/static libs/`.so` symlinks a `-dev` package would carry, not for splitting out man pages/docs. |
-| `source` | Whitespace/newline-separated list of URLs and/or local filenames (patches, install scripts) to fetch/stage before `build()`. |
-| `sha256sums` | One `<hash>  <filename>` line per URL entry in `source` — CI verifies before building. |
-| `$CHOST` | Set by CI to the target triple (currently `x86_64-zainium-linux-musl`). |
-| `$PAYLOAD_DIR` | Set by CI to the main package's staging `payload/`. |
-| `$SUBPKG_PAYLOAD_DIR` | Set by CI, only for the `-dev` subpackage function call, to its own staging `payload/`. |
+- `maintainer`: who maintains the recipe, as `Name <email>`.
+- `pkgname`: must match `package.name` in `manifest.toml`.
+- `pkgver`, `pkgrel`: upstream version and recipe revision.
+- `subpackages`: optional. Only a `-dev` split is supported.
+- `source`, `sha256sums`: URLs and local files to fetch, and a checksum line per URL.
+- `$CHOST`: target triple, `x86_64-zainium-linux-musl`.
+- `$PAYLOAD_DIR`: staging directory of the package.
+- `$SUBPKG_PAYLOAD_DIR`: staging directory of the `-dev` subpackage.
 
-`htop` above has no meaningful `-dev` split (it's an end-user binary, no library to build against), so it doesn't use `subpackages` at all. A library package would:
+A library can ship a `-dev` package with a `dev()` function that moves headers, `.a` files and `.so` symlinks into `$SUBPKG_PAYLOAD_DIR`. It needs a matching `<name>-dev.manifest.toml`.
 
-```sh
-pkgname=libfoo
-subpackages="$pkgname-dev"
+`substrate pack` patches ELF interpreters and RPATHs and enforces the layout policy after `package()`. Packages that are already linked for the target can set `native = true` in `manifest.toml` to skip this.
 
-package() {
-    make DESTDIR="$PAYLOAD_DIR" install
-}
+## Install prefix
 
-# CI runs this after package() — move headers/.so-symlinks/pkgconfig
-# files OUT of $PAYLOAD_DIR into $SUBPKG_PAYLOAD_DIR, matching a
-# libfoo-dev.manifest.toml next to the main manifest.toml. Two .zex
-# outputs from one recipe: libfoo (runtime .so) and libfoo-dev (headers).
-dev() {
-    mkdir -p "$SUBPKG_PAYLOAD_DIR"/include "$SUBPKG_PAYLOAD_DIR"/lib
-    mv "$PAYLOAD_DIR"/include/* "$SUBPKG_PAYLOAD_DIR"/include/
-    mv "$PAYLOAD_DIR"/lib/*.a "$PAYLOAD_DIR"/lib/*.so "$SUBPKG_PAYLOAD_DIR"/lib/ 2>/dev/null || true
-}
-```
+Always build with `--prefix=/overlayer/syshub`, even for userland packages.
 
-Nothing about interpreter paths or install prefixes needs patching by hand here — `substrate pack` (the last thing CI runs, once per package *and* once per subpackage, after `package()`/the subpackage functions) patches ELF interpreters/RPATHs and enforces the layout policy automatically. Toolchain/self-hosting packages that are already correctly linked for the target can opt out with `native = true` in `manifest.toml`'s `[package]` table.
+`/overlayer/syshub` is the merged view of the immutable base and the userland layer, so it is the only path a running program ever sees. The `_syshub = false` flag in `manifest.toml` only decides which layer the files are written to.
 
-### Why `--prefix=/overlayer/syshub` even for userland packages
-
-Zainium's root is an OverlayFS: `/overlayer/syshub` is the **lowerdir** (the immutable base OS) and `/overlayer/zexlib/union` is the **upperdir** (where userland packages actually get written to disk). Once mounted, the two merge into one filesystem view — and the path that view is mounted at is `/overlayer/syshub`. A running program never sees `/overlayer/zexlib/union` at all; it only ever sees the merged result at `/overlayer/syshub`, regardless of which layer a given file physically lives on.
-
-That means whatever path gets baked into a binary at build time (via `--prefix`/`--sysconfdir`/`--mandir`/`--infodir`/`--localstatedir` — anything the build system compiles in for the program to find its own files later) has to be the **runtime-visible merged path**, `/overlayer/syshub`, even for a userland package. This is separate from `manifest.toml`'s `_syshub` flag, which stays `false` for userland packages — that flag tells `substrate`/the installer which physical layer to *write* the files to (and drives its own RPATH computation), not what path the program itself was built expecting.
-
-### The dynamic linker (interpreter) path
-
-Every dynamically-linked ELF binary's `PT_INTERP` — the loader the kernel runs first — is:
-
-```
-/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1
-```
-
-Always this, regardless of `_syshub`, same reasoning as above: the loader is one shared system component every binary needs to find at the same runtime-visible path. You don't need to set this yourself — `substrate pack` patches every payload binary's interpreter to this automatically (`elfpatch.rs`). It's documented here so it's not a mystery if you ever inspect a built binary directly (`readelf -l` / `patchelf --print-interpreter`).
-
-#### Baking it in yourself (optional, for `configure`-less builds)
-
-`elfpatch.rs` is enough for any recipe that runs `./configure` — which is every recipe in this repo so far except `git` (no pre-generated `./configure`, driven straight through its Makefile via a hand-written `config.mak` instead, see `git/ZEXBUILD`). For that kind of Makefile-only build it's worth setting the same three runtime paths directly in `build()` too, so the binary is already correct before `substrate pack` ever touches it — `elfpatch` then just confirms it, it isn't doing the only correcting pass:
+Every binary uses `/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1` as its interpreter. `substrate pack` sets it, so recipes normally do nothing. For Makefile-only builds, you can set it yourself:
 
 ```make
-EXTRA_CPPFLAGS += -DSHELL_PATH='"/overlayer/syshub/bin/bash"'
-BASIC_LDFLAGS  += -Wl,-dynamic-linker,/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1
-BASIC_LDFLAGS  += -Wl,-rpath,/overlayer/syshub/lib
-BASIC_LDFLAGS  += -Wl,-rpath,/overlayer/syshub/x86_64-zainium-linux-musl/lib
+BASIC_LDFLAGS += -Wl,-dynamic-linker,/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1
+BASIC_LDFLAGS += -Wl,-rpath,/overlayer/syshub/lib
 ```
 
-Same three things `--host="$CHOST"`-driven `./configure` builds get from `elfpatch` after the fact: interpreter, rpath, and the runtime `SHELL_PATH` string compiled into the binary (distinct from the build-time `SHELL_PATH`/`TEST_SHELL_PATH` `make` itself uses to run its own recipes on the CI host — see `git/ZEXBUILD` for both side by side).
+## Rust packages
 
-### Rust packages — target spec
+`targets/x86_64-zainium-linux-musl.json` is the custom Rust target for Zainium's musl userland. Build against it instead of the host target.
 
-`targets/x86_64-zainium-linux-musl.json` in this repo is the custom Rust target spec for Zainium's musl userland (matches the one `substrate`/`zex-server` build against). A Rust `ZEXBUILD` should build against it explicitly, not the host's default target:
+## manifest.toml
 
-```sh
-build() {
-    cargo build --release --target="$RECIPE_ROOT/../targets/x86_64-zainium-linux-musl.json"
-}
-
-package() {
-    install -Dm755 target/x86_64-zainium-linux-musl/release/"$pkgname" "$PAYLOAD_DIR"/bin/"$pkgname"
-}
-```
-
-(Exact `$RECIPE_ROOT`-style variable name TBD once CI actually sets it up for Rust builds — not wired yet, this documents the intent.)
-
-## `manifest.toml`
-
-Same shape `substrate pack` has always read — see `htop/manifest.toml` for a real example, or `substrate`'s own `USAGE.md` for the full field reference. A `-dev` subpackage's `manifest.toml` is a completely normal one — `package.name` is the subpackage's own name (e.g. `libfoo-dev`), not the parent's.
+The same format `substrate pack` has always read. See `htop/manifest.toml`. A `-dev` subpackage has its own manifest whose `package.name` is the subpackage name.
 
 ## CI
 
-Runs on GitHub Actions (`.github/workflows/ci.yml`) — free/unlimited minutes on GitHub-hosted runners for a public repo, so no shared-runner budget to worry about. Two jobs:
+GitHub Actions workflow `.github/workflows/ci.yml` has two jobs:
 
-- **`check`** — every pull request, build-only, no publish.
-- **`release`** — every push to `main` (i.e. every merged PR), builds and publishes for real.
+- `check` runs on every pull request and only builds.
+- `release` runs on every push to `main`, then builds and publishes.
 
-Both only touch packages whose directory actually changed (`ci/changed-packages.sh`) — this repo can hold thousands of recipes, no reason to rebuild the rest on every run.
-
-`substrate` is installed straight from crates.io (`cargo install substrate-zainium --locked`). `zex-ports` isn't published yet, so `release` builds it from source each run (`gitlab.com/alizain.arch/zex-port` — that tool stays on GitLab, only the recipe repos moved here).
-
+Only packages whose directory changed are built.
