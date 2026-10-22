@@ -46,12 +46,16 @@
  IOSchedulingClass=idle
 --- a/triggers/gtk-icon-cache.trigger
 +++ b/triggers/gtk-icon-cache.trigger
-@@ -1,7 +1,7 @@
+@@ -1,7 +1,11 @@
  #!/bin/sh
  
++# the theme index is what makes the exported icons visible; the cache only speeds lookups up
++if test -d "$1/exports/share/icons/hicolor"; then
++    cp /overlayer/syshub/share/icons/hicolor/index.theme "$1/exports/share/icons/hicolor/"
++fi
++
  if command -v gtk-update-icon-cache >/dev/null && test -d "$1/exports/share/icons/hicolor"; then
 -    cp /usr/share/icons/hicolor/index.theme "$1/exports/share/icons/hicolor/"
-+    cp /overlayer/syshub/share/icons/hicolor/index.theme "$1/exports/share/icons/hicolor/"
      for dir in "$1"/exports/share/icons/*; do
          if test -f "$dir/index.theme"; then
              if ! gtk-update-icon-cache --quiet "$dir"; then
