@@ -32,9 +32,9 @@ build() {
     local triple=x86_64-zainium-linux-musl
     local musl_root="$sysroot/$triple"
     local gccver
-    gccver="$(ls "$musl_root/lib/gcc/$triple" | head -1)"
-    local gcc_prefix="$musl_root/lib/gcc/$triple/$gccver/"
-    local cxx_inc="-I$musl_root/include/c++/$gccver -I$musl_root/include/c++/$gccver/$triple"
+    gccver="$(ls "$sysroot/lib/gcc/$triple" | head -1)"
+    local gcc_prefix="$sysroot/lib/gcc/$triple/$gccver/"
+    local cxx_inc="-I$sysroot/include/c++/$gccver -I$sysroot/include/c++/$gccver/$triple"
 
     cat > bootstrap.toml <<EOF
 change-id = 154508
