@@ -1,6 +1,6 @@
 [package]
 name             = "rustc"
-version          = "1.99.1"
+version          = "1.96.1"
 description      = "Rust compiler, standard library, rustdoc, clippy, rustfmt and rust-analyzer with the x86_64-zainium-linux-musl target"
 license          = "MIT OR Apache-2.0"
 maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
