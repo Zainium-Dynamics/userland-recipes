@@ -11,8 +11,8 @@ build() {
     local sysroot=/overlayer/syshub
     local triple=x86_64-zainium-linux-musl
     local gccver
-    gccver="$(ls "$sysroot/$triple/lib/gcc/$triple" | head -1)"
-    local gcc_prefix="$sysroot/$triple/lib/gcc/$triple/$gccver/"
+    gccver="$(ls "$sysroot/lib/gcc/$triple" | head -1)"
+    local gcc_prefix="$sysroot/lib/gcc/$triple/$gccver/"
     local gcc="$sysroot/bin/$triple-gcc"
 
     for pair in "libstdc++.so.6:libstdc++.so.6.0.*" "libstdc++.so:libstdc++.so.6.0.*" "libatomic.so.1:libatomic.so.1.*"; do
@@ -23,11 +23,6 @@ build() {
     done
 
     cd "$SRCDIR/cargo-$pkgver"
-    sed -i 's#\.unwrap_or_else(|| gctx\.home()\.clone()))#.unwrap_or_else(|| Filesystem::new(PathBuf::from("/overlayer/zexlib/union"))))#' src/cargo/ops/common_for_install_and_uninstall.rs
-    grep -q '/overlayer/zexlib/union' src/cargo/ops/common_for_install_and_uninstall.rs
-
-    grep -rl 'multiplexing.unwrap_or(true)' src | xargs sed -i 's/multiplexing\.unwrap_or(true)/multiplexing.unwrap_or(false)/'
-    ! grep -rq 'multiplexing.unwrap_or(true)' src
 
     export LD_LIBRARY_PATH=/usr/lib:/lib
     rustup-init -y -q --default-toolchain "1.99.1" --profile minimal
