@@ -18,7 +18,8 @@ ed25519_pubkey   = ""
 requires_syshub  = ""
 depends          = ["musl", "glib", "libostree", "appstream", "libarchive", "curl", "libxml2",
                     "libcap", "libseccomp", "zstd", "polkit", "gdk-pixbuf", "libjpeg-turbo", "systemd",
-                    "gnupg", "gpgme", "json-glib", "fuse3", "bzip2", "lz4", "libfyaml", "libxmlb"]
+                    "gnupg", "gpgme", "json-glib", "fuse3", "bzip2", "lz4", "libfyaml", "libxmlb",
+                    "gtk-update-icon-cache"]
 provides         = ["flatpak"]
 tags             = ["desktop", "sandboxing", "apps"]
 

@@ -1,0 +1,33 @@
+# manifest.toml — gtk-update-icon-cache
+# See substrate's USAGE.md for the full field reference.
+
+[package]
+name             = "gtk-update-icon-cache"
+version          = "3.24.42"
+description      = "Icon theme caching utility"
+license          = "LGPL-2.1-or-later"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://gitlab.gnome.org/Community/gentoo/gtk-update-icon-cache"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "glib", "gdk-pixbuf"]
+provides         = ["gtk-update-icon-cache"]
+tags             = ["utility", "gnome", "icons"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

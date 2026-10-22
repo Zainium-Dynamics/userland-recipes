@@ -1,0 +1,30 @@
+maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
+pkgname=gtk-update-icon-cache
+pkgver=3.24.42
+pkgrel=0
+# the tool on its own, split out of GTK 3 (Gentoo's GNOME team keeps it on GNOME GitLab)
+source="https://gitlab.gnome.org/Community/gentoo/gtk-update-icon-cache/-/archive/$pkgver/gtk-update-icon-cache-$pkgver.tar.gz"
+sha256sums="5245a3765560443decdce5fef05142ea6f69d0d22bc6852d83a7b584b7895d9e  gtk-update-icon-cache-$pkgver.tar.gz"
+makedepends="meson gettext"
+needs_toolchain="glib glib-dev pcre2 pcre2-dev libffi libffi-dev zlib zlib-dev gettext gettext-dev gdk-pixbuf gdk-pixbuf-dev libpng libpng-dev libjpeg-turbo libjpeg-turbo-dev"
+
+build() {
+    export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+    meson setup builddir \
+        --wrap-mode=nofallback \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        -Dman-pages=false
+    ninja -C builddir
+    DESTDIR="$(pwd)/_zexbuild-install" ninja -C builddir install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/bin"
+    cp -a "$inst"/bin/gtk-update-icon-cache "$PAYLOAD_DIR/bin/"
+    if [ -d "$inst/share/locale" ]; then
+        mkdir -p "$PAYLOAD_DIR/share"
+        cp -a "$inst"/share/locale "$PAYLOAD_DIR/share/"
+    fi
+}
