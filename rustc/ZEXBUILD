@@ -1,10 +1,10 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=rustc
-pkgver=1.96.1
-pkgrel=1
+pkgver=1.99.1
+pkgrel=0
 source="https://static.rust-lang.org/dist/rustc-$pkgver-src.tar.gz
 0001-zainium-targets.patch"
-sha256sums="d0a9b5198c41868538ae12af28064163551d06dcceab11ef0b1bc9aa6e98b7a7  rustc-$pkgver-src.tar.gz"
+sha256sums="db56bbc64db491ceda6b78a2811a6d121c639338906fd944f720289cbd02245c  rustc-$pkgver-src.tar.gz"
 makedepends="build-base python3 ninja git perl make pkgconf"
 needs_toolchain="musl gcc-musl binutils cmake curl curl-dev pkgconf linux-headers llvm llvm-dev xz xz-dev zlib zlib-dev libffi libffi-dev zstd zstd-dev libxml2 libxml2-dev ncurses ncurses-dev"
 
@@ -32,9 +32,9 @@ build() {
     local triple=x86_64-zainium-linux-musl
     local musl_root="$sysroot/$triple"
     local gccver
-    gccver="$(ls "$musl_root/lib/gcc/$triple" | head -1)"
-    local gcc_prefix="$musl_root/lib/gcc/$triple/$gccver/"
-    local cxx_inc="-I$musl_root/include/c++/$gccver -I$musl_root/include/c++/$gccver/$triple"
+    gccver="$(ls "$sysroot/lib/gcc/$triple" | head -1)"
+    local gcc_prefix="$sysroot/lib/gcc/$triple/$gccver/"
+    local cxx_inc="-I$sysroot/include/c++/$gccver -I$sysroot/include/c++/$gccver/$triple"
 
     cat > bootstrap.toml <<EOF
 change-id = 154508
