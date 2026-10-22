@@ -1,6 +1,6 @@
 [package]
 name             = "cargo"
-version          = "0.100.0"
+version          = "0.97.2"
 description      = "Rust package manager and build tool"
 license          = "MIT OR Apache-2.0"
 maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
