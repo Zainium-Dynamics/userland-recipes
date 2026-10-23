@@ -1,6 +1,6 @@
 [package]
 name             = "cargo"
-version          = "0.97.2"
+version          = "0.100.0"
 description      = "Rust package manager and build tool"
 license          = "MIT OR Apache-2.0"
 maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
@@ -19,7 +19,6 @@ tags             = ["development", "rust"]
 
 [install]
 bin     = "/overlayer/zexlib/union/bin"
-share   = "/overlayer/zexlib/union/share"
 _syshub = false
 
 [remove]
