@@ -2,11 +2,12 @@ diff --git a/compiler/rustc_target/src/spec/mod.rs b/compiler/rustc_target/src/s
 index 0601f9d..d4167d8 100644
 --- a/compiler/rustc_target/src/spec/mod.rs
 +++ b/compiler/rustc_target/src/spec/mod.rs
-@@ -1492,8 +1492,10 @@ supported_targets! {
+@@ -1489,9 +1489,11 @@ supported_targets! {
      ("armv7-unknown-linux-musleabihf", armv7_unknown_linux_musleabihf),
      ("aarch64-unknown-linux-gnu", aarch64_unknown_linux_gnu),
      ("aarch64-unknown-linux-musl", aarch64_unknown_linux_musl),
 +    ("aarch64-zainium-linux-musl", aarch64_zainium_linux_musl),
+     ("aarch64-unknown-linux-pauthtest", aarch64_unknown_linux_pauthtest),
      ("aarch64_be-unknown-linux-musl", aarch64_be_unknown_linux_musl),
      ("x86_64-unknown-linux-musl", x86_64_unknown_linux_musl),
 +    ("x86_64-zainium-linux-musl", x86_64_zainium_linux_musl),
