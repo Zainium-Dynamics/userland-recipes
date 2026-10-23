@@ -19,7 +19,6 @@ tags             = ["development", "rust"]
 
 [install]
 bin     = "/overlayer/zexlib/union/bin"
-share   = "/overlayer/zexlib/union/share"
 _syshub = false
 
 [remove]
