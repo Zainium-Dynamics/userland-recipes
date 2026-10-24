@@ -5,7 +5,7 @@ pkgrel=0
 source="https://github.com/rust-lang/cargo/archive/refs/tags/$pkgver.tar.gz"
 sha256sums=""
 makedepends="build-base rustup perl make"
-needs_toolchain="musl gcc-musl binutils rustc cmake curl curl-dev pkgconf linux-headers llvm llvm-dev openssl openssl-dev xz xz-dev zlib zlib-dev libffi libffi-dev zstd zstd-dev libxml2 libxml2-dev ncurses ncurses-dev"
+needs_toolchain="musl gcc-musl binutils rustc cmake curl curl-dev nghttp2 nghttp2-dev pkgconf linux-headers llvm llvm-dev openssl openssl-dev xz xz-dev zlib zlib-dev libffi libffi-dev zstd zstd-dev libxml2 libxml2-dev ncurses ncurses-dev"
 
 build() {
     local sysroot=/overlayer/syshub
