@@ -1,7 +1,7 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=cargo
 pkgver=0.100.0
-pkgrel=0
+pkgrel=1
 source="https://github.com/rust-lang/cargo/archive/refs/tags/$pkgver.tar.gz"
 sha256sums=""
 makedepends="build-base rustup perl make"
