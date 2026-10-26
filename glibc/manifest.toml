@@ -1,7 +1,7 @@
 [package]
 name             = "glibc"
 version          = "2.44"
-description      = "GNU C Library compatibility layer"
+description      = "GNU C Library in its own directory: glibc's loader, libraries, locales and tools"
 license          = "LGPL-2.1-or-later"
 maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
 homepage         = "https://www.gnu.org/software/libc/"
@@ -18,9 +18,7 @@ provides         = ["glibc"]
 tags             = ["compat", "library"]
 
 [install]
-lib     = "/overlayer/zexlib/union/lib"
-bin     = "/overlayer/zexlib/union/bin"
-etc     = "/overlayer/zexlib/union/etc"
+x86_64-zainium-linux-gnu = "/overlayer/zexlib/union/x86_64-zainium-linux-gnu"
 _syshub = false
 
 [remove]

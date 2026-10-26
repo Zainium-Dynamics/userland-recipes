@@ -1,0 +1,31 @@
+[package]
+name             = "glibc-toolchain"
+version          = "2.44"
+description      = "gcc and g++ for glibc programs: x86_64-zainium-linux-gnu-gcc / -g++"
+license          = "GPL-3.0-or-later WITH GCC-exception-3.1"
+maintainer       = "Zainium Dynamics <alizain@zainiumdynamics.tech>"
+homepage         = "https://gcc.gnu.org/"
+build_type       = "dynamic"
+libc_target      = "gnu"
+native           = true
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+depends          = ["glibc-dev", "binutils"]
+provides         = ["glibc-toolchain", "x86_64-zainium-linux-gnu-gcc", "x86_64-zainium-linux-gnu-g++"]
+tags             = ["compat", "dev", "toolchain", "compiler"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
