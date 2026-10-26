@@ -1,0 +1,372 @@
+Zainium has no /etc, /bin, /usr or /var at the root: the system's files are under
+/overlayer/syshub. glibc's compiled-in paths point there (the mount table is the
+kernel's /proc/self/mounts); glibc's own loader files stay in its directory,
+/overlayer/zexlib/union/x86_64-zainium-linux-gnu. A diff against pristine glibc 2.44.
+
+--- a/elf/rtld.c
++++ b/elf/rtld.c
+@@ -1834,7 +1834,7 @@
+      open().  So we do this first.  If it succeeds we do almost twice
+      the work but this does not matter, since it is not for production
+      use.  */
+-  static const char preload_file[] = "/etc/ld.so.preload";
++  static const char preload_file[] = "/overlayer/zexlib/union/x86_64-zainium-linux-gnu/etc/ld.so.preload";
+   if (__glibc_unlikely (__access (preload_file, R_OK) == 0))
+     {
+       /* Read the contents of the file.  */
+--- a/elf/sprof.c
++++ b/elf/sprof.c
+@@ -643,7 +643,7 @@
+       *++cp = '\0';
+ 
+       /* First add the debuginfo file name only.  */
+-      static const char usrlibdebug[]= "/usr/lib/debug/";
++      static const char usrlibdebug[]= "/overlayer/syshub/lib/debug/";
+       char *workbuf = (char *) alloca (sizeof (usrlibdebug)
+ 				       + (cp - realname)
+ 				       + strlen (debuginfo_fname));
+@@ -804,8 +804,8 @@
+       /* A file with the given name does not exist in the current
+ 	 directory, try it in the default location where the profiling
+ 	 files are created.  */
+-      ext_name = (char *) alloca (strlen (name) + sizeof "/var/tmp/");
+-      stpcpy (stpcpy (ext_name, "/var/tmp/"), name);
++      ext_name = (char *) alloca (strlen (name) + sizeof "/overlayer/syshub/var/tmp/");
++      stpcpy (stpcpy (ext_name, "/overlayer/syshub/var/tmp/"), name);
+       name = ext_name;
+ 
+       fd = open (ext_name, O_RDONLY);
+--- a/hesiod/hesiod.c
++++ b/hesiod/hesiod.c
+@@ -60,7 +60,7 @@
+ #include "hesiod.h"
+ #include "hesiod_p.h"
+ 
+-#define _PATH_HESIOD_CONF "/etc/hesiod.conf"
++#define _PATH_HESIOD_CONF "/overlayer/syshub/etc/hesiod.conf"
+ 
+ /* Forward */
+ 
+--- a/misc/fstab.h
++++ b/misc/fstab.h
+@@ -45,8 +45,8 @@
+  * if type is "rq", then use concatenation of fs_file and "quotas" to locate
+  * quota file.
+  */
+-#define	_PATH_FSTAB	"/etc/fstab"
+-#define	FSTAB		"/etc/fstab"	/* deprecated */
++#define	_PATH_FSTAB	"/overlayer/syshub/etc/fstab"
++#define	FSTAB		"/overlayer/syshub/etc/fstab"	/* deprecated */
+ 
+ #define	FSTAB_RW	"rw"		/* read/write device */
+ #define	FSTAB_RQ	"rq"		/* read/write with quotas */
+--- a/misc/ttyent.h
++++ b/misc/ttyent.h
+@@ -34,7 +34,7 @@
+ 
+ #include <features.h>
+ 
+-#define	_PATH_TTYS	"/etc/ttys"
++#define	_PATH_TTYS	"/overlayer/syshub/etc/ttys"
+ 
+ #define	_TTYS_OFF	"off"
+ #define	_TTYS_ON	"on"
+--- a/nscd/nscd-client.h
++++ b/nscd/nscd-client.h
+@@ -41,7 +41,7 @@
+ #define _PATH_NSCDSOCKET "/var/run/nscd/socket"
+ 
+ /* Path for the configuration file.  */
+-#define _PATH_NSCDCONF	 "/etc/nscd.conf"
++#define _PATH_NSCDCONF	 "/overlayer/syshub/etc/nscd.conf"
+ 
+ /* Maximum allowed length for the key.  */
+ #define MAXKEYLEN 1024
+--- a/nss/getaddrinfo.c
++++ b/nss/getaddrinfo.c
+@@ -1723,7 +1723,7 @@
+ 
+ 
+ /* Name of the config file for RFC 3484 sorting (for now).  */
+-#define GAICONF_FNAME "/etc/gai.conf"
++#define GAICONF_FNAME "/overlayer/syshub/etc/gai.conf"
+ 
+ 
+ /* Non-zero if we are supposed to reload the config file automatically
+--- a/nss/lckpwdf.c
++++ b/nss/lckpwdf.c
+@@ -29,7 +29,7 @@
+ 
+ 
+ /* Name of the lock file.  */
+-#define PWD_LOCKFILE "/etc/.pwd.lock"
++#define PWD_LOCKFILE "/overlayer/syshub/etc/.pwd.lock"
+ 
+ /* How long to wait for getting the lock before returning with an
+    error.  */
+--- a/nss/nss_compat/compat-grp.c
++++ b/nss/nss_compat/compat-grp.c
+@@ -108,7 +108,7 @@
+ 
+   if (ent->stream == NULL)
+     {
+-      ent->stream = __nss_files_fopen ("/etc/group");
++      ent->stream = __nss_files_fopen ("/overlayer/syshub/etc/group");
+ 
+       if (ent->stream == NULL)
+ 	status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
+--- a/nss/nss_compat/compat-initgroups.c
++++ b/nss/nss_compat/compat-initgroups.c
+@@ -122,7 +122,7 @@
+   else
+     ent->blacklist.current = 0;
+ 
+-  ent->stream = __nss_files_fopen ("/etc/group");
++  ent->stream = __nss_files_fopen ("/overlayer/syshub/etc/group");
+ 
+   if (ent->stream == NULL)
+     status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
+--- a/nss/nss_compat/compat-pwd.c
++++ b/nss/nss_compat/compat-pwd.c
+@@ -223,7 +223,7 @@
+ 
+   if (ent->stream == NULL)
+     {
+-      ent->stream = __nss_files_fopen ("/etc/passwd");
++      ent->stream = __nss_files_fopen ("/overlayer/syshub/etc/passwd");
+ 
+       if (ent->stream == NULL)
+ 	status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
+--- a/nss/nss_compat/compat-spwd.c
++++ b/nss/nss_compat/compat-spwd.c
+@@ -178,7 +178,7 @@
+ 
+   if (ent->stream == NULL)
+     {
+-      ent->stream = __nss_files_fopen ("/etc/shadow");
++      ent->stream = __nss_files_fopen ("/overlayer/syshub/etc/shadow");
+ 
+       if (ent->stream == NULL)
+ 	status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
+--- a/nss/nss_files/files-alias.c
++++ b/nss/nss_files/files-alias.c
+@@ -42,7 +42,7 @@
+ 
+   if (*stream == NULL)
+     {
+-      *stream = __nss_files_fopen ("/etc/aliases");
++      *stream = __nss_files_fopen ("/overlayer/syshub/etc/aliases");
+ 
+       if (*stream == NULL)
+ 	status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
+@@ -58,7 +58,7 @@
+ enum nss_status
+ _nss_files_setaliasent (void)
+ {
+-  return __nss_files_data_setent (nss_file_aliasent, "/etc/aliases");
++  return __nss_files_data_setent (nss_file_aliasent, "/overlayer/syshub/etc/aliases");
+ }
+ libc_hidden_def (_nss_files_setaliasent)
+ 
+@@ -338,7 +338,7 @@
+ 
+   struct nss_files_per_file_data *data;
+   enum nss_status status = __nss_files_data_open (&data, nss_file_aliasent,
+-						  "/etc/aliases", errnop, NULL);
++						  "/overlayer/syshub/etc/aliases", errnop, NULL);
+   if (status != NSS_STATUS_SUCCESS)
+     return status;
+ 
+--- a/nss/nss_files/files-init.c
++++ b/nss/nss_files/files-init.c
+@@ -41,12 +41,12 @@
+ void
+ _nss_files_init (void (*cb) (size_t, struct traced_file *))
+ {
+-  register_file (cb, pwddb, "/etc/passwd", 0);
+-  register_file (cb, grpdb, "/etc/group", 0);
+-  register_file (cb, hstdb, "/etc/hosts", 0);
+-  register_file (cb, hstdb, "/etc/resolv.conf", 1);
+-  register_file (cb, servdb, "/etc/services", 0);
+-  register_file (cb, netgrdb, "/etc/netgroup", 0);
++  register_file (cb, pwddb, "/overlayer/syshub/etc/passwd", 0);
++  register_file (cb, grpdb, "/overlayer/syshub/etc/group", 0);
++  register_file (cb, hstdb, "/overlayer/syshub/etc/hosts", 0);
++  register_file (cb, hstdb, "/overlayer/syshub/etc/resolv.conf", 1);
++  register_file (cb, servdb, "/overlayer/syshub/etc/services", 0);
++  register_file (cb, netgrdb, "/overlayer/syshub/etc/netgroup", 0);
+ }
+ libc_hidden_def (_nss_files_init)
+ 
+--- a/nss/nss_files/files-initgroups.c
++++ b/nss/nss_files/files-initgroups.c
+@@ -33,7 +33,7 @@
+ 			   long int *size, gid_t **groupsp, long int limit,
+ 			   int *errnop)
+ {
+-  FILE *stream = __nss_files_fopen ("/etc/group");
++  FILE *stream = __nss_files_fopen ("/overlayer/syshub/etc/group");
+   if (stream == NULL)
+     {
+       *errnop = errno;
+--- a/nss/nss_files/files-netgrp.c
++++ b/nss/nss_files/files-netgrp.c
+@@ -27,7 +27,7 @@
+ #include "netgroup.h"
+ #include <nss_files.h>
+ 
+-#define DATAFILE	"/etc/netgroup"
++#define DATAFILE	"/overlayer/syshub/etc/netgroup"
+ 
+ libc_hidden_proto (_nss_files_endnetgrent)
+ 
+--- a/nss/nss_files/files-XXX.c
++++ b/nss/nss_files/files-XXX.c
+@@ -39,7 +39,7 @@
+ 
+ #define ENTNAME_r	CONCAT(ENTNAME,_r)
+ 
+-#define DATAFILE	"/etc/" DATABASE
++#define DATAFILE	"/overlayer/syshub/etc/" DATABASE
+ 
+ #ifdef NEED_H_ERRNO
+ # include <netdb.h>
+--- a/resolv/netdb.h
++++ b/resolv/netdb.h
+@@ -40,12 +40,12 @@
+ #include <bits/netdb.h>
+ 
+ /* Absolute file name for network data base files.  */
+-#define	_PATH_HEQUIV		"/etc/hosts.equiv"
+-#define	_PATH_HOSTS		"/etc/hosts"
+-#define	_PATH_NETWORKS		"/etc/networks"
+-#define	_PATH_NSSWITCH_CONF	"/etc/nsswitch.conf"
+-#define	_PATH_PROTOCOLS		"/etc/protocols"
+-#define	_PATH_SERVICES		"/etc/services"
++#define	_PATH_HEQUIV		"/overlayer/syshub/etc/hosts.equiv"
++#define	_PATH_HOSTS		"/overlayer/syshub/etc/hosts"
++#define	_PATH_NETWORKS		"/overlayer/syshub/etc/networks"
++#define	_PATH_NSSWITCH_CONF	"/overlayer/syshub/etc/nsswitch.conf"
++#define	_PATH_PROTOCOLS		"/overlayer/syshub/etc/protocols"
++#define	_PATH_SERVICES		"/overlayer/syshub/etc/services"
+ 
+ 
+ __BEGIN_DECLS
+--- a/resolv/res_hconf.c
++++ b/resolv/res_hconf.c
+@@ -48,7 +48,7 @@
+ # define fgets_unlocked __fgets_unlocked
+ #endif
+ 
+-#define _PATH_HOSTCONF	"/etc/host.conf"
++#define _PATH_HOSTCONF	"/overlayer/syshub/etc/host.conf"
+ 
+ /* Environment vars that all user to override default behavior:  */
+ #define ENV_HOSTCONF	"RESOLV_HOST_CONF"
+--- a/resolv/resolv.h
++++ b/resolv/resolv.h
+@@ -91,7 +91,7 @@
+  */
+ 
+ #ifndef _PATH_RESCONF
+-#define _PATH_RESCONF        "/etc/resolv.conf"
++#define _PATH_RESCONF        "/overlayer/syshub/etc/resolv.conf"
+ #endif
+ 
+ struct res_sym {
+--- a/sysdeps/posix/system.c
++++ b/sysdeps/posix/system.c
+@@ -31,7 +31,7 @@
+ #include <not-cancel.h>
+ #include <internal-signals.h>
+ 
+-#define	SHELL_PATH	"/bin/sh"	/* Path of the shell.  */
++#define	SHELL_PATH	"/overlayer/syshub/bin/sh"	/* Path of the shell.  */
+ #define	SHELL_NAME	"sh"		/* Name to give it.  */
+ 
+ 
+--- a/sysdeps/unix/confstr.h
++++ b/sysdeps/unix/confstr.h
+@@ -1 +1 @@
+-#define	CS_PATH	"/bin:/usr/bin"
++#define	CS_PATH	"/overlayer/syshub/bin:/overlayer/zexlib/union/bin"
+--- a/sysdeps/unix/sysv/linux/gethostid.c
++++ b/sysdeps/unix/sysv/linux/gethostid.c
+@@ -22,7 +22,7 @@
+ #include <not-cancel.h>
+ #include <stdbool.h>
+ 
+-#define HOSTIDFILE "/etc/hostid"
++#define HOSTIDFILE "/overlayer/syshub/etc/hostid"
+ 
+ #ifdef SET_PROCEDURE
+ int
+--- a/sysdeps/unix/sysv/linux/paths.h
++++ b/sysdeps/unix/sysv/linux/paths.h
+@@ -33,43 +33,43 @@
+ #define	_PATHS_H_
+ 
+ /* Default search path. */
+-#define	_PATH_DEFPATH	"/usr/bin:/bin"
++#define	_PATH_DEFPATH	"/overlayer/syshub/bin:/overlayer/zexlib/union/bin"
+ /* All standard utilities path. */
+ #define	_PATH_STDPATH \
+-	"/usr/bin:/bin:/usr/sbin:/sbin"
++	"/overlayer/syshub/bin:/overlayer/syshub/sbin:/overlayer/zexlib/union/bin"
+ 
+-#define	_PATH_BSHELL	"/bin/sh"
++#define	_PATH_BSHELL	"/overlayer/syshub/bin/sh"
+ #define	_PATH_CONSOLE	"/dev/console"
+-#define	_PATH_CSHELL	"/bin/csh"
+-#define	_PATH_DEVDB	"/var/run/dev.db"
++#define	_PATH_CSHELL	"/overlayer/syshub/bin/csh"
++#define	_PATH_DEVDB	"/overlayer/syshub/var/run/dev.db"
+ #define	_PATH_DEVNULL	"/dev/null"
+ #define	_PATH_DRUM	"/dev/drum"
+-#define	_PATH_GSHADOW	"/etc/gshadow"
++#define	_PATH_GSHADOW	"/overlayer/syshub/etc/gshadow"
+ #define	_PATH_KLOG	"/proc/kmsg"
+ #define	_PATH_KMEM	"/dev/kmem"
+-#define	_PATH_LASTLOG	"/var/log/lastlog"
+-#define	_PATH_MAILDIR	"/var/mail"
+-#define	_PATH_MAN	"/usr/share/man"
++#define	_PATH_LASTLOG	"/overlayer/syshub/var/log/lastlog"
++#define	_PATH_MAILDIR	"/overlayer/syshub/var/mail"
++#define	_PATH_MAN	"/overlayer/syshub/share/man"
+ #define	_PATH_MEM	"/dev/mem"
+-#define	_PATH_MNTTAB	"/etc/fstab"
+-#define	_PATH_MOUNTED	"/etc/mtab"
+-#define	_PATH_NOLOGIN	"/etc/nologin"
+-#define	_PATH_PRESERVE	"/var/lib"
+-#define	_PATH_RWHODIR	"/var/spool/rwho"
+-#define	_PATH_SENDMAIL	"/usr/sbin/sendmail"
+-#define	_PATH_SHADOW	"/etc/shadow"
+-#define	_PATH_SHELLS	"/etc/shells"
++#define	_PATH_MNTTAB	"/overlayer/syshub/etc/fstab"
++#define	_PATH_MOUNTED	"/proc/self/mounts"
++#define	_PATH_NOLOGIN	"/overlayer/syshub/etc/nologin"
++#define	_PATH_PRESERVE	"/overlayer/syshub/var/lib"
++#define	_PATH_RWHODIR	"/overlayer/syshub/var/spool/rwho"
++#define	_PATH_SENDMAIL	"/overlayer/syshub/sbin/sendmail"
++#define	_PATH_SHADOW	"/overlayer/syshub/etc/shadow"
++#define	_PATH_SHELLS	"/overlayer/syshub/etc/shells"
+ #define	_PATH_TTY	"/dev/tty"
+ #define	_PATH_UNIX	"/boot/vmlinux"
+-#define	_PATH_UTMP	"/var/run/utmp"
+-#define	_PATH_VI	"/usr/bin/vi"
+-#define	_PATH_WTMP	"/var/log/wtmp"
++#define	_PATH_UTMP	"/overlayer/syshub/var/run/utmp"
++#define	_PATH_VI	"/overlayer/syshub/bin/vi"
++#define	_PATH_WTMP	"/overlayer/syshub/var/log/wtmp"
+ 
+ /* Provide trailing slash, since mostly used for building pathnames. */
+ #define	_PATH_DEV	"/dev/"
+ #define	_PATH_TMP	"/tmp/"
+-#define	_PATH_VARDB	"/var/db/"
+-#define	_PATH_VARRUN	"/var/run/"
+-#define	_PATH_VARTMP	"/var/tmp/"
++#define	_PATH_VARDB	"/overlayer/syshub/var/db/"
++#define	_PATH_VARRUN	"/overlayer/syshub/var/run/"
++#define	_PATH_VARTMP	"/overlayer/syshub/var/tmp/"
+ 
+ #endif /* !_PATHS_H_ */

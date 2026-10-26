@@ -11,50 +11,19 @@ _target=x86_64-zainium-linux-gnu
 _prefix=/overlayer/zexlib/union
 _glibc=$_prefix/$_target
 source="https://ftp.gnu.org/gnu/glibc/glibc-$pkgver.tar.xz
-https://ftp.gnu.org/gnu/gcc/gcc-$_gccver/gcc-$_gccver.tar.gz"
+https://ftp.gnu.org/gnu/gcc/gcc-$_gccver/gcc-$_gccver.tar.gz
+0001-zainium-glibc-paths.patch
+0002-zainium-gcc-gnu-paths.patch"
 sha256sums="37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667  glibc-$pkgver.tar.xz
 071d00a097579e5ef7ce97fc4a9e58e73fd3503c0a013c765c970370a5a53b9b  gcc-$_gccver.tar.gz"
-makedepends="bison flex texinfo gawk python3 perl"
+makedepends="bison flex texinfo gawk python3 perl patch"
 needs_toolchain="linux-headers gcc-musl binutils"
 
-# Zainium has no /etc, /bin, /usr or /var at the root: the system's files are under
-# /overlayer/syshub (musl is set up the same way). glibc compiles these paths in, so they are
-# pointed there before it is built; the mount table is the kernel's. glibc's own loader files
-# (ld.so.cache, ld.so.conf, ld.so.preload) stay in its directory.
-_zainium_paths() {
-    local s=/overlayer/syshub u=/overlayer/zexlib/union
-    sed -i \
-        -e 's|"/etc/mtab"|"/proc/self/mounts"|' \
-        -e "s|\"/usr/bin:/bin:/usr/sbin:/sbin\"|\"$s/bin:$s/sbin:$u/bin\"|" \
-        -e "s|\"/usr/bin:/bin\"|\"$s/bin:$u/bin\"|" \
-        -e "s|\"/bin/|\"$s/bin/|g" \
-        -e "s|\"/usr/|\"$s/|g" \
-        -e "s|\"/var/|\"$s/var/|g" \
-        -e "s|\"/etc/|\"$s/etc/|g" \
-        sysdeps/unix/sysv/linux/paths.h
-    sed -i "s|\"/bin:/usr/bin\"|\"$s/bin:$u/bin\"|" sysdeps/unix/confstr.h
-    sed -i "s|\"/bin/sh\"|\"$s/bin/sh\"|" sysdeps/posix/system.c
-    sed -i "s|\"/etc/ld.so.preload\"|\"$_glibc/etc/ld.so.preload\"|" elf/rtld.c
-    sed -i "s|\"/etc/|\"$s/etc/|g" \
-        misc/fstab.h misc/ttyent.h resolv/netdb.h resolv/res_hconf.c resolv/resolv.h \
-        nss/getaddrinfo.c nss/lckpwdf.c nss/nss_compat/compat-*.c nss/nss_files/files-*.c \
-        sysdeps/unix/sysv/linux/gethostid.c hesiod/hesiod.c nscd/nscd-client.h
-    sed -i -e "s|\"/var/tmp/\"|\"$s/var/tmp/\"|" -e "s|\"/usr/lib/debug/\"|\"$s/lib/debug/\"|" elf/sprof.c
-
-    local left
-    left="$(grep -nE '"/(etc|bin|usr|var)/' sysdeps/unix/sysv/linux/paths.h sysdeps/unix/confstr.h \
-        sysdeps/posix/system.c elf/rtld.c misc/fstab.h misc/ttyent.h resolv/netdb.h \
-        resolv/res_hconf.c resolv/resolv.h nss/getaddrinfo.c nss/lckpwdf.c \
-        nss/nss_compat/compat-*.c nss/nss_files/files-*.c || true)"
-    [ -z "$left" ] || { echo "FHS paths left in glibc:" >&2; echo "$left" >&2; return 1; }
-}
-
-# The glibc gcc: its loader is glibc's, and x86_64 keeps its libraries in lib, not lib64.
-_gcc_paths() {
-    sed -i "s|\"/lib64/ld-linux-x86-64.so.2\"|\"$_glibc/lib/ld-linux-x86-64.so.2\"|" gcc/config/i386/linux64.h
-    sed -i '/m64=/s/lib64/lib/' gcc/config/i386/t-linux64
-    grep -q "$_glibc/lib/ld-linux-x86-64.so.2" gcc/config/i386/linux64.h
-}
+# 0001-zainium-glibc-paths.patch: Zainium has no /etc, /bin, /usr or /var at the root, the
+# system's files are under /overlayer/syshub (musl is set up the same way); glibc's own loader
+# files (ld.so.cache, ld.so.conf, ld.so.preload) stay in its directory.
+# 0002-zainium-gcc-gnu-paths.patch: the glibc gcc's programs ask for glibc's loader in glibc's
+# directory, and x86_64 keeps its libraries in lib, not lib64 (as gcc-musl does).
 
 # stage-1 gcc has no target libc (--without-headers) and gcc-full-libgcc only libgcc: both
 # exist to compile glibc and are not published. The glibc gcc built last runs on Zainium
@@ -70,8 +39,8 @@ build() {
     local sysroot="$bootstrap/sysroot"
     mkdir -p "$sysroot"
 
-    (cd "glibc-$pkgver" && _zainium_paths)
-    (cd "gcc-$_gccver" && _gcc_paths && ./contrib/download_prerequisites)
+    (cd "glibc-$pkgver" && patch -p1 < "$SRCDIR/0001-zainium-glibc-paths.patch")
+    (cd "gcc-$_gccver" && patch -p1 < "$SRCDIR/0002-zainium-gcc-gnu-paths.patch" && ./contrib/download_prerequisites)
 
     mkdir -p target-binutils
     for t in as ld ar ranlib nm objcopy objdump strip readelf; do
