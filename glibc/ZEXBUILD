@@ -247,6 +247,19 @@ _check() {
     env -u LD_LIBRARY_PATH "$_glibc/bin/getconf" GNU_LIBC_VERSION
 }
 
+# Zainium has no /usr and substrate refuses text that names it: glibc's locale sources and
+# locale.alias, and gcc's headers, mention it in comments. glibc's own data and headers are
+# in its directory, everything else in the base (gcc-musl does the same for its files).
+_no_usr() {
+    find "$1" -type f | while read -r f; do
+        grep -q '/usr/' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e "s#/usr/share/i18n#$_glibc/share/i18n#g" -e "s#/usr/share/locale#$_glibc/share/locale#g" \
+            -e "s#/usr/include#$_glibc/include#g" -e 's#/usr/local#/overlayer/syshub#g' \
+            -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
+}
+
 # glibc's loader, libraries, gconv modules, locales and tools, and gcc's libstdc++ and
 # libgcc_s built against it: what glibc programs need to run.
 package() {
@@ -268,6 +281,7 @@ package() {
         [ -d "$_glibc/$sub" ] && cp -a "$_glibc/$sub" "$d/"
     done
     rm -rf "$d/share/info" "$d/share/man"
+    _no_usr "$PAYLOAD_DIR"
 }
 
 # Headers (glibc, the kernel's, libstdc++), static libraries, crt objects and the link-time
@@ -286,6 +300,7 @@ dev() {
             *) cp -P "$f" "$d/lib/" ;;
         esac
     done
+    _no_usr "$PAYLOAD_DIR"
 }
 
 # The glibc gcc and g++: x86_64-zainium-linux-gnu-gcc builds a program for glibc (plain gcc
@@ -301,4 +316,5 @@ toolchain() {
     other="$(cd "$g" && find . -type f ! -path "./bin/$_target-*" ! -path "./lib/gcc/$_target/*" \
         ! -path "./libexec/gcc/$_target/*" ! -path "./$_target/*" ! -path "./share/*")"
     [ -z "$other" ] || { echo "glibc gcc installed other files:" >&2; echo "$other" >&2; return 1; }
+    _no_usr "$PAYLOAD_DIR"
 }
