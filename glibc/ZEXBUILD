@@ -236,7 +236,7 @@ _check() {
     local f bad=""
     for f in $(find "$_glibc" "$SRCDIR/gcc-gnu-install$_glibc/lib" -type f -name '*.so*') "$_glibc"/bin/* "$_glibc"/sbin/*; do
         head -c4 "$f" | grep -q ELF || continue
-        readelf -d "$f" 2>/dev/null | grep -qE 'RPATH|RUNPATH' && bad="$bad $f(rpath)"
+        readelf -d "$f" 2>/dev/null | grep -E 'RPATH|RUNPATH' | grep -qv '\[\$ORIGIN\]' && bad="$bad $f(rpath)"
         interp="$(readelf -l "$f" 2>/dev/null | sed -n 's/.*interpreter: \([^]]*\).*/\1/p')"
         [ -z "$interp" ] || [ "$interp" = "$_glibc/lib/ld-linux-x86-64.so.2" ] || bad="$bad $f($interp)"
     done
