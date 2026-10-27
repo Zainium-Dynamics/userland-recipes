@@ -1,7 +1,7 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=glibc
 pkgver=2.44
-pkgrel=1
+pkgrel=2
 subpackages="glibc-dev glibc-toolchain"
 _gccver=16.2.0
 _target=x86_64-zainium-linux-gnu
@@ -23,7 +23,10 @@ needs_toolchain="linux-headers gcc-musl binutils"
 # system's files are under /overlayer/syshub (musl is set up the same way); glibc's own loader
 # files (ld.so.cache, ld.so.conf, ld.so.preload) stay in its directory.
 # 0002-zainium-gcc-gnu-paths.patch: the glibc gcc's programs ask for glibc's loader in glibc's
-# directory, and x86_64 keeps its libraries in lib, not lib64 (as gcc-musl does).
+# directory, its start files and libraries come from there (not /lib, /usr/lib), and x86_64
+# keeps its libraries in lib, not lib64 (as gcc-musl does). The glibc gcc's local prefix is
+# glibc's directory (no /usr/local/include), and ld searches only the directories gcc names
+# (-nostdlib): the base's own include and library directories are musl's.
 
 # stage-1 gcc has no target libc (--without-headers) and gcc-full-libgcc only libgcc: both
 # exist to compile glibc and are not published. The glibc gcc built last runs on Zainium
@@ -181,6 +184,8 @@ build() {
         --prefix=$_prefix \
         --with-sysroot=/ \
         --with-native-system-header-dir=$_glibc/include \
+        --with-local-prefix=$_glibc \
+        --with-specs='-Wl,-nostdlib' \
         --with-as=/overlayer/syshub/bin/as \
         --with-ld=/overlayer/syshub/bin/ld \
         --with-pkgversion="GCC 16 (Zainium OS 16, glibc)" \

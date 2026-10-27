@@ -1,10 +1,11 @@
 gcc for x86_64-zainium-linux-gnu: programs it links ask for glibc's loader in glibc's
 directory, and x86_64 keeps its libraries in lib, not lib64 (as gcc-musl does for musl).
+glibc's start files and libraries come from its directory too, never /lib or /usr/lib.
 A diff against pristine gcc 16.2.0.
 
 --- a/gcc/config/i386/linux64.h
 +++ b/gcc/config/i386/linux64.h
-@@ -27,13 +27,13 @@
+@@ -27,9 +27,13 @@
  #define GNU_USER_LINK_EMULATION64 "elf_x86_64"
  #define GNU_USER_LINK_EMULATIONX32 "elf32_x86_64"
  
@@ -14,13 +15,13 @@ A diff against pristine gcc 16.2.0.
 +#define GLIBC_DYNAMIC_LINKER32 "/overlayer/zexlib/union/x86_64-zainium-linux-gnu/lib/ld-linux.so.2"
 +#define GLIBC_DYNAMIC_LINKER64 "/overlayer/zexlib/union/x86_64-zainium-linux-gnu/lib/ld-linux-x86-64.so.2"
 +#define GLIBC_DYNAMIC_LINKERX32 "/overlayer/zexlib/union/x86_64-zainium-linux-gnu/lib/ld-linux-x32.so.2"
++/* glibc's libraries and start files are in its own directory, never /lib or /usr/lib
++   (on Zainium those would be the base's musl libraries).  */
++#define STANDARD_STARTFILE_PREFIX_1 "/overlayer/zexlib/union/x86_64-zainium-linux-gnu/lib/"
++#define STANDARD_STARTFILE_PREFIX_2 "/overlayer/zexlib/union/x86_64-zainium-linux-gnu/lib/"
  
  #undef MUSL_DYNAMIC_LINKER32
  #define MUSL_DYNAMIC_LINKER32 "/lib/ld-musl-i386.so.1"
- #undef MUSL_DYNAMIC_LINKER64
- #define MUSL_DYNAMIC_LINKER64 "/lib/ld-musl-x86_64.so.1"
- #undef MUSL_DYNAMIC_LINKERX32
- #define MUSL_DYNAMIC_LINKERX32 "/lib/ld-musl-x32.so.1"
 --- a/gcc/config/i386/t-linux64
 +++ b/gcc/config/i386/t-linux64
 @@ -33,6 +33,6 @@
