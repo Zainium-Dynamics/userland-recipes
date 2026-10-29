@@ -58,7 +58,7 @@ diff -ru a/src/as-pool.c b/src/as-pool.c
  	if (as_flags_contains (priv->flags, AS_POOL_FLAG_LOAD_FLATPAK)) {
  		as_pool_register_flatpak_dir (pool,
 -					      "/var/lib/flatpak/appstream/",
-+					      "/overlayer/syshub/var/lib/flatpak/appstream/",
++					      "/overlayer/zexlib/union/var/lib/flatpak/appstream/",
  					      AS_COMPONENT_SCOPE_SYSTEM);
  		if (include_user_data) {
  			g_autofree gchar *flatpak_user_dir = g_build_filename (

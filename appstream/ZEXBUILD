@@ -1,7 +1,7 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=appstream
 pkgver=1.1.6
-pkgrel=0
+pkgrel=1
 subpackages="appstream-dev"
 source="https://www.freedesktop.org/software/appstream/releases/AppStream-$pkgver.tar.xz"
 sha256sums="e298929f39729e84a70f6be6941f3e7f3fc2ee3c83cb3ea1b1b5b280a8fe3a24  AppStream-$pkgver.tar.xz"
