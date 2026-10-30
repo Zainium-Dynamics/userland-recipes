@@ -1,86 +1,65 @@
-# userland-recipes
+Zainium OS userland recipes
+===========================
 
-Community package recipes for the userland of Zainium OS, an immutable Linux distribution built on musl.
+Community recipes for the userland of Zainium OS: the software people
+install with zex on top of the base. Fork the repository, add a recipe and
+open a pull request. Once it is merged, CI builds, signs and publishes the
+package, and anyone can install it:
 
-Fork the repo, add a recipe and open a pull request. Once it is merged, CI builds the package, packs it with [substrate](https://crates.io/crates/substrate-zainium) and publishes it to the package repository. A `ZEXBUILD` plays the role an `APKBUILD` plays in Alpine's aports.
+    elevate zex install <package>
 
-## Adding a package
+Adding a package
+----------------
 
-1. Fork this repo.
-2. Create `<pkgname>/ZEXBUILD` and `<pkgname>/manifest.toml`. See `htop/` for a complete example.
-3. Put any `*.patch` files next to `ZEXBUILD` and apply them inside it.
-4. Open a pull request. CI runs a build-only check.
-5. After the merge, CI builds and publishes the package.
+  1. Make a directory named after the package, with a ZEXBUILD and a
+     manifest.toml. htop/ is a complete example.
+  2. Put any *.patch files next to ZEXBUILD and apply them in it.
+  3. Open a pull request. CI builds it to check it.
 
-## ZEXBUILD
+ZEXBUILD
+--------
 
-A POSIX shell script sourced by CI.
+A POSIX shell script that CI sources:
 
-```sh
-maintainer="Your Name <you@example.com>"
-pkgname=htop
-pkgver=3.5.2
-pkgrel=0
-source="https://github.com/htop-dev/htop/releases/download/$pkgver/htop-$pkgver.tar.xz"
-sha256sums="<hash>  htop-$pkgver.tar.xz"
+    maintainer="Your Name <you@example.com>"
+    pkgname=htop
+    pkgver=3.5.2
+    pkgrel=0
+    source="https://github.com/htop-dev/htop/releases/download/$pkgver/htop-$pkgver.tar.xz"
+    sha256sums="<hash>  htop-$pkgver.tar.xz"
 
-build() {
-    ./configure \
-        --host="$CHOST" \
-        --prefix=/overlayer/syshub \
-        --sysconfdir=/overlayer/syshub/etc \
-        --localstatedir=/overlayer/syshub/var
-    make
-}
+    build() {
+        ./configure --host="$CHOST" --prefix=/overlayer/syshub \
+            --sysconfdir=/overlayer/syshub/etc --localstatedir=/overlayer/syshub/var
+        make
+    }
 
-package() {
-    make DESTDIR="$PAYLOAD_DIR" install
-}
-```
+    package() {
+        make DESTDIR="$PAYLOAD_DIR" install
+    }
 
-- `maintainer`: who maintains the recipe, as `Name <email>`.
-- `pkgname`: must match `package.name` in `manifest.toml`.
-- `pkgver`, `pkgrel`: upstream version and recipe revision.
-- `subpackages`: optional. Only a `-dev` split is supported.
-- `source`, `sha256sums`: URLs and local files to fetch, and a checksum line per URL.
-- `$CHOST`: target triple, `x86_64-zainium-linux-musl`.
-- `$PAYLOAD_DIR`: staging directory of the package.
-- `$SUBPKG_PAYLOAD_DIR`: staging directory of the `-dev` subpackage.
+pkgname must match package.name in manifest.toml, and pkgrel counts
+rebuilds of the same version. $CHOST is x86_64-zainium-linux-musl, and
+$PAYLOAD_DIR is where package() installs. A library can add a -dev
+subpackage with a dev() function and its own <name>-dev.manifest.toml.
 
-A library can ship a `-dev` package with a `dev()` function that moves headers, `.a` files and `.so` symlinks into `$SUBPKG_PAYLOAD_DIR`. It needs a matching `<name>-dev.manifest.toml`.
+Always build with --prefix=/overlayer/syshub, also for the userland: that
+is the path every program sees, the base and the userland joined. The
+manifest's _syshub = false is what puts the files in the userland. When it
+packs, substrate sets each program's loader and library path, so recipes
+normally need nothing more.
 
-`substrate pack` patches ELF interpreters and RPATHs and enforces the layout policy after `package()`. Packages that are already linked for the target can set `native = true` in `manifest.toml` to skip this.
+Rust programs build for the target in targets/x86_64-zainium-linux-musl.json.
 
-## Install prefix
+Building
+--------
 
-Always build with `--prefix=/overlayer/syshub`, even for userland packages.
+GitHub Actions builds only the packages whose directory changed. A pull
+request is only built. A push to main is built, packed with substrate and
+published to the userland archive.
 
-`/overlayer/syshub` is the merged view of the immutable base and the userland layer, so it is the only path a running program ever sees. The `_syshub = false` flag in `manifest.toml` only decides which layer the files are written to.
+License
+-------
 
-Every binary uses `/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1` as its interpreter. `substrate pack` sets it, so recipes normally do nothing. For Makefile-only builds, you can set it yourself:
-
-```make
-BASIC_LDFLAGS += -Wl,-dynamic-linker,/overlayer/syshub/x86_64-zainium-linux-musl/lib/ld-musl-x86_64.so.1
-BASIC_LDFLAGS += -Wl,-rpath,/overlayer/syshub/lib
-```
-
-## Rust packages
-
-`targets/x86_64-zainium-linux-musl.json` is the custom Rust target for Zainium's musl userland. Build against it instead of the host target.
-
-## manifest.toml
-
-The same format `substrate pack` has always read. See `htop/manifest.toml`. A `-dev` subpackage has its own manifest whose `package.name` is the subpackage name.
-
-## CI
-
-GitHub Actions workflow `.github/workflows/ci.yml` has two jobs:
-
-- `check` runs on every pull request and only builds.
-- `release` runs on every push to `main`, then builds and publishes.
-
-Only packages whose directory changed are built.
-
-## License
-
-The recipes in this repository are licensed under GPL-3.0-only. See `LICENSE`. Upstream software keeps its own license.
+The recipes are GPL-3.0-only (see LICENSE). The software they build keeps
+its own license.
