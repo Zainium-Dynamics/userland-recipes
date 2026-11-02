@@ -93,8 +93,14 @@ jobs:
 
       - name: Build changed packages
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
+          # the event's base.sha goes stale once the target branch moves; a PR that merges it in
+          # would rebuild the target's own packages, so diff against the real merge base
+          git config --global --add safe.directory "$PWD"
+          git fetch -q origin "$BASE_REF"
+          BASE_SHA="$(git merge-base FETCH_HEAD HEAD)"
+          export BASE_SHA
           pkgs_out="$(mktemp)"
           if ! sh ci/changed-packages.sh > "$pkgs_out"; then
             echo "changed-packages.sh failed:"
