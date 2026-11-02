@@ -1,0 +1,7 @@
+[Context]
+# Zainium has no X server: apps that only ask for X11 still get the Wayland socket
+sockets=wayland;
+
+[Environment]
+# Electron apps (Arduino IDE, ...) pick Wayland themselves instead of failing on a missing $DISPLAY
+ELECTRON_OZONE_PLATFORM_HINT=auto
