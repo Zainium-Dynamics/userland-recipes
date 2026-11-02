@@ -48,24 +48,23 @@ echo "changed-packages.sh: using BASE=$BASE" >&2
 # nothing. Same bug class already fixed once in ci/build.sh's pack step.
 diff_out="$(mktemp)"
 trap 'rm -f "$diff_out"' EXIT
-if ! git diff --name-only "$BASE"...HEAD -- . > "$diff_out" 2>&1; then
+# recipes live in letter folders (a/acl, cosmic-desktop/cosmic-comp); a pure move rebuilds nothing
+if ! git diff --name-status -M100% "$BASE"...HEAD -- . > "$diff_out" 2>&1; then
     echo "changed-packages.sh: git diff $BASE...HEAD failed:" >&2
     cat "$diff_out" >&2
     exit 1
 fi
 
-# "$dir/ZEXBUILD" not existing for a given changed top-level path (e.g.
-# a push that only touches .github/ or ci/, no package directory at
-# all) is a completely normal outcome, not a failure — but `[ -f ... ]`
-# failing IS what a bare `&&`-only body leaves as the while loop's own
-# exit status once it hits EOF, which then becomes this whole
-# pipeline's (and the script's) exit status under `set -e`. `|| true`
-# makes "not a package dir" and "is a package dir" both count as a
-# successful iteration; only a real git-diff failure above should ever
-# fail this script.
-cut -d/ -f1 < "$diff_out" \
-    | sort -u \
-    | while read -r dir; do
-        [ -f "$dir/ZEXBUILD" ] && echo "$dir"
-        true
-      done
+# the package is the nearest directory with a ZEXBUILD; deleted or moved-only paths are skipped
+while IFS="$(printf '\t')" read -r status path newpath; do
+    case "$status" in
+        D | R100) continue ;;
+        R*) path="$newpath" ;;
+    esac
+    dir="$(dirname "$path")"
+    while [ "$dir" != "." ] && [ ! -f "$dir/ZEXBUILD" ]; do
+        dir="$(dirname "$dir")"
+    done
+    [ "$dir" != "." ] && echo "$dir"
+    true
+done < "$diff_out" | sort -u
