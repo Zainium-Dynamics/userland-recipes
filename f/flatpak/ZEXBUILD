@@ -1,7 +1,7 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=flatpak
 pkgver=1.18.4
-pkgrel=12
+pkgrel=13
 subpackages="flatpak-dev"
 source="https://github.com/flatpak/flatpak/releases/download/$pkgver/flatpak-$pkgver.tar.xz
 0001-zainium-host-paths.patch
@@ -90,6 +90,9 @@ package() {
     chmod 0755 "$PAYLOAD_DIR/libexec/flatpak-bwrap"
     # Flathub as a static system remote, applied on first system-wide use
     install -Dm644 "$RECIPE_DIR/flathub.flatpakrepo" "$PAYLOAD_DIR/etc/flatpak/remotes.d/flathub.flatpakrepo"
+    # COSMIC applets live in System76's COSMIC repository, not on Flathub; the store's Applets
+    # page stays empty without it (same file the store itself ships as its recommended source)
+    install -Dm644 "$RECIPE_DIR/cosmic.flatpakrepo" "$PAYLOAD_DIR/etc/flatpak/remotes.d/cosmic.flatpakrepo"
     install -Dm644 "$RECIPE_DIR/overrides/global" "$PAYLOAD_DIR/etc/flatpak/overrides/global"
     install -Dm644 "$RECIPE_DIR/overrides/dev.zed.Zed" "$PAYLOAD_DIR/etc/flatpak/overrides/dev.zed.Zed"
 }
