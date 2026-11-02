@@ -1,13 +1,14 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=flatpak
 pkgver=1.18.4
-pkgrel=11
+pkgrel=12
 subpackages="flatpak-dev"
 source="https://github.com/flatpak/flatpak/releases/download/$pkgver/flatpak-$pkgver.tar.xz
 0001-zainium-host-paths.patch
 0002-zainium-data-paths.patch
 0003-zainium-local-fonts.patch
-0004-zainium-fontconfig-env.patch"
+0004-zainium-fontconfig-env.patch
+0005-zainium-vendor-overrides.patch"
 sha256sums="b899a7a00c48d2c626cb8ec33fe556720b376c25805d7222430c0fdca4c6ac8d  flatpak-$pkgver.tar.xz"
 makedepends="meson bison git gettext shared-mime-info py3-parsing"
 needs_toolchain="glib glib-dev pcre2 pcre2-dev libffi libffi-dev zlib zlib-dev gettext gettext-dev xz xz-dev openssl acl expat libucontext
@@ -37,6 +38,8 @@ build() {
     patch -p1 < ../0003-zainium-local-fonts.patch
     # FONTCONFIG_FILE from /etc/profile points at a host path the runtime does not have
     patch -p1 < ../0004-zainium-fontconfig-env.patch
+    # app defaults the OS ships in /overlayer/syshub/etc/flatpak/overrides, under the installation's
+    patch -p1 < ../0005-zainium-vendor-overrides.patch
 
     meson setup builddir \
         --prefix=/overlayer/syshub \
@@ -87,6 +90,7 @@ package() {
     chmod 0755 "$PAYLOAD_DIR/libexec/flatpak-bwrap"
     # Flathub as a static system remote, applied on first system-wide use
     install -Dm644 "$RECIPE_DIR/flathub.flatpakrepo" "$PAYLOAD_DIR/etc/flatpak/remotes.d/flathub.flatpakrepo"
+    install -Dm644 "$RECIPE_DIR/overrides/dev.zed.Zed" "$PAYLOAD_DIR/etc/flatpak/overrides/dev.zed.Zed"
 }
 
 dev() {
