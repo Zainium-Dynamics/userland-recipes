@@ -52,6 +52,27 @@ normally need nothing more.
 
 Rust programs build for the target in targets/x86_64-zainium-linux-musl.json.
 
+AI-assisted contributions
+-------------------------
+
+Recipes and patches written with the help of AI tools are allowed. The
+person who opens the pull request is responsible for every line of it,
+whatever tool wrote it:
+
+  - Verify it yourself before you open the pull request: read every line
+    of the ZEXBUILD, the manifest and the patches, build the package and
+    test it on Zainium OS. A pull request that was not built and tested
+    by you is closed.
+  - You must be able to explain each line and answer review questions
+    yourself.
+  - Patches come from upstream or are your own work; say where each one
+    comes from. Do not submit code whose license does not allow it.
+  - Say which tool helped with an "Assisted-by: <tool> <model>" line in
+    the commit message. AI tools are not authors or co-authors.
+  - One package (or one closely related set) per pull request. Never mix
+    base and userland packages: base recipes belong in syshub-recipes,
+    userland recipes in userland-recipes.
+
 Building
 --------
 
