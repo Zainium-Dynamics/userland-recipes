@@ -11,8 +11,9 @@ package, and anyone can install it:
 Adding a package
 ----------------
 
-  1. Make a directory named after the package, with a ZEXBUILD and a
-     manifest.toml. htop/ is a complete example.
+  1. Make a directory named after the package, inside the folder for its
+     first letter, with a ZEXBUILD and a manifest.toml. h/htop is a
+     complete example; COSMIC apps go in cosmic-desktop.
   2. Put any *.patch files next to ZEXBUILD and apply them in it.
   3. Open a pull request. CI builds it to check it.
 
