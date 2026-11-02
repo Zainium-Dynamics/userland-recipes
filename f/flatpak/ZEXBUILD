@@ -90,6 +90,7 @@ package() {
     chmod 0755 "$PAYLOAD_DIR/libexec/flatpak-bwrap"
     # Flathub as a static system remote, applied on first system-wide use
     install -Dm644 "$RECIPE_DIR/flathub.flatpakrepo" "$PAYLOAD_DIR/etc/flatpak/remotes.d/flathub.flatpakrepo"
+    install -Dm644 "$RECIPE_DIR/overrides/global" "$PAYLOAD_DIR/etc/flatpak/overrides/global"
     install -Dm644 "$RECIPE_DIR/overrides/dev.zed.Zed" "$PAYLOAD_DIR/etc/flatpak/overrides/dev.zed.Zed"
 }
 
