@@ -1,0 +1,191 @@
+diff --git a/kittens/desktop_ui/portal.go b/kittens/desktop_ui/portal.go
+index 634c4f2..1c6191d 100644
+--- a/kittens/desktop_ui/portal.go
++++ b/kittens/desktop_ui/portal.go
+@@ -330,7 +330,7 @@ var DataDirs = sync.OnceValue(func() (ans []string) {
+ 
+ 	data_dirs := os.Getenv("XDG_DATA_DIRS")
+ 	if data_dirs == "" {
+-		data_dirs = "/usr/local/share:/usr/share"
++		data_dirs = "/overlayer/zexlib/union/share:/overlayer/syshub/share"
+ 	}
+ 	data_home := os.Getenv("XDG_DATA_HOME")
+ 	if data_home == "" {
+diff --git a/kitty/child.py b/kitty/child.py
+index da97631..826a6b8 100644
+--- a/kitty/child.py
++++ b/kitty/child.py
+@@ -550,7 +550,7 @@ class Child:
+                 if cwd:
+                     argv.append('--cwd=' + cwd)
+                     cwd = os.path.expanduser('~')
+-                login_argv = ['/usr/bin/login', '-f', '-l', '-p', user]
++                login_argv = ['/overlayer/syshub/bin/login', '-f', '-l', '-p', user]
+                 argv = login_argv + argv
+                 kitty_wrappers.insert(0, KittyWrapper(tuple(login_argv), False))
+         self.final_exe = final_exe = which(argv[0]) or argv[0]
+diff --git a/kitty/cli.py b/kitty/cli.py
+index 6161c80..5794a55 100644
+--- a/kitty/cli.py
++++ b/kitty/cli.py
+@@ -715,7 +715,7 @@ def parse_args(
+     return ans, parse_cmdline(oc, disabled, ans, args=args, track_seen_options=track_seen_options)
+ 
+ 
+-SYSTEM_CONF = f'/etc/xdg/{appname}/{appname}.conf'
++SYSTEM_CONF = f'/overlayer/syshub/etc/xdg/{appname}/{appname}.conf'
+ 
+ 
+ def default_config_paths(conf_paths: Sequence[str]) -> tuple[str, ...]:
+diff --git a/kitty/constants.py b/kitty/constants.py
+index d213650..ba3c520 100644
+--- a/kitty/constants.py
++++ b/kitty/constants.py
+@@ -193,11 +193,11 @@ shell_integration_dir = os.path.join(kitty_base_dir, 'shell-integration')
+ fonts_dir = os.path.join(kitty_base_dir, 'fonts')
+ shaders_dir = os.path.join(kitty_base_dir, 'shaders')
+ try:
+-    shell_path = os.environ.get('SHELL') or pwd.getpwuid(os.geteuid()).pw_shell or '/bin/sh'
++    shell_path = os.environ.get('SHELL') or pwd.getpwuid(os.geteuid()).pw_shell or '/overlayer/syshub/bin/sh'
+ except KeyError:
+     with suppress(Exception):
+         print('Failed to read login shell via getpwuid() for current user, falling back to /bin/sh', file=sys.stderr)
+-    shell_path = '/bin/sh'
++    shell_path = '/overlayer/syshub/bin/sh'
+ # Keep this short as it is limited to 103 bytes on macOS
+ # https://github.com/ansible/ansible/issues/11536#issuecomment-153030743
+ ssh_control_master_template = 'kssh-{kitty_pid}-{ssh_placeholder}'
+diff --git a/kitty/machine_id.py b/kitty/machine_id.py
+index 186fefb..c511dea 100644
+--- a/kitty/machine_id.py
++++ b/kitty/machine_id.py
+@@ -17,7 +17,7 @@ def machine_id(salt: str = '') -> str:
+ 
+         mid = cocoa_get_machine_id().rstrip().encode()
+     else:
+-        with suppress(OSError), open('/etc/machine-id', 'rb') as f:
++        with suppress(OSError), open('/overlayer/syshub/etc/machine-id', 'rb') as f:
+             mid = f.read().rstrip()
+     if not salt:
+         return mid.decode()
+diff --git a/kitty/mime-cache.c b/kitty/mime-cache.c
+index e274faf..d1e6630 100644
+--- a/kitty/mime-cache.c
++++ b/kitty/mime-cache.c
+@@ -419,7 +419,7 @@ find_cache_paths(void) {
+         }
+     }
+     const char *data_dirs = getenv("XDG_DATA_DIRS");
+-    if (!data_dirs || !data_dirs[0]) data_dirs = "/usr/local/share/:/usr/share/";
++    if (!data_dirs || !data_dirs[0]) data_dirs = "/overlayer/zexlib/union/share/:/overlayer/syshub/share/";
+     for (const char *p = data_dirs; *p;) {
+         const char *end = strchr(p, ':');
+         size_t len = end ? (size_t)(end - p) : strlen(p);
+diff --git a/kitty/xdg.py b/kitty/xdg.py
+index d78254c..c89064b 100644
+--- a/kitty/xdg.py
++++ b/kitty/xdg.py
+@@ -10,7 +10,7 @@ from kitty.types import run_once
+ 
+ @run_once
+ def xdg_data_dirs() -> tuple[str, ...]:
+-    return tuple(os.environ.get('XDG_DATA_DIRS', '/usr/local/share/:/usr/share/').split(os.pathsep))
++    return tuple(os.environ.get('XDG_DATA_DIRS', '/overlayer/zexlib/union/share/:/overlayer/syshub/share/').split(os.pathsep))
+ 
+ 
+ @run_once
+diff --git a/tools/config/api.go b/tools/config/api.go
+index 089694b..3e1d0bc 100644
+--- a/tools/config/api.go
++++ b/tools/config/api.go
+@@ -295,7 +295,7 @@ func (self *ConfigParser) ParseFiles(paths ...string) error {
+ }
+ 
+ func (self *ConfigParser) LoadConfig(name string, paths []string, overrides []string) (err error) {
+-	const SYSTEM_CONF = "/etc/xdg/kitty"
++	const SYSTEM_CONF = "/overlayer/syshub/etc/xdg/kitty"
+ 	system_conf := filepath.Join(SYSTEM_CONF, name)
+ 	add_if_exists := func(q string) {
+ 		err = self.ParseFiles(q)
+diff --git a/tools/tui/run.go b/tools/tui/run.go
+index 44359e8..449eaea 100644
+--- a/tools/tui/run.go
++++ b/tools/tui/run.go
+@@ -70,7 +70,7 @@ func get_shell_from_kitty_conf() (shell string) {
+ 	if shell == "." {
+ 		s, e := utils.LoginShellForCurrentUser()
+ 		if e != nil {
+-			shell = "/bin/sh"
++			shell = "/overlayer/syshub/bin/sh"
+ 		} else {
+ 			shell = s
+ 		}
+@@ -114,7 +114,7 @@ func ResolveShell(shell string) []string {
+ 	}
+ 	exe := utils.FindExe(shell_cmd[0])
+ 	if unix.Access(exe, unix.X_OK) != nil {
+-		shell_cmd = []string{"/bin/sh"}
++		shell_cmd = []string{"/overlayer/syshub/bin/sh"}
+ 	}
+ 	return shell_cmd
+ }
+diff --git a/tools/tui/shell_integration/api.go b/tools/tui/shell_integration/api.go
+index 2835233..0815420 100644
+--- a/tools/tui/shell_integration/api.go
++++ b/tools/tui/shell_integration/api.go
+@@ -112,14 +112,14 @@ func PathToTerminfoDb(term string) (ans string) {
+ 	if td := os.Getenv("TERMINFO_DIRS"); td != "" {
+ 		for q := range strings.SplitSeq(td, string(os.PathListSeparator)) {
+ 			if q == "" {
+-				q = "/usr/share/terminfo"
++				q = "/overlayer/syshub/share/terminfo"
+ 			}
+ 			if ans = check_dir(q); ans != "" {
+ 				return ans
+ 			}
+ 		}
+ 	}
+-	for _, q := range []string{"/usr/share/terminfo", "/usr/lib/terminfo", "/usr/share/lib/terminfo"} {
++	for _, q := range []string{"/overlayer/syshub/share/terminfo", "/usr/lib/terminfo", "/usr/share/lib/terminfo"} {
+ 		if ans = check_dir(q); ans != "" {
+ 			return ans
+ 		}
+diff --git a/tools/utils/machine_id/unix.go b/tools/utils/machine_id/unix.go
+index 81ba103..a6f8ed9 100644
+--- a/tools/utils/machine_id/unix.go
++++ b/tools/utils/machine_id/unix.go
+@@ -14,7 +14,7 @@ import (
+ var _ = fmt.Print
+ 
+ func read_machine_id() (string, error) {
+-	if data, err := os.ReadFile("/etc/machine-id"); err == nil {
++	if data, err := os.ReadFile("/overlayer/syshub/etc/machine-id"); err == nil {
+ 		ans := utils.UnsafeBytesToString(data)
+ 		return strings.TrimRightFunc(ans, unicode.IsSpace), nil
+ 	} else {
+diff --git a/tools/utils/mime_cache.go b/tools/utils/mime_cache.go
+index a8d8ecd..ccfaa4e 100644
+--- a/tools/utils/mime_cache.go
++++ b/tools/utils/mime_cache.go
+@@ -33,7 +33,7 @@ const (
+ 	mime_cache_literal_list_offset_pos  = 12
+ 	mime_cache_suffix_tree_offset_pos   = 16
+ 	mime_cache_glob_list_offset_pos     = 20
+-	mime_cache_default_data_dirs        = "/usr/local/share/:/usr/share/"
++	mime_cache_default_data_dirs        = "/overlayer/zexlib/union/share/:/overlayer/syshub/share/"
+ 	mime_cache_relative_path_in_datadir = "mime/mime.cache"
+ )
+ 
+diff --git a/tools/utils/passwd.go b/tools/utils/passwd.go
+index 1557508..2526bc1 100644
+--- a/tools/utils/passwd.go
++++ b/tools/utils/passwd.go
+@@ -51,7 +51,7 @@ func ParsePasswdFile(path string) (ans map[string]PasswdEntry, err error) {
+ 
+ var passwd_err error
+ var passwd_database = sync.OnceValue(func() (ans map[string]PasswdEntry) {
+-	ans, passwd_err = ParsePasswdFile("/etc/passwd")
++	ans, passwd_err = ParsePasswdFile("/overlayer/syshub/etc/passwd")
+ 	return
+ })
+ 

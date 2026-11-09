@@ -1,0 +1,26 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=kitty
+pkgver=0.50.0
+pkgrel=0
+source="https://github.com/kovidgoyal/kitty/releases/download/v$pkgver/kitty-$pkgver.tar.xz
+0001-zainium-paths.patch"
+sha256sums="01f20d0b253af0a7e041394a501adc83483f2eee01faf607a933c028343ab71a  kitty-$pkgver.tar.xz"
+makedepends="python3-dev go pkgconf harfbuzz-dev fontconfig-dev freetype-dev libxkbcommon-dev wayland-dev wayland-protocols libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev mesa-dev dbus-dev lcms2-dev libpng-dev zlib-dev openssl-dev xxhash-dev librsync-dev simde ncurses cairo-dev"
+
+# The kitty terminal. 0001-zainium-paths.patch moves the paths kitty and its
+# kitten helper read at run time to the Zainium layout: the system config in
+# /overlayer/syshub/etc/xdg/kitty, the default XDG data dirs, terminfo, /etc/passwd,
+# /etc/machine-id, the fallback shell and login. kitten is a static Go program, so
+# sys_resolver can not redirect its paths; the patch has to.
+build() {
+    patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    python3 setup.py linux-package \
+        --prefix "$SRCDIR/out/overlayer/syshub" \
+        --update-check-interval=0 \
+        --verbose
+}
+
+package() {
+    mkdir -p "$PAYLOAD_DIR"
+    cp -a "$SRCDIR/out/overlayer" "$PAYLOAD_DIR/"
+}
