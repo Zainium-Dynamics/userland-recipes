@@ -1,0 +1,31 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=make
+pkgver=4.4.1
+pkgrel=0
+source="https://ftp.gnu.org/gnu/make/make-$pkgver.tar.gz
+0001-zainium-paths.patch"
+sha256sums="dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3  make-$pkgver.tar.gz"
+
+# GNU make. 0001-zainium-paths.patch: the default shell is /overlayer/syshub/bin/sh,
+# and the default include directories are the userland's and the base's include
+# folders instead of /usr/include and /usr/local/include.
+build() {
+    patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    # gnulib's fnmatch.c declares getenv() without arguments, which C23 (GCC 15's default) rejects
+    CFLAGS="${CFLAGS:-} -std=gnu17" ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --mandir=/overlayer/syshub/share/man \
+        --infodir=/overlayer/syshub/share/info \
+        --localstatedir=/overlayer/syshub/var \
+        --disable-nls \
+        --without-guile
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+    # info pages have no reader here
+    rm -rf "$PAYLOAD_DIR/overlayer/syshub/share/info"
+}
