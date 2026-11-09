@@ -5,7 +5,7 @@ pkgrel=0
 source="https://github.com/kovidgoyal/kitty/releases/download/v$pkgver/kitty-$pkgver.tar.xz
 0001-zainium-paths.patch"
 sha256sums="01f20d0b253af0a7e041394a501adc83483f2eee01faf607a933c028343ab71a  kitty-$pkgver.tar.xz"
-makedepends="python3-dev go pkgconf harfbuzz-dev fontconfig-dev freetype-dev libxkbcommon-dev wayland-dev wayland-protocols libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev mesa-dev dbus-dev lcms2-dev libpng-dev zlib-dev openssl-dev xxhash-dev librsync-dev simde ncurses cairo-dev"
+makedepends="python3-dev go pkgconf harfbuzz-dev fontconfig-dev freetype-dev libxkbcommon-dev wayland-dev wayland-protocols libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev mesa-dev dbus-dev lcms2-dev libpng-dev zlib-dev openssl-dev xxhash-dev librsync-dev simde ncurses cairo-dev fontconfig font-nerd-fonts-symbols"
 
 # The kitty terminal. 0001-zainium-paths.patch moves the paths kitty and its
 # kitten helper read at run time to the Zainium layout: the system config in
