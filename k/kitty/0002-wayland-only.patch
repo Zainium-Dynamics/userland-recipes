@@ -1,0 +1,13 @@
+diff --git a/setup.py b/setup.py
+index bb7ae04..e2eee12 100755
+--- a/setup.py
++++ b/setup.py
+@@ -1303,7 +1303,7 @@ def build_wayland_protocols(
+ 
+ 
+ def compile_glfw(compilation_database: CompilationDatabase, build_dsym: bool = False) -> None:
+-    modules = 'cocoa' if is_macos else 'x11 wayland'
++    modules = 'cocoa' if is_macos else 'wayland'
+     for module in modules.split():
+         try:
+             genv = glfw_init_env(env, pkg_config, pkg_version, at_least_version, test_compile, module)
