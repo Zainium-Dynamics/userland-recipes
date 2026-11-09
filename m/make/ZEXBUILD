@@ -11,7 +11,8 @@ sha256sums="dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3  ma
 # folders instead of /usr/include and /usr/local/include.
 build() {
     patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
-    ./configure \
+    # gnulib's fnmatch.c declares getenv() without arguments, which C23 (GCC 15's default) rejects
+    CFLAGS="${CFLAGS:-} -std=gnu17" ./configure \
         --host="$CHOST" \
         --prefix=/overlayer/syshub \
         --sysconfdir=/overlayer/syshub/etc \
