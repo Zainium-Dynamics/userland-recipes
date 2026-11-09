@@ -1,0 +1,38 @@
+diff --git a/src/job.c b/src/job.c
+index ea88561..69d00af 100644
+--- a/src/job.c
++++ b/src/job.c
+@@ -54,7 +54,7 @@ int batch_mode_shell = 0;
+ 
+ #elif defined (__EMX__)
+ 
+-const char *default_shell = "/bin/sh";
++const char *default_shell = "/overlayer/syshub/bin/sh";
+ int batch_mode_shell = 0;
+ 
+ #elif defined (VMS)
+@@ -76,7 +76,7 @@ char * vms_strsignal (int status);
+ 
+ #else
+ 
+-const char *default_shell = "/bin/sh";
++const char *default_shell = "/overlayer/syshub/bin/sh";
+ int batch_mode_shell = 0;
+ 
+ #endif
+diff --git a/src/read.c b/src/read.c
+index b0fc1e1..eb294d6 100644
+--- a/src/read.c
++++ b/src/read.c
+@@ -111,9 +111,8 @@ static const char *default_include_directories[] =
+     INCLUDEDIR,
+ #endif
+ #ifndef _AMIGA
+-    "/usr/gnu/include",
+-    "/usr/local/include",
+-    "/usr/include",
++    "/overlayer/zexlib/union/include",
++    "/overlayer/syshub/include",
+ #endif
+     0
+   };
