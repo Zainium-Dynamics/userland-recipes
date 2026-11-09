@@ -7,7 +7,7 @@ source="https://github.com/kovidgoyal/kitty/releases/download/v$pkgver/kitty-$pk
 sha256sums="01f20d0b253af0a7e041394a501adc83483f2eee01faf607a933c028343ab71a  kitty-$pkgver.tar.xz"
 # Zainium's own libraries and headers where we have them; only build tools and the
 # libraries the base lacks (lcms2, xxhash, librsync, simde, X11 parts) come from Alpine
-needs_toolchain="gcc-musl binutils gettext python python-dev pixman pixman-dev glib glib-dev pcre2 pcre2-dev libffi libffi-dev expat expat-dev bzip2 bzip2-dev brotli brotli-dev libdrm libdrm-dev util-linux cairo cairo-dev harfbuzz harfbuzz-dev fontconfig fontconfig-dev freetype freetype-dev libxkbcommon libxkbcommon-dev wayland wayland-dev wayland-protocols dbus dbus-dev libpng libpng-dev zlib zlib-dev openssl openssl-dev mesa mesa-dev ncurses ncurses-dev pkgconf"
+needs_toolchain="gcc-musl binutils libglvnd libglvnd-dev gettext python python-dev pixman pixman-dev glib glib-dev pcre2 pcre2-dev libffi libffi-dev expat expat-dev bzip2 bzip2-dev brotli brotli-dev libdrm libdrm-dev util-linux cairo cairo-dev harfbuzz harfbuzz-dev fontconfig fontconfig-dev freetype freetype-dev libxkbcommon libxkbcommon-dev wayland wayland-dev wayland-protocols dbus dbus-dev libpng libpng-dev zlib zlib-dev openssl openssl-dev mesa mesa-dev ncurses ncurses-dev pkgconf"
 makedepends="go libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev lcms2-dev xxhash-dev librsync-dev simde font-nerd-fonts-symbols"
 
 # The kitty terminal. 0001-zainium-paths.patch moves the paths kitty and its
@@ -15,6 +15,8 @@ makedepends="go libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-de
 # /overlayer/syshub/etc/xdg/kitty, the default XDG data dirs, terminfo, /etc/passwd,
 # /etc/machine-id, the fallback shell and login. kitten is a static Go program, so
 # sys_resolver can not redirect its paths; the patch has to.
+# The patch also links desktop OpenGL from libglvnd's libOpenGL (opengl.pc) and
+# loads libOpenGL.so.0 first, because Zainium is Wayland only and has no libGL.
 build() {
     patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
     # build with Zainium's own compiler, against Zainium's headers and libraries,

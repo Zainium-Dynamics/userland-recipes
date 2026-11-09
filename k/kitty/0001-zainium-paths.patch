@@ -1,3 +1,15 @@
+diff --git a/glfw/egl_context.c b/glfw/egl_context.c
+index e939bdd..8b363dd 100644
+--- a/glfw/egl_context.c
++++ b/glfw/egl_context.c
+@@ -529,6 +529,7 @@ _glfwCreateContextEGL(_GLFWwindow *window, const _GLFWctxconfig *ctxconfig, cons
+ #elif defined(_GLFW_WIN32)
+ #elif defined(_GLFW_COCOA)
+ #else
++            "libOpenGL.so.0",
+             "libGL.so.1",
+ #endif
+             NULL};
 diff --git a/kittens/desktop_ui/portal.go b/kittens/desktop_ui/portal.go
 index 634c4f2..1c6191d 100644
 --- a/kittens/desktop_ui/portal.go
@@ -94,6 +106,19 @@ index d78254c..c89064b 100644
  
  
  @run_once
+diff --git a/setup.py b/setup.py
+index bb7ae04..1c44030 100755
+--- a/setup.py
++++ b/setup.py
+@@ -809,7 +809,7 @@ def kitty_env(args: Options) -> Env:
+     cflags.extend(pkg_config('harfbuzz', '--cflags-only-I'))
+     platform_libs.extend(pkg_config('harfbuzz', '--libs'))
+     pylib = get_python_flags(args, cflags)
+-    gl_libs = ['-framework', 'OpenGL'] if is_macos else pkg_config('gl', '--libs')
++    gl_libs = ['-framework', 'OpenGL'] if is_macos else pkg_config('opengl', '--libs')
+     libpng = pkg_config('libpng', '--libs')
+     lcms2 = pkg_config('lcms2', '--libs')
+     ans.ldpaths += pylib + platform_libs + gl_libs + libpng + lcms2 + libcrypto_ldflags + xxhash[1]
 diff --git a/tools/config/api.go b/tools/config/api.go
 index 089694b..3e1d0bc 100644
 --- a/tools/config/api.go
