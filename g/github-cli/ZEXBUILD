@@ -15,6 +15,12 @@ needs_toolchain="go"
 build() {
     cd "$SRCDIR/cli-$pkgver"
     patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    # Zainium's Go looks for DNS and CA certificates under /overlayer/syshub/etc.
+    # The build machine is Alpine, so give it the build machine's own (not packaged)
+    mkdir -p /overlayer/syshub/etc/ssl/certs
+    [ -e /overlayer/syshub/etc/resolv.conf ] || cp /etc/resolv.conf /overlayer/syshub/etc/resolv.conf
+    [ -e /overlayer/syshub/etc/ssl/certs/ca-certificates.crt ] ||
+        cp /etc/ssl/certs/ca-certificates.crt /overlayer/syshub/etc/ssl/certs/ca-certificates.crt
     export GOROOT=/overlayer/syshub/lib/go
     export PATH="$GOROOT/bin:$PATH"
     export GOTOOLCHAIN=local CGO_ENABLED=0 GOFLAGS=-trimpath
