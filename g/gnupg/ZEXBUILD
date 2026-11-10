@@ -9,6 +9,10 @@ needs_toolchain="zlib zlib-dev libksba libksba-dev"
 
 # Only gpg itself: smartcards, keyservers, gpgsm, keyboxd, ldap and tofu off
 build() {
+    # configure finds libksba through Alpine's gpgrt-config, which only looks in
+    # /usr/lib/pkgconfig. Point it at Zainium's ksba.pc (its prefix is /overlayer/syshub)
+    mkdir -p /usr/lib/pkgconfig
+    ln -sf /overlayer/syshub/lib/pkgconfig/ksba.pc /usr/lib/pkgconfig/ksba.pc
     export CPPFLAGS="-I/overlayer/syshub/include ${CPPFLAGS:-}"
     export LDFLAGS="-L/overlayer/syshub/lib ${LDFLAGS:-}"
     ./configure \
