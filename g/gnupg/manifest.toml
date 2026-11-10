@@ -16,7 +16,7 @@ ed25519_sig      = ""
 ed25519_pubkey   = ""
 
 requires_syshub  = ""
-depends          = ["musl", "libgpg-error", "libassuan", "libgcrypt", "npth", "zlib"]
+depends          = ["musl", "libgpg-error", "libassuan", "libgcrypt", "libksba", "npth", "zlib"]
 provides         = ["gnupg"]
 tags             = ["gnupg", "crypto"]
 
