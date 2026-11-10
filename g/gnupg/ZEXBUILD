@@ -1,11 +1,11 @@
 maintainer="Zainium Dynamics <alizain@zainiumdynamics.tech>"
 pkgname=gnupg
 pkgver=2.4.9
-pkgrel=0
+pkgrel=1
 source="https://gnupg.org/ftp/gcrypt/gnupg/gnupg-$pkgver.tar.bz2"
 sha256sums="dd17ab2e9a04fd79d39d853f599cbc852062ddb9ab52a4ddeb4176fd8b302964  gnupg-$pkgver.tar.bz2"
-makedepends="libgpg-error-dev libassuan-dev libgcrypt-dev libksba-dev npth-dev"
-needs_toolchain="zlib zlib-dev"
+makedepends="libgpg-error-dev libassuan-dev libgcrypt-dev npth-dev"
+needs_toolchain="zlib zlib-dev libksba libksba-dev"
 
 # Only gpg itself: smartcards, keyservers, gpgsm, keyboxd, ldap and tofu off
 build() {
