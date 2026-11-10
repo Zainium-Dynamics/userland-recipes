@@ -8,8 +8,8 @@ source="https://github.com/kovidgoyal/kitty/releases/download/v$pkgver/kitty-$pk
 sha256sums="01f20d0b253af0a7e041394a501adc83483f2eee01faf607a933c028343ab71a  kitty-$pkgver.tar.xz"
 # Zainium's own libraries and headers where we have them; only build tools and the
 # libraries the base lacks (lcms2, xxhash, simde) come from Alpine
-needs_toolchain="gcc-musl binutils libglvnd libglvnd-dev gettext python python-dev pixman pixman-dev glib glib-dev pcre2 pcre2-dev libffi libffi-dev expat expat-dev bzip2 bzip2-dev brotli brotli-dev libdrm libdrm-dev util-linux cairo cairo-dev harfbuzz harfbuzz-dev fontconfig fontconfig-dev freetype freetype-dev libxkbcommon libxkbcommon-dev wayland wayland-dev wayland-protocols dbus dbus-dev libpng libpng-dev zlib zlib-dev openssl openssl-dev mesa mesa-dev ncurses ncurses-dev pkgconf"
-makedepends="go lcms2-dev lcms2-static xxhash-dev xxhash-static simde-dev font-nerd-fonts-symbols"
+needs_toolchain="gcc-musl binutils libglvnd libglvnd-dev gettext python python-dev pixman pixman-dev glib glib-dev pcre2 pcre2-dev libffi libffi-dev expat expat-dev bzip2 bzip2-dev brotli brotli-dev libdrm libdrm-dev util-linux cairo cairo-dev harfbuzz harfbuzz-dev fontconfig fontconfig-dev freetype freetype-dev libxkbcommon libxkbcommon-dev wayland wayland-dev wayland-protocols dbus dbus-dev systemd systemd-dev libpng libpng-dev zlib zlib-dev openssl openssl-dev mesa mesa-dev ncurses ncurses-dev pkgconf"
+makedepends="go lcms2-dev lcms2-static xxhash-dev simde-dev font-nerd-fonts-symbols"
 
 # The kitty terminal. 0001-zainium-paths.patch moves the paths kitty and its
 # kitten helper read at run time to the Zainium layout: the system config in
@@ -32,7 +32,11 @@ build() {
     cp /usr/include/xxhash.h /usr/include/xxh3.h /usr/include/lcms2*.h "$D/include/"
     cp -r /usr/include/simde "$D/include/"
     printf 'Name: simde\nDescription: simde\nVersion: 0.8\nCflags: -I%s/include\n' "$D" > "$D/pkgconfig/simde.pc"
-    printf 'Name: libxxhash\nDescription: xxhash\nVersion: 0.8\nCflags: -I%s/include\nLibs: /usr/lib/libxxhash.a\n' "$D" > "$D/pkgconfig/libxxhash.pc"
+    # Alpine's libxxhash.a is LTO bytecode from an older gcc, so build it here from the header
+    printf '#define XXH_IMPLEMENTATION\n#define XXH_STATIC_LINKING_ONLY\n#include "xxhash.h"\n' > "$D/xxhash.c"
+    "$CC" -O3 -fPIC -I"$D/include" -c "$D/xxhash.c" -o "$D/xxhash.o"
+    ar rcs "$D/libxxhash.a" "$D/xxhash.o"
+    printf 'Name: libxxhash\nDescription: xxhash\nVersion: 0.8\nCflags: -I%s/include\nLibs: %s/libxxhash.a\n' "$D" "$D" > "$D/pkgconfig/libxxhash.pc"
     printf 'Name: lcms2\nDescription: lcms2\nVersion: 2.16\nCflags: -I%s/include\nLibs: /usr/lib/liblcms2.a -lm -lpthread\n' "$D" > "$D/pkgconfig/lcms2.pc"
     export PKG_CONFIG_PATH="$D/pkgconfig:/overlayer/syshub/lib/pkgconfig:/overlayer/syshub/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
     export CPPFLAGS="-I/overlayer/syshub/include ${CPPFLAGS:-}"
