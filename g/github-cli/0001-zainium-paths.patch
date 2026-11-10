@@ -1,0 +1,11 @@
+--- a/pkg/cmd/completion/completion.go
++++ b/pkg/cmd/completion/completion.go
+@@ -38,7 +38,7 @@
+ 
+ 			Generate a %[1]s_gh%[1]s completion script and put it somewhere in your %[1]s$fpath%[1]s:
+ 
+-				gh completion -s zsh > /usr/local/share/zsh/site-functions/_gh
++				gh completion -s zsh > /overlayer/syshub/share/zsh/site-functions/_gh
+ 
+ 			Ensure that the following is present in your %[1]s~/.zshrc%[1]s:
+ 

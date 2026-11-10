@@ -1,0 +1,30 @@
+[package]
+name             = "github-cli"
+version          = "2.103.3"
+description      = "GitHub's official command line tool, gh"
+license          = "MIT"
+maintainer       = "Ali Zain <alizain@zainiumdynamics.tech>"
+homepage         = "https://cli.github.com"
+build_type       = "static"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = []
+provides         = ["gh"]
+tags             = ["cli", "git", "github", "development"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
