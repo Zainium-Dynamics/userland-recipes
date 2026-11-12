@@ -1,0 +1,34 @@
+[package]
+name             = "kitty"
+version          = "0.50.0"
+description      = "kitty, a fast GPU terminal emulator"
+license          = "GPL-3.0-only"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://sw.kovidgoyal.net/kitty/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["kitty", "kitten"]
+tags             = ["terminal", "gui"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+etc     = "/overlayer/zexlib/union/etc"
+share   = "/overlayer/zexlib/union/share"
+var     = "/overlayer/zexlib/union/var"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

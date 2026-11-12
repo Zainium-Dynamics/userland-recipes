@@ -1,0 +1,2643 @@
+diff --git a/__main__.py b/__main__.py
+index be06a41..244d900 100644
+--- a/__main__.py
++++ b/__main__.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2015, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/autoformat b/autoformat
+index 15aa7ae..5c38960 100755
+--- a/autoformat
++++ b/autoformat
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2026, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/benchmark.py b/benchmark.py
+index 6c50005..c6a3d51 100755
+--- a/benchmark.py
++++ b/benchmark.py
+@@ -294,7 +294,7 @@ def main() -> None:
+         help=(
+             'Profile with Linux perf: records at 999 Hz with DWARF call graphs '
+             'and saves raw data to ' + perf_output() + '. '
+-            'Requires perf in PATH with setcap cap_sys_admin,cap_sys_ptrace,cap_syslog=ep /usr/bin/perf'
++            'Requires perf in PATH with setcap cap_sys_admin,cap_sys_ptrace,cap_syslog=ep /overlayer/syshub/bin/perf'
+         ),
+     )
+     p.add_argument(
+diff --git a/build-terminfo b/build-terminfo
+index 722639a..66281af 100755
+--- a/build-terminfo
++++ b/build-terminfo
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # vim:fileencoding=utf-8
+ # License: GPL v3 Copyright: 2019, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+diff --git a/bypy/init_env.py b/bypy/init_env.py
+index 24ebd98..53bf048 100644
+--- a/bypy/init_env.py
++++ b/bypy/init_env.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # vim:fileencoding=utf-8
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+diff --git a/bypy/linux/__main__.py b/bypy/linux/__main__.py
+index 6d7cd36..a43bf9b 100644
+--- a/bypy/linux/__main__.py
++++ b/bypy/linux/__main__.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # vim:fileencoding=utf-8
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+@@ -113,7 +113,7 @@ def copy_libs(env) -> None:
+     print('Copying libs...')
+ 
+     for x in binary_includes():
+-        dest = env.bin_dir if '/bin/' in x else env.lib_dir
++        dest = env.bin_dir if '/overlayer/syshub/bin/' in x else env.lib_dir
+         shutil.copy2(x, dest)
+         dest = os.path.join(dest, os.path.basename(x))
+         subprocess.check_call(['chrpath', '-d', dest])
+diff --git a/bypy/macos/__main__.py b/bypy/macos/__main__.py
+index 1692d78..f500327 100644
+--- a/bypy/macos/__main__.py
++++ b/bypy/macos/__main__.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # vim:fileencoding=utf-8
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+@@ -54,7 +54,7 @@ def flipwritable(fn, mode=None):
+     return old_mode
+ 
+ 
+-STRIPCMD = ('/usr/bin/strip', '-x', '-S', '-')
++STRIPCMD = ('/overlayer/syshub/bin/strip', '-x', '-S', '-')
+ 
+ 
+ def strip_files(files, argv_max=(256 * 1024)) -> None:
+@@ -513,7 +513,7 @@ class Freeze(object):
+             print('Signing completed in {} minutes {} seconds'.format(*times))
+         os.symlink('/Applications', join(tdir, 'Applications'))
+         size_in_mb = int(subprocess.check_output(['du', '-s', '-k', tdir]).decode('utf-8').split()[0]) / 1024.0
+-        cmd = ['/usr/bin/hdiutil', 'create', '-srcfolder', tdir, '-volname', volname, '-format', format]
++        cmd = ['/overlayer/syshub/bin/hdiutil', 'create', '-srcfolder', tdir, '-volname', volname, '-format', format]
+         if size_in_mb > 190:
+             # We need an explicit -size because of a bug in hdiutil. When the size of
+             # srcfolder is close to 200MB hdiutil fails with
+diff --git a/bypy/site.py b/bypy/site.py
+index 9f73073..883b135 100644
+--- a/bypy/site.py
++++ b/bypy/site.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # vim:fileencoding=utf-8
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+diff --git a/count-lines-of-code b/count-lines-of-code
+index b1e6e2e..fe4752a 100755
+--- a/count-lines-of-code
++++ b/count-lines-of-code
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ 
+ import subprocess
+ 
+diff --git a/dev.sh b/dev.sh
+index 1b1820f..53c7199 100755
+--- a/dev.sh
++++ b/dev.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # dev.sh
+ # Copyright (C) 2023 Kovid Goyal <kovid at kovidgoyal.net>
+diff --git a/docs/_build/man/kitten-@-launch.1 b/docs/_build/man/kitten-@-launch.1
+index 84c9b9d..55dd9fb 100644
+--- a/docs/_build/man/kitten-@-launch.1
++++ b/docs/_build/man/kitten-@-launch.1
+@@ -127,7 +127,7 @@ A match expression to select an existing window or tab. If a match is found, it
+ .BI "--cwd" 
+ The working directory for the newly launched child. Use the special value current to use the working directory of the 
+ .B \-\-source\-window. The special value last_reported uses the last working directory reported by the shell (needs shell_integration to work). The special value oldest works like current but uses the working directory of the oldest foreground process associated with the currently active window rather than the newest foreground process. Finally, the special value root refers to the process that was originally started when the window was created. If kitty itself started that process via a wrapper, such as 
+-.I /usr/bin/login on macOS, the wrapper is ignored and its first child is used instead. The working directory reported by the shell is used only when the root process is in the foreground.
++.I /overlayer/syshub/bin/login on macOS, the wrapper is ignored and its first child is used instead. The working directory reported by the shell is used only when the root process is in the foreground.
+ 
+ When opening in the same working directory as the current window causes the new window to connect to a remote host, you can use the 
+ .B \-\-hold\-after\-ssh flag to prevent the new window from closing when the connection is terminated.
+diff --git a/docs/_build/man/kitten-choose-files.1 b/docs/_build/man/kitten-choose-files.1
+index b4393e9..312adba 100644
+--- a/docs/_build/man/kitten-choose-files.1
++++ b/docs/_build/man/kitten-choose-files.1
+@@ -839,7 +839,7 @@ If this option is not specified, config files are searched for in the order: \fB
+ .sp
+ If the environment variable \fBKITTY_CONFIG_DIRECTORY\fP \%<#\:envvar-KITTY_CONFIG_DIRECTORY> is specified, that directory is always used and the above searching does not happen.
+ .sp
+-If \fB/etc/xdg/kitty/choose\-files.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
++If \fB/overlayer/syshub/etc/xdg/kitty/choose\-files.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
+ .UNINDENT
+ .INDENT 0.0
+ .TP
+diff --git a/docs/_build/man/kitten-desktop-ui.1 b/docs/_build/man/kitten-desktop-ui.1
+index 0c26f8d..883d58a 100644
+--- a/docs/_build/man/kitten-desktop-ui.1
++++ b/docs/_build/man/kitten-desktop-ui.1
+@@ -71,7 +71,7 @@ kitten desktop\-ui enable\-portal
+ .UNINDENT
+ .sp
+ Then, set the following two environment variables, \fIsystem wide\fP, that means in
+-\fB/etc/environment\fP or the equivalent for your distribution:
++\fB/overlayer/syshub/etc/environment\fP or the equivalent for your distribution:
+ .INDENT 0.0
+ .INDENT 3.5
+ .sp
+@@ -119,7 +119,7 @@ There are multiple competing implementations of the backends. Each desktop
+ environment like KDE or GNOME has it\(aqs own backend and many window managers
+ provide implementations for some backends as well. Service discovery and
+ configuring which backend to use happens via the \fBxdg\-desktop\-portal\fP
+-program, usually found at \fB/usr/lib/xdg\-desktop\-portal\fP\&.
++program, usually found at \fB/overlayer/syshub/lib/xdg\-desktop\-portal\fP\&.
+ .sp
+ It can be configured by files in \fB$XDG_CONFIG_HOME/xdg\-desktop\-portal\fP,
+ which defaults to \fB~/.config/xdg\-desktop\-portal\fP\&. See
+@@ -171,7 +171,7 @@ Read the \fBportals.conf\fP man page and run:
+ .INDENT 3.5
+ .sp
+ .EX
+-/usr/lib/xdg\-desktop\-portal \-r \-v
++/overlayer/syshub/lib/xdg\-desktop\-portal \-r \-v
+ .EE
+ .UNINDENT
+ .UNINDENT
+diff --git a/docs/_build/man/kitten-diff.1 b/docs/_build/man/kitten-diff.1
+index 033954a..6f05efe 100644
+--- a/docs/_build/man/kitten-diff.1
++++ b/docs/_build/man/kitten-diff.1
+@@ -1018,7 +1018,7 @@ If this option is not specified, config files are searched for in the order: \fB
+ .sp
+ If the environment variable \fBKITTY_CONFIG_DIRECTORY\fP \%<#\:envvar-KITTY_CONFIG_DIRECTORY> is specified, that directory is always used and the above searching does not happen.
+ .sp
+-If \fB/etc/xdg/kitty/diff.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
++If \fB/overlayer/syshub/etc/xdg/kitty/diff.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
+ .UNINDENT
+ .INDENT 0.0
+ .TP
+diff --git a/docs/_build/man/kitten-edit-in-kitty.1 b/docs/_build/man/kitten-edit-in-kitty.1
+index 30ac219..c789107 100644
+--- a/docs/_build/man/kitten-edit-in-kitty.1
++++ b/docs/_build/man/kitten-edit-in-kitty.1
+@@ -67,7 +67,7 @@ Keep the focus on the currently active window instead of switching to the newly
+ .BI "--cwd" 
+ The working directory for the newly launched child. Use the special value current to use the working directory of the 
+ .B \-\-source\-window. The special value last_reported uses the last working directory reported by the shell (needs shell_integration to work). The special value oldest works like current but uses the working directory of the oldest foreground process associated with the currently active window rather than the newest foreground process. Finally, the special value root refers to the process that was originally started when the window was created. If kitty itself started that process via a wrapper, such as 
+-.I /usr/bin/login on macOS, the wrapper is ignored and its first child is used instead. The working directory reported by the shell is used only when the root process is in the foreground.
++.I /overlayer/syshub/bin/login on macOS, the wrapper is ignored and its first child is used instead. The working directory reported by the shell is used only when the root process is in the foreground.
+ 
+ When opening in the same working directory as the current window causes the new window to connect to a remote host, you can use the 
+ .B \-\-hold\-after\-ssh flag to prevent the new window from closing when the connection is terminated.
+diff --git a/docs/_build/man/kitten-quick-access-terminal.1 b/docs/_build/man/kitten-quick-access-terminal.1
+index 85c5719..4dd83a0 100644
+--- a/docs/_build/man/kitten-quick-access-terminal.1
++++ b/docs/_build/man/kitten-quick-access-terminal.1
+@@ -345,7 +345,7 @@ If this option is not specified, config files are searched for in the order: \fB
+ .sp
+ If the environment variable \fBKITTY_CONFIG_DIRECTORY\fP \%<#\:envvar-KITTY_CONFIG_DIRECTORY> is specified, that directory is always used and the above searching does not happen.
+ .sp
+-If \fB/etc/xdg/kitty/quick\-access\-terminal.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
++If \fB/overlayer/syshub/etc/xdg/kitty/quick\-access\-terminal.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
+ .UNINDENT
+ .INDENT 0.0
+ .TP
+diff --git a/docs/_build/man/kitten-ssh.1 b/docs/_build/man/kitten-ssh.1
+index 7c6b7c5..9bf0b34 100644
+--- a/docs/_build/man/kitten-ssh.1
++++ b/docs/_build/man/kitten-ssh.1
+@@ -671,13 +671,13 @@ infocmp \-CrT0 xterm\-kitty
+ .UNINDENT
+ .sp
+ The output of this command is the termcap description, which should be appended
+-to \fB/usr/share/misc/termcap\fP on the remote server. Then run the following
++to \fB/overlayer/syshub/share/misc/termcap\fP on the remote server. Then run the following
+ command to apply your change (on the server):
+ .INDENT 0.0
+ .INDENT 3.5
+ .sp
+ .EX
+-cap_mkdb /usr/share/misc/termcap
++cap_mkdb /overlayer/syshub/share/misc/termcap
+ .EE
+ .UNINDENT
+ .UNINDENT
+diff --git a/docs/_build/man/kitty.1 b/docs/_build/man/kitty.1
+index 419efd0..8e8cf82 100644
+--- a/docs/_build/man/kitty.1
++++ b/docs/_build/man/kitty.1
+@@ -73,7 +73,7 @@ If this option is not specified, config files are searched for in the order: \fB
+ .sp
+ If the environment variable \fBKITTY_CONFIG_DIRECTORY\fP \%<#\:envvar-KITTY_CONFIG_DIRECTORY> is specified, that directory is always used and the above searching does not happen.
+ .sp
+-If \fB/etc/xdg/kitty/kitty.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
++If \fB/overlayer/syshub/etc/xdg/kitty/kitty.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
+ .sp
+ When \fBNONE\fP is used, other files in the kitty config directory that are normally loaded automatically are also ignored, namely, the automatic color theme files (\fB*\-theme.auto.conf\fP), \fBopen\-actions.conf\fP, \fBlaunch\-actions.conf\fP, \fBmime.types\fP, \fBpaste\-actions.py\fP, \fBnotifications.py\fP and the custom window icon (\fBkitty.app.png\fP).
+ .UNINDENT
+diff --git a/gen/__main__.py b/gen/__main__.py
+index 1a3ff14..004c21e 100644
+--- a/gen/__main__.py
++++ b/gen/__main__.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2023, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/gen/apc_parsers.py b/gen/apc_parsers.py
+index ad5104b..d2f59a8 100755
+--- a/gen/apc_parsers.py
++++ b/gen/apc_parsers.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/gen/bitfields.py b/gen/bitfields.py
+index cc2c2d1..ccc8491 100644
+--- a/gen/bitfields.py
++++ b/gen/bitfields.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2025, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/gen/cursors.py b/gen/cursors.py
+index fa63149..0dd0703 100755
+--- a/gen/cursors.py
++++ b/gen/cursors.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2023, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/gen/key_constants.py b/gen/key_constants.py
+index 644f542..a1980c5 100755
+--- a/gen/key_constants.py
++++ b/gen/key_constants.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/gen/srgb_lut.py b/gen/srgb_lut.py
+index b3d9813..4eab327 100755
+--- a/gen/srgb_lut.py
++++ b/gen/srgb_lut.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ 
+ import os
+ import sys
+diff --git a/gen/wcwidth.py b/gen/wcwidth.py
+index 9e61ab5..5c62001 100755
+--- a/gen/wcwidth.py
++++ b/gen/wcwidth.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # Imports {{{
+diff --git a/glad/generate.py b/glad/generate.py
+index 65c522f..7df22ab 100755
+--- a/glad/generate.py
++++ b/glad/generate.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # vim:fileencoding=utf-8
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+diff --git a/glfw/egl_context.c b/glfw/egl_context.c
+index e939bdd..8b363dd 100644
+--- a/glfw/egl_context.c
++++ b/glfw/egl_context.c
+@@ -529,6 +529,7 @@ _glfwCreateContextEGL(_GLFWwindow *window, const _GLFWctxconfig *ctxconfig, cons
+ #elif defined(_GLFW_WIN32)
+ #elif defined(_GLFW_COCOA)
+ #else
++            "libOpenGL.so.0",
+             "libGL.so.1",
+ #endif
+             NULL};
+diff --git a/glfw/glfw.py b/glfw/glfw.py
+index 4bca08f..76b60f2 100755
+--- a/glfw/glfw.py
++++ b/glfw/glfw.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # vim:fileencoding=utf-8
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+diff --git a/kittens/ask/main.py b/kittens/ask/main.py
+index 588c6fc..c94f73e 100644
+--- a/kittens/ask/main.py
++++ b/kittens/ask/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/broadcast/main.py b/kittens/broadcast/main.py
+index 24fa847..563e0c0 100644
+--- a/kittens/broadcast/main.py
++++ b/kittens/broadcast/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/choose_files/main.py b/kittens/choose_files/main.py
+index bffbc42..6fe38f0 100644
+--- a/kittens/choose_files/main.py
++++ b/kittens/choose_files/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2025, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import shlex
+diff --git a/kittens/choose_fonts/backend.py b/kittens/choose_fonts/backend.py
+index c5b3728..996936b 100644
+--- a/kittens/choose_fonts/backend.py
++++ b/kittens/choose_fonts/backend.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import json
+diff --git a/kittens/clipboard/main.py b/kittens/clipboard/main.py
+index f176201..a7405cd 100644
+--- a/kittens/clipboard/main.py
++++ b/kittens/clipboard/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/command_palette/main.py b/kittens/command_palette/main.py
+index 3e66298..579497b 100644
+--- a/kittens/command_palette/main.py
++++ b/kittens/command_palette/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # Entry point: collect_keys_data(opts) — collects all keybinding, alias, and
+diff --git a/kittens/desktop_ui/main.go b/kittens/desktop_ui/main.go
+index 89b6097..24bfe70 100644
+--- a/kittens/desktop_ui/main.go
++++ b/kittens/desktop_ui/main.go
+@@ -78,7 +78,7 @@ func specialize_command(parent *cli.Command) {
+ 	parent.AddSubCommand(&cli.Command{
+ 		Name:             "enable-portal",
+ 		ShortDescription: "This will create or edit the various files needed so that the portal from this kitten is used by xdg-desktop-portal",
+-		HelpText:         "Once you run this command, add :code:`kitten desktop-ui run-server` to your window manager startup sequence and reboot your computer (or logout and restart your session) and hopefully xdg-desktop-portal should now delegate to kitty for the portals implemented here. If it doesn't try running :code:`/usr/lib/xdg-desktop-portal -r -v` it will provide a lot of logging about why it is choosing different portal backends. That combined with a careful reading of :code:`man portals.conf` should be enough to learn how to convince xdg-desktop-portal to use kitty.\n\nYou can change the system color-scheme dynamically by running::\n\n:code:`kitten desktop-ui set-color-scheme dark`",
++		HelpText:         "Once you run this command, add :code:`kitten desktop-ui run-server` to your window manager startup sequence and reboot your computer (or logout and restart your session) and hopefully xdg-desktop-portal should now delegate to kitty for the portals implemented here. If it doesn't try running :code:`/overlayer/syshub/lib/xdg-desktop-portal -r -v` it will provide a lot of logging about why it is choosing different portal backends. That combined with a careful reading of :code:`man portals.conf` should be enough to learn how to convince xdg-desktop-portal to use kitty.\n\nYou can change the system color-scheme dynamically by running::\n\n:code:`kitten desktop-ui set-color-scheme dark`",
+ 		Run: func(cmd *cli.Command, args []string) (rc int, err error) {
+ 			err = enable_portal()
+ 			return utils.IfElse(err == nil, 0, 1), err
+diff --git a/kittens/desktop_ui/main.py b/kittens/desktop_ui/main.py
+index bebe0e5..37fbc62 100644
+--- a/kittens/desktop_ui/main.py
++++ b/kittens/desktop_ui/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2025, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/desktop_ui/portal.go b/kittens/desktop_ui/portal.go
+index 634c4f2..1c6191d 100644
+--- a/kittens/desktop_ui/portal.go
++++ b/kittens/desktop_ui/portal.go
+@@ -330,7 +330,7 @@ var DataDirs = sync.OnceValue(func() (ans []string) {
+ 
+ 	data_dirs := os.Getenv("XDG_DATA_DIRS")
+ 	if data_dirs == "" {
+-		data_dirs = "/usr/local/share:/usr/share"
++		data_dirs = "/overlayer/zexlib/union/share:/overlayer/syshub/share"
+ 	}
+ 	data_home := os.Getenv("XDG_DATA_HOME")
+ 	if data_home == "" {
+diff --git a/kittens/diff/main.py b/kittens/diff/main.py
+index efb05a3..d2b3437 100644
+--- a/kittens/diff/main.py
++++ b/kittens/diff/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/dnd/main.py b/kittens/dnd/main.py
+index 017a202..bcda911 100644
+--- a/kittens/dnd/main.py
++++ b/kittens/dnd/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/hints/main.py b/kittens/hints/main.py
+index 8da6c16..311a6dc 100644
+--- a/kittens/hints/main.py
++++ b/kittens/hints/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/hyperlinked_grep/main.py b/kittens/hyperlinked_grep/main.py
+index a3b1834..fc008fe 100755
+--- a/kittens/hyperlinked_grep/main.py
++++ b/kittens/hyperlinked_grep/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/icat/main.py b/kittens/icat/main.py
+index bd53790..e6d0ea0 100644
+--- a/kittens/icat/main.py
++++ b/kittens/icat/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ OPTIONS = """\
+diff --git a/kittens/notify/main.py b/kittens/notify/main.py
+index 26182b4..b64cea4 100644
+--- a/kittens/notify/main.py
++++ b/kittens/notify/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/pager/main.py b/kittens/pager/main.py
+index 0e21537..6555b28 100644
+--- a/kittens/pager/main.py
++++ b/kittens/pager/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/panel/main.py b/kittens/panel/main.py
+index 6bea829..1f3508e 100644
+--- a/kittens/panel/main.py
++++ b/kittens/panel/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kittens/query_terminal/main.py b/kittens/query_terminal/main.py
+index c11ad9f..08b1487 100644
+--- a/kittens/query_terminal/main.py
++++ b/kittens/query_terminal/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import re
+diff --git a/kittens/quick_access_terminal/main.py b/kittens/quick_access_terminal/main.py
+index ef513f0..7e82d07 100644
+--- a/kittens/quick_access_terminal/main.py
++++ b/kittens/quick_access_terminal/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2025, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import re
+diff --git a/kittens/remote_file/main.py b/kittens/remote_file/main.py
+index 5bafdcc..ee85790 100644
+--- a/kittens/remote_file/main.py
++++ b/kittens/remote_file/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/resize_window/main.py b/kittens/resize_window/main.py
+index 7840690..8d719d9 100644
+--- a/kittens/resize_window/main.py
++++ b/kittens/resize_window/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/runner.py b/kittens/runner.py
+index 78b187e..830c9e0 100644
+--- a/kittens/runner.py
++++ b/kittens/runner.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/show_key/main.py b/kittens/show_key/main.py
+index 5114397..d4c5886 100644
+--- a/kittens/show_key/main.py
++++ b/kittens/show_key/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/ssh/config.go b/kittens/ssh/config.go
+index 0057e33..27a8d0e 100644
+--- a/kittens/ssh/config.go
++++ b/kittens/ssh/config.go
+@@ -239,7 +239,7 @@ func ParseCopyInstruction(spec string) (ans []*CopyInstruction, err error) {
+ 	if opts.SymlinkStrategy == "resolve" {
+ 		// The copied paths have their symlinks resolved, so HOME must be resolved
+ 		// as well, otherwise paths under a HOME that is itself reached via a
+-		// symlink, such as /home -> /usr/home, are not recognized as being in HOME.
++		// symlink, such as /home -> /overlayer/syshub/home, are not recognized as being in HOME.
+ 		// If HOME cannot be resolved fall back to using it as is.
+ 		if rh, err := filepath.EvalSymlinks(home); err == nil {
+ 			home = rh
+diff --git a/kittens/ssh/main.py b/kittens/ssh/main.py
+index 8644be0..a9e8ff9 100644
+--- a/kittens/ssh/main.py
++++ b/kittens/ssh/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/ssh/utils.py b/kittens/ssh/utils.py
+index 88595b3..5904895 100644
+--- a/kittens/ssh/utils.py
++++ b/kittens/ssh/utils.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2022, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/themes/main.py b/kittens/themes/main.py
+index 83174b6..abf8357 100644
+--- a/kittens/themes/main.py
++++ b/kittens/themes/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kittens/transfer/main.py b/kittens/transfer/main.py
+index 241eb3d..afb45f1 100644
+--- a/kittens/transfer/main.py
++++ b/kittens/transfer/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/transfer/utils.py b/kittens/transfer/utils.py
+index 7beef26..6f3d301 100644
+--- a/kittens/transfer/utils.py
++++ b/kittens/transfer/utils.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kittens/tui/dircolors.py b/kittens/tui/dircolors.py
+index 838ff74..6b7fe40 100644
+--- a/kittens/tui/dircolors.py
++++ b/kittens/tui/dircolors.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+@@ -264,7 +264,7 @@ class Dircolors:
+         self.extensions.clear()
+ 
+     def load_from_file(self) -> bool:
+-        for candidate in (os.path.expanduser('~/.dir_colors'), '/etc/DIR_COLORS'):
++        for candidate in (os.path.expanduser('~/.dir_colors'), '/overlayer/syshub/etc/DIR_COLORS'):
+             with suppress(Exception):
+                 with open(candidate) as f:
+                     return self.load_from_dircolors(f.read())
+diff --git a/kittens/tui/handler.py b/kittens/tui/handler.py
+index fcbca39..13c7e62 100644
+--- a/kittens/tui/handler.py
++++ b/kittens/tui/handler.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/tui/images.py b/kittens/tui/images.py
+index 2cb7276..5006113 100644
+--- a/kittens/tui/images.py
++++ b/kittens/tui/images.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import codecs
+diff --git a/kittens/tui/line_edit.py b/kittens/tui/line_edit.py
+index a57c4fb..7b160ec 100644
+--- a/kittens/tui/line_edit.py
++++ b/kittens/tui/line_edit.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Callable
+diff --git a/kittens/tui/loop.py b/kittens/tui/loop.py
+index 601e33d..2fb4de9 100644
+--- a/kittens/tui/loop.py
++++ b/kittens/tui/loop.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import asyncio
+diff --git a/kittens/tui/operations.py b/kittens/tui/operations.py
+index c584bd8..71275d9 100644
+--- a/kittens/tui/operations.py
++++ b/kittens/tui/operations.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kittens/tui/operations_stub.py b/kittens/tui/operations_stub.py
+index 61359be..3c55db6 100644
+--- a/kittens/tui/operations_stub.py
++++ b/kittens/tui/operations_stub.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/tui/path_completer.py b/kittens/tui/path_completer.py
+index aeb272b..4e8cb81 100644
+--- a/kittens/tui/path_completer.py
++++ b/kittens/tui/path_completer.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/tui/progress.py b/kittens/tui/progress.py
+index d04e2fe..bd16d7e 100644
+--- a/kittens/tui/progress.py
++++ b/kittens/tui/progress.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kittens/tui/spinners.py b/kittens/tui/spinners.py
+index 392066b..831bd45 100644
+--- a/kittens/tui/spinners.py
++++ b/kittens/tui/spinners.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Sequence
+diff --git a/kittens/tui/utils.py b/kittens/tui/utils.py
+index 1782850..504e94d 100644
+--- a/kittens/tui/utils.py
++++ b/kittens/tui/utils.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kittens/unicode_input/main.py b/kittens/unicode_input/main.py
+index ee6dede..21ad0d0 100644
+--- a/kittens/unicode_input/main.py
++++ b/kittens/unicode_input/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/actions.py b/kitty/actions.py
+index 7198302..2d34d1f 100644
+--- a/kitty/actions.py
++++ b/kitty/actions.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import inspect
+diff --git a/kitty/bash.py b/kitty/bash.py
+index 03df436..7852873 100644
+--- a/kitty/bash.py
++++ b/kitty/bash.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2022, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/borders.py b/kitty/borders.py
+index 0b3b40f..e1e9c42 100644
+--- a/kitty/borders.py
++++ b/kitty/borders.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Iterable
+diff --git a/kitty/boss.py b/kitty/boss.py
+index 51b3024..f56848e 100644
+--- a/kitty/boss.py
++++ b/kitty/boss.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # Imports {{{
+@@ -2637,7 +2637,7 @@ class Boss:
+         tab = self.active_tab
+         if tab is not None:
+             bdata = data.encode('utf-8') if isinstance(data, str) else data
+-            if is_macos and cmd[0] == '/usr/bin/less' and macos_version()[:2] < (12, 3):
++            if is_macos and cmd[0] == '/overlayer/syshub/bin/less' and macos_version()[:2] < (12, 3):
+                 # the system less before macOS 12.3 barfs up OSC codes, so sanitize them ourselves
+                 sentinel = os.path.join(cache_dir(), 'less-is-new-enough')
+                 if not os.path.exists(sentinel):
+diff --git a/kitty/child.py b/kitty/child.py
+index da97631..114df17 100644
+--- a/kitty/child.py
++++ b/kitty/child.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+@@ -538,7 +538,7 @@ class Child:
+                 argv.extend(self.startup_command_via_shell_integration)
+             if is_macos and not pass_fds and not opts.forward_stdio:
+                 # In addition for getlogin() to work we need to run the shell
+-                # via the /usr/bin/login wrapper, sigh.
++                # via the /overlayer/syshub/bin/login wrapper, sigh.
+                 # And login on macOS looks for .hushlogin in CWD instead of
+                 # HOME, bloody idiotic so we cant cwd when running it.
+                 # https://github.com/kovidgoyal/kitty/issues/6511
+@@ -550,7 +550,7 @@ class Child:
+                 if cwd:
+                     argv.append('--cwd=' + cwd)
+                     cwd = os.path.expanduser('~')
+-                login_argv = ['/usr/bin/login', '-f', '-l', '-p', user]
++                login_argv = ['/overlayer/syshub/bin/login', '-f', '-l', '-p', user]
+                 argv = login_argv + argv
+                 kitty_wrappers.insert(0, KittyWrapper(tuple(login_argv), False))
+         self.final_exe = final_exe = which(argv[0]) or argv[0]
+@@ -697,7 +697,7 @@ class Child:
+         """
+         The pid of the process originally started when the window was created,
+         skipping over any wrapper processes kitty itself inserted, such as
+-        /usr/bin/login on macOS. A wrapper is replaced by its first child.
++        /overlayer/syshub/bin/login on macOS. A wrapper is replaced by its first child.
+         """
+         if self.resolved_root_pid is not None:
+             return self.resolved_root_pid
+@@ -751,7 +751,7 @@ class Child:
+                 # so we assume the one with the highest PID is as that is most
+                 # likely to be the newest process. This situation can happen
+                 # for example with a shell script such as:
+-                # #!/bin/bash
++                # #!/overlayer/syshub/bin/bash
+                 # cd /tmp
+                 # vim
+                 # With this script , the foreground process group will contain
+diff --git a/kitty/choose_entry.py b/kitty/choose_entry.py
+index 9d0cb6e..5184df0 100644
+--- a/kitty/choose_entry.py
++++ b/kitty/choose_entry.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2019, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import re
+diff --git a/kitty/cli.py b/kitty/cli.py
+index 6161c80..8148305 100644
+--- a/kitty/cli.py
++++ b/kitty/cli.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+@@ -715,7 +715,7 @@ def parse_args(
+     return ans, parse_cmdline(oc, disabled, ans, args=args, track_seen_options=track_seen_options)
+ 
+ 
+-SYSTEM_CONF = f'/etc/xdg/{appname}/{appname}.conf'
++SYSTEM_CONF = f'/overlayer/syshub/etc/xdg/{appname}/{appname}.conf'
+ 
+ 
+ def default_config_paths(conf_paths: Sequence[str]) -> tuple[str, ...]:
+diff --git a/kitty/cli_stub.py b/kitty/cli_stub.py
+index 403e953..9a30d60 100644
+--- a/kitty/cli_stub.py
++++ b/kitty/cli_stub.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/client.py b/kitty/client.py
+index f6bb7c9..5e5f3bd 100644
+--- a/kitty/client.py
++++ b/kitty/client.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # Replay the log from --dump-commands. To use first run
+diff --git a/kitty/clipboard.py b/kitty/clipboard.py
+index e344af1..68d045d 100644
+--- a/kitty/clipboard.py
++++ b/kitty/clipboard.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2022, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import io
+diff --git a/kitty/colors.py b/kitty/colors.py
+index 8624379..517cc51 100644
+--- a/kitty/colors.py
++++ b/kitty/colors.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/conf/generate.py b/kitty/conf/generate.py
+index f8fab50..5c64325 100644
+--- a/kitty/conf/generate.py
++++ b/kitty/conf/generate.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/conf/types.py b/kitty/conf/types.py
+index 9991e8e..28d1acc 100644
+--- a/kitty/conf/types.py
++++ b/kitty/conf/types.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import builtins
+diff --git a/kitty/conf/utils.py b/kitty/conf/utils.py
+index 6475cfd..498a753 100644
+--- a/kitty/conf/utils.py
++++ b/kitty/conf/utils.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/config.py b/kitty/config.py
+index 67b39f2..77883eb 100644
+--- a/kitty/config.py
++++ b/kitty/config.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import json
+diff --git a/kitty/constants.py b/kitty/constants.py
+index d213650..2b9d009 100644
+--- a/kitty/constants.py
++++ b/kitty/constants.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+@@ -193,11 +193,11 @@ shell_integration_dir = os.path.join(kitty_base_dir, 'shell-integration')
+ fonts_dir = os.path.join(kitty_base_dir, 'fonts')
+ shaders_dir = os.path.join(kitty_base_dir, 'shaders')
+ try:
+-    shell_path = os.environ.get('SHELL') or pwd.getpwuid(os.geteuid()).pw_shell or '/bin/sh'
++    shell_path = os.environ.get('SHELL') or pwd.getpwuid(os.geteuid()).pw_shell or '/overlayer/syshub/bin/sh'
+ except KeyError:
+     with suppress(Exception):
+-        print('Failed to read login shell via getpwuid() for current user, falling back to /bin/sh', file=sys.stderr)
+-    shell_path = '/bin/sh'
++        print('Failed to read login shell via getpwuid() for current user, falling back to /overlayer/syshub/bin/sh', file=sys.stderr)
++    shell_path = '/overlayer/syshub/bin/sh'
+ # Keep this short as it is limited to 103 bytes on macOS
+ # https://github.com/ansible/ansible/issues/11536#issuecomment-153030743
+ ssh_control_master_template = 'kssh-{kitty_pid}-{ssh_placeholder}'
+@@ -325,7 +325,7 @@ def local_docs() -> str:
+         sq = os.path.join(d(base), 'docs', '_build', 'html')
+         if os.path.isdir(sq):
+             return sq
+-    for candidate in ('/usr', '/usr/local', '/opt/homebrew'):
++    for candidate in ('/overlayer/syshub', '/overlayer/syshub', '/opt/homebrew'):
+         q = os.path.join(candidate, 'share', subdir)
+         if os.path.isdir(q):
+             return q
+diff --git a/kitty/debug_config.py b/kitty/debug_config.py
+index e7bf24a..5fb5981 100644
+--- a/kitty/debug_config.py
++++ b/kitty/debug_config.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+@@ -198,12 +198,12 @@ class IssueData:
+         self.u = str(self.num_users)
+         self.U = self.u + ' user' + ('' if self.num_users == 1 else 's')
+         self.vars = {}
+-        with suppress(Exception), open('/etc/os-release') as osf:
++        with suppress(Exception), open('/overlayer/syshub/etc/os-release') as osf:
+             for line in osf:
+                 k, _, v = line.strip().partition('=')
+                 self.vars[k] = ' '.join(shlex_split(v))
+         if not self.vars:
+-            with suppress(Exception), open('/usr/lib/os-release') as osf:
++            with suppress(Exception), open('/overlayer/syshub/lib/os-release') as osf:
+                 for line in osf:
+                     k, _, v = line.strip().partition('=')
+                     self.vars[k] = ' '.join(shlex_split(v))
+@@ -283,7 +283,7 @@ def compositor_name() -> str:
+ def issue_data() -> str:
+     with suppress(Exception):
+         idata = IssueData()
+-        with open('/etc/issue', encoding='utf-8', errors='replace') as f:
++        with open('/overlayer/syshub/etc/issue', encoding='utf-8', errors='replace') as f:
+             return ''.join(idata.parse_issue_file(f)).strip()
+     return ''
+ 
+@@ -306,7 +306,7 @@ def debug_config(opts: KittyOpts | None = None, global_shortcuts: dict[str, Sing
+             p(' '.join(subprocess.check_output(['sw_vers']).decode('utf-8').splitlines()).strip())
+     if idata := issue_data():
+         p(idata)
+-    with suppress(Exception), open('/etc/lsb-release', encoding='utf-8', errors='replace') as f:
++    with suppress(Exception), open('/overlayer/syshub/etc/lsb-release', encoding='utf-8', errors='replace') as f:
+         p(f.read().strip())
+     if not is_macos:
+         p('Running under:', green(compositor_name()))
+diff --git a/kitty/entry_points.py b/kitty/entry_points.py
+index f8e75b9..7d21c12 100644
+--- a/kitty/entry_points.py
++++ b/kitty/entry_points.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2022, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/file_transmission.py b/kitty/file_transmission.py
+index 4676521..c5b316b 100644
+--- a/kitty/file_transmission.py
++++ b/kitty/file_transmission.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import errno
+diff --git a/kitty/fonts/common.py b/kitty/fonts/common.py
+index 19f1d7e..c437238 100644
+--- a/kitty/fonts/common.py
++++ b/kitty/fonts/common.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import copy
+diff --git a/kitty/fonts/core_text.py b/kitty/fonts/core_text.py
+index 5afeb9b..c9d1328 100644
+--- a/kitty/fonts/core_text.py
++++ b/kitty/fonts/core_text.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import itertools
+diff --git a/kitty/fonts/features.py b/kitty/fonts/features.py
+index 46eda25..561b895 100644
+--- a/kitty/fonts/features.py
++++ b/kitty/fonts/features.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from enum import IntEnum
+diff --git a/kitty/fonts/fontconfig.py b/kitty/fonts/fontconfig.py
+index 4c50aaf..3160139 100644
+--- a/kitty/fonts/fontconfig.py
++++ b/kitty/fonts/fontconfig.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kitty/fonts/list.py b/kitty/fonts/list.py
+index 9972501..c72127e 100644
+--- a/kitty/fonts/list.py
++++ b/kitty/fonts/list.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Sequence
+diff --git a/kitty/fonts/render.py b/kitty/fonts/render.py
+index 84efd59..5aabbac 100644
+--- a/kitty/fonts/render.py
++++ b/kitty/fonts/render.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/guess_mime_type.py b/kitty/guess_mime_type.py
+index 53e9d54..d66d73f 100644
+--- a/kitty/guess_mime_type.py
++++ b/kitty/guess_mime_type.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/key_encoding.py b/kitty/key_encoding.py
+index ffc6405..5812208 100644
+--- a/kitty/key_encoding.py
++++ b/kitty/key_encoding.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from enum import IntEnum
+diff --git a/kitty/key_names.py b/kitty/key_names.py
+index d496339..cbeeb3e 100644
+--- a/kitty/key_names.py
++++ b/kitty/key_names.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2019, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kitty/keys.py b/kitty/keys.py
+index c8c7e65..d1c8807 100644
+--- a/kitty/keys.py
++++ b/kitty/keys.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Callable, Iterable, Iterator
+diff --git a/kitty/launch.py b/kitty/launch.py
+index 2231f24..433a55d 100644
+--- a/kitty/launch.py
++++ b/kitty/launch.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2019, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+@@ -203,7 +203,7 @@ by the shell (needs :ref:`shell_integration` to work). The special value
+ oldest foreground process associated with the currently active window rather
+ than the newest foreground process. Finally, the special value :code:`root`
+ refers to the process that was originally started when the window was created.
+-If kitty itself started that process via a wrapper, such as :file:`/usr/bin/login`
++If kitty itself started that process via a wrapper, such as :file:`/overlayer/syshub/bin/login`
+ on macOS, the wrapper is ignored and its first child is used instead. The
+ working directory reported by the shell is used only when the root process is in
+ the foreground.
+diff --git a/kitty/launcher/single-instance.c b/kitty/launcher/single-instance.c
+index 5ee9ea6..6d167b1 100644
+--- a/kitty/launcher/single-instance.c
++++ b/kitty/launcher/single-instance.c
+@@ -109,8 +109,8 @@ get_socket_dir(char *output, size_t output_capacity) {
+     test_env(TMP);
+ 
+     ret_if_ok("/tmp");
+-    ret_if_ok("/var/tmp");
+-    ret_if_ok("/usr/tmp");
++    ret_if_ok("/overlayer/syshub/var/tmp");
++    ret_if_ok("/overlayer/syshub/tmp");
+ 
+     test_env(HOME);
+ 
+diff --git a/kitty/layout/base.py b/kitty/layout/base.py
+index e7dc951..244765f 100644
+--- a/kitty/layout/base.py
++++ b/kitty/layout/base.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Callable, Generator, Iterable, Iterator, Sequence
+diff --git a/kitty/layout/grid.py b/kitty/layout/grid.py
+index b762bba..d5f9436 100644
+--- a/kitty/layout/grid.py
++++ b/kitty/layout/grid.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Callable, Generator, Iterator, Sequence
+diff --git a/kitty/layout/interface.py b/kitty/layout/interface.py
+index fde28df..046fb42 100644
+--- a/kitty/layout/interface.py
++++ b/kitty/layout/interface.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/layout/splits.py b/kitty/layout/splits.py
+index a23dd43..a6f2118 100644
+--- a/kitty/layout/splits.py
++++ b/kitty/layout/splits.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Collection, Generator, Iterator, Sequence
+diff --git a/kitty/layout/stack.py b/kitty/layout/stack.py
+index 5f72126..7570514 100644
+--- a/kitty/layout/stack.py
++++ b/kitty/layout/stack.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from kitty.types import NeighborsMap
+diff --git a/kitty/layout/tall.py b/kitty/layout/tall.py
+index 8d2bea5..b641e87 100644
+--- a/kitty/layout/tall.py
++++ b/kitty/layout/tall.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import sys
+diff --git a/kitty/layout/vertical.py b/kitty/layout/vertical.py
+index 518144a..fee3e89 100644
+--- a/kitty/layout/vertical.py
++++ b/kitty/layout/vertical.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Generator, Iterable
+diff --git a/kitty/logout_session.py b/kitty/logout_session.py
+index c54b723..c3384bd 100644
+--- a/kitty/logout_session.py
++++ b/kitty/logout_session.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2026, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # Save the state of every kitty instance when the user logs out and restore it the next time kitty is started.
+diff --git a/kitty/machine_id.py b/kitty/machine_id.py
+index 186fefb..49bb6bd 100644
+--- a/kitty/machine_id.py
++++ b/kitty/machine_id.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2026, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import hashlib
+@@ -17,7 +17,7 @@ def machine_id(salt: str = '') -> str:
+ 
+         mid = cocoa_get_machine_id().rstrip().encode()
+     else:
+-        with suppress(OSError), open('/etc/machine-id', 'rb') as f:
++        with suppress(OSError), open('/overlayer/syshub/etc/machine-id', 'rb') as f:
+             mid = f.read().rstrip()
+     if not salt:
+         return mid.decode()
+diff --git a/kitty/main.py b/kitty/main.py
+index 3c705c6..4016b50 100644
+--- a/kitty/main.py
++++ b/kitty/main.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import json
+@@ -440,7 +440,7 @@ def ensure_macos_locale() -> None:
+         elif lang_code:
+             if lang_code != 'en':
+                 with suppress(OSError):
+-                    found = sorted(x for x in os.listdir('/usr/share/locale') if x.startswith(f'{lang_code}_'))
++                    found = sorted(x for x in os.listdir('/overlayer/syshub/share/locale') if x.startswith(f'{lang_code}_'))
+                     if found:
+                         lang = found[0].partition('.')[0]
+         os.environ['LANG'] = f'{lang}.UTF-8'
+diff --git a/kitty/marks.py b/kitty/marks.py
+index 88a0c1e..c44771b 100644
+--- a/kitty/marks.py
++++ b/kitty/marks.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import re
+diff --git a/kitty/mime-cache.c b/kitty/mime-cache.c
+index e274faf..d1e6630 100644
+--- a/kitty/mime-cache.c
++++ b/kitty/mime-cache.c
+@@ -419,7 +419,7 @@ find_cache_paths(void) {
+         }
+     }
+     const char *data_dirs = getenv("XDG_DATA_DIRS");
+-    if (!data_dirs || !data_dirs[0]) data_dirs = "/usr/local/share/:/usr/share/";
++    if (!data_dirs || !data_dirs[0]) data_dirs = "/overlayer/zexlib/union/share/:/overlayer/syshub/share/";
+     for (const char *p = data_dirs; *p;) {
+         const char *end = strchr(p, ':');
+         size_t len = end ? (size_t)(end - p) : strlen(p);
+diff --git a/kitty/multiprocessing.py b/kitty/multiprocessing.py
+index bdd9d00..cb351c8 100644
+--- a/kitty/multiprocessing.py
++++ b/kitty/multiprocessing.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # Monkeypatch the stdlib multiprocessing module to work with the embedded python
+diff --git a/kitty/notifications.py b/kitty/notifications.py
+index 85e1eca..07196a9 100644
+--- a/kitty/notifications.py
++++ b/kitty/notifications.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/open_actions.py b/kitty/open_actions.py
+index 5f543af..fc98e9b 100644
+--- a/kitty/open_actions.py
++++ b/kitty/open_actions.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/options/definition.py b/kitty/options/definition.py
+index f825171..6577552 100644
+--- a/kitty/options/definition.py
++++ b/kitty/options/definition.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # After editing this file run ./gen-config.py to apply the changes
+diff --git a/kitty/options/utils.py b/kitty/options/utils.py
+index a286edf..88e5c05 100644
+--- a/kitty/options/utils.py
++++ b/kitty/options/utils.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/os_window_size.py b/kitty/os_window_size.py
+index 3a733f5..3806475 100644
+--- a/kitty/os_window_size.py
++++ b/kitty/os_window_size.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Callable
+diff --git a/kitty/program_status.py b/kitty/program_status.py
+index e22180b..630c6b9 100644
+--- a/kitty/program_status.py
++++ b/kitty/program_status.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2026, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # Program Status Protocol (OSC 7501), revision 0.4
+diff --git a/kitty/progress.py b/kitty/progress.py
+index 0be6605..6a72d41 100644
+--- a/kitty/progress.py
++++ b/kitty/progress.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2025, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/action.py b/kitty/rc/action.py
+index b567f4e..f2bdedf 100644
+--- a/kitty/rc/action.py
++++ b/kitty/rc/action.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/base.py b/kitty/rc/base.py
+index 58ce957..a0e8bc5 100644
+--- a/kitty/rc/base.py
++++ b/kitty/rc/base.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Callable, Iterable, Iterator
+diff --git a/kitty/rc/close_tab.py b/kitty/rc/close_tab.py
+index e67a946..81cbc93 100644
+--- a/kitty/rc/close_tab.py
++++ b/kitty/rc/close_tab.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/close_window.py b/kitty/rc/close_window.py
+index 6dcdedf..b368558 100644
+--- a/kitty/rc/close_window.py
++++ b/kitty/rc/close_window.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/create_marker.py b/kitty/rc/create_marker.py
+index 9e5ee0c..fbdfbfa 100644
+--- a/kitty/rc/create_marker.py
++++ b/kitty/rc/create_marker.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/detach_tab.py b/kitty/rc/detach_tab.py
+index 4ed5912..97618f0 100644
+--- a/kitty/rc/detach_tab.py
++++ b/kitty/rc/detach_tab.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/detach_window.py b/kitty/rc/detach_window.py
+index b36be07..5776327 100644
+--- a/kitty/rc/detach_window.py
++++ b/kitty/rc/detach_window.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/disable_ligatures.py b/kitty/rc/disable_ligatures.py
+index 9690a32..8cbbad6 100644
+--- a/kitty/rc/disable_ligatures.py
++++ b/kitty/rc/disable_ligatures.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/env.py b/kitty/rc/env.py
+index 58dd6b4..cb628a4 100644
+--- a/kitty/rc/env.py
++++ b/kitty/rc/env.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import Any
+diff --git a/kitty/rc/focus_tab.py b/kitty/rc/focus_tab.py
+index c5d9f49..d968aa2 100644
+--- a/kitty/rc/focus_tab.py
++++ b/kitty/rc/focus_tab.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/focus_window.py b/kitty/rc/focus_window.py
+index 2603b84..47713bf 100644
+--- a/kitty/rc/focus_window.py
++++ b/kitty/rc/focus_window.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/get_colors.py b/kitty/rc/get_colors.py
+index 8ac1ed8..233ed9c 100644
+--- a/kitty/rc/get_colors.py
++++ b/kitty/rc/get_colors.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/get_text.py b/kitty/rc/get_text.py
+index 3773bfc..324f285 100644
+--- a/kitty/rc/get_text.py
++++ b/kitty/rc/get_text.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/goto_layout.py b/kitty/rc/goto_layout.py
+index 50a6a79..1f39c4e 100644
+--- a/kitty/rc/goto_layout.py
++++ b/kitty/rc/goto_layout.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Iterable
+diff --git a/kitty/rc/kitten.py b/kitty/rc/kitten.py
+index b0a2884..3877033 100644
+--- a/kitty/rc/kitten.py
++++ b/kitty/rc/kitten.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/last_used_layout.py b/kitty/rc/last_used_layout.py
+index 59d07b8..007a959 100644
+--- a/kitty/rc/last_used_layout.py
++++ b/kitty/rc/last_used_layout.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/launch.py b/kitty/rc/launch.py
+index bbf42e6..feec622 100644
+--- a/kitty/rc/launch.py
++++ b/kitty/rc/launch.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/load_config.py b/kitty/rc/load_config.py
+index b106c48..f77aee9 100644
+--- a/kitty/rc/load_config.py
++++ b/kitty/rc/load_config.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/ls.py b/kitty/rc/ls.py
+index 4a98a56..a866cff 100644
+--- a/kitty/rc/ls.py
++++ b/kitty/rc/ls.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import json
+diff --git a/kitty/rc/new_window.py b/kitty/rc/new_window.py
+index 2d95554..ef8ef3a 100644
+--- a/kitty/rc/new_window.py
++++ b/kitty/rc/new_window.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/remove_marker.py b/kitty/rc/remove_marker.py
+index 4fdc698..5d70658 100644
+--- a/kitty/rc/remove_marker.py
++++ b/kitty/rc/remove_marker.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/resize_os_window.py b/kitty/rc/resize_os_window.py
+index 7fd2b7e..7471704 100644
+--- a/kitty/rc/resize_os_window.py
++++ b/kitty/rc/resize_os_window.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/resize_window.py b/kitty/rc/resize_window.py
+index 65be545..27753e0 100644
+--- a/kitty/rc/resize_window.py
++++ b/kitty/rc/resize_window.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from math import isfinite
+diff --git a/kitty/rc/resize_window_edge.py b/kitty/rc/resize_window_edge.py
+index 8902ee0..8c6bf23 100644
+--- a/kitty/rc/resize_window_edge.py
++++ b/kitty/rc/resize_window_edge.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2026, Kovid Goyal, <kovid at kovidgoyal.net>
+ 
+ import json
+diff --git a/kitty/rc/run.py b/kitty/rc/run.py
+index 5dc532e..da3d61a 100644
+--- a/kitty/rc/run.py
++++ b/kitty/rc/run.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from base64 import standard_b64decode, standard_b64encode
+diff --git a/kitty/rc/screenshot.py b/kitty/rc/screenshot.py
+index f8efa6d..1187bf7 100644
+--- a/kitty/rc/screenshot.py
++++ b/kitty/rc/screenshot.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/rc/scroll_window.py b/kitty/rc/scroll_window.py
+index 8bea189..df0dd5c 100644
+--- a/kitty/rc/scroll_window.py
++++ b/kitty/rc/scroll_window.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/select_window.py b/kitty/rc/select_window.py
+index c27d281..4756093 100644
+--- a/kitty/rc/select_window.py
++++ b/kitty/rc/select_window.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING, Optional
+diff --git a/kitty/rc/send_key.py b/kitty/rc/send_key.py
+index 8f5fc83..56725c3 100644
+--- a/kitty/rc/send_key.py
++++ b/kitty/rc/send_key.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/send_text.py b/kitty/rc/send_text.py
+index 26d9942..081c3b6 100644
+--- a/kitty/rc/send_text.py
++++ b/kitty/rc/send_text.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import base64
+diff --git a/kitty/rc/set_background_image.py b/kitty/rc/set_background_image.py
+index fb15b4d..e09b04c 100644
+--- a/kitty/rc/set_background_image.py
++++ b/kitty/rc/set_background_image.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/rc/set_background_opacity.py b/kitty/rc/set_background_opacity.py
+index abd0286..a4d1539 100644
+--- a/kitty/rc/set_background_opacity.py
++++ b/kitty/rc/set_background_opacity.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import math
+diff --git a/kitty/rc/set_colors.py b/kitty/rc/set_colors.py
+index 3b5d85d..c392c06 100644
+--- a/kitty/rc/set_colors.py
++++ b/kitty/rc/set_colors.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/set_enabled_layouts.py b/kitty/rc/set_enabled_layouts.py
+index 430b8f2..2ba8357 100644
+--- a/kitty/rc/set_enabled_layouts.py
++++ b/kitty/rc/set_enabled_layouts.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Iterable
+diff --git a/kitty/rc/set_font_size.py b/kitty/rc/set_font_size.py
+index 51e729d..996af06 100644
+--- a/kitty/rc/set_font_size.py
++++ b/kitty/rc/set_font_size.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from math import isfinite
+diff --git a/kitty/rc/set_os_window_title.py b/kitty/rc/set_os_window_title.py
+index 1451763..dc9152c 100644
+--- a/kitty/rc/set_os_window_title.py
++++ b/kitty/rc/set_os_window_title.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/set_spacing.py b/kitty/rc/set_spacing.py
+index 1e2491b..b1ec755 100644
+--- a/kitty/rc/set_spacing.py
++++ b/kitty/rc/set_spacing.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/set_tab_color.py b/kitty/rc/set_tab_color.py
+index d0b6e94..b028a89 100644
+--- a/kitty/rc/set_tab_color.py
++++ b/kitty/rc/set_tab_color.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/set_tab_title.py b/kitty/rc/set_tab_title.py
+index b788f2f..26e84c3 100644
+--- a/kitty/rc/set_tab_title.py
++++ b/kitty/rc/set_tab_title.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/rc/set_user_vars.py b/kitty/rc/set_user_vars.py
+index 1afb1ad..a022c40 100644
+--- a/kitty/rc/set_user_vars.py
++++ b/kitty/rc/set_user_vars.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/set_window_logo.py b/kitty/rc/set_window_logo.py
+index 357bc29..61b096f 100644
+--- a/kitty/rc/set_window_logo.py
++++ b/kitty/rc/set_window_logo.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/rc/set_window_title.py b/kitty/rc/set_window_title.py
+index 41f9cc2..a4cbdf7 100644
+--- a/kitty/rc/set_window_title.py
++++ b/kitty/rc/set_window_title.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/rc/signal_child.py b/kitty/rc/signal_child.py
+index 1d62b49..b2df99f 100644
+--- a/kitty/rc/signal_child.py
++++ b/kitty/rc/signal_child.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from typing import TYPE_CHECKING
+diff --git a/kitty/remote_control.py b/kitty/remote_control.py
+index 4c366ae..4b78cb6 100644
+--- a/kitty/remote_control.py
++++ b/kitty/remote_control.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import base64
+diff --git a/kitty/render_cache.py b/kitty/render_cache.py
+index 4f5543a..770d0aa 100644
+--- a/kitty/render_cache.py
++++ b/kitty/render_cache.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/rgb.py b/kitty/rgb.py
+index 4e27b39..251dc5d 100644
+--- a/kitty/rgb.py
++++ b/kitty/rgb.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from .fast_data_types import Color
+diff --git a/kitty/search_query_parser.py b/kitty/search_query_parser.py
+index adb3151..acdc518 100644
+--- a/kitty/search_query_parser.py
++++ b/kitty/search_query_parser.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2022, Kovid Goyal <kovid at kovidgoyal.net>
+ import re
+ from collections.abc import Callable, Iterator, Sequence
+diff --git a/kitty/session.py b/kitty/session.py
+index 7a8ba86..f1709df 100644
+--- a/kitty/session.py
++++ b/kitty/session.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import json
+diff --git a/kitty/shaders/slang.py b/kitty/shaders/slang.py
+index 0201dd1..9174dec 100644
+--- a/kitty/shaders/slang.py
++++ b/kitty/shaders/slang.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2026, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import glob
+diff --git a/kitty/shaders/validate_shaders.py b/kitty/shaders/validate_shaders.py
+index 89504dd..63125c4 100755
+--- a/kitty/shaders/validate_shaders.py
++++ b/kitty/shaders/validate_shaders.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python3
++#!/overlayer/syshub/bin/env python3
+ import subprocess
+ import sys
+ from pathlib import Path
+diff --git a/kitty/shell_integration.py b/kitty/shell_integration.py
+index c8d5942..891d0e8 100644
+--- a/kitty/shell_integration.py
++++ b/kitty/shell_integration.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+@@ -52,7 +52,7 @@ def setup_zsh_env(env: dict[str, str], argv: list[str]) -> None:
+     zdotdir = env.get('ZDOTDIR')
+     if is_new_zsh_install(env, zdotdir):
+         if zdotdir is None:
+-            # Try to get ZDOTDIR from /etc/zshenv, when all startup files are not present
++            # Try to get ZDOTDIR from /overlayer/syshub/etc/zshenv, when all startup files are not present
+             zdotdir = get_zsh_zdotdir_from_global_zshenv(env, argv)
+             if zdotdir is None or is_new_zsh_install(env, zdotdir):
+                 return
+diff --git a/kitty/shm.py b/kitty/shm.py
+index a4fb2ad..0dc280e 100644
+--- a/kitty/shm.py
++++ b/kitty/shm.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2022, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # This is present in the python stdlib (version 3.7) in
+diff --git a/kitty/short_uuid.py b/kitty/short_uuid.py
+index f662dd5..f1040f8 100644
+--- a/kitty/short_uuid.py
++++ b/kitty/short_uuid.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import math
+diff --git a/kitty/simple_cli_definitions.py b/kitty/simple_cli_definitions.py
+index 5b6cd98..48a63f2 100644
+--- a/kitty/simple_cli_definitions.py
++++ b/kitty/simple_cli_definitions.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2025, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ # This module must be runnable by a vanilla python interpreter
+@@ -380,7 +380,7 @@ is used as the config file.
+ If the environment variable :envvar:`KITTY_CONFIG_DIRECTORY` is specified, that
+ directory is always used and the above searching does not happen.
+ 
+-If :file:`/etc/xdg/{appname}/{conf_name}.conf` exists, it is merged before (i.e.
++If :file:`/overlayer/syshub/etc/xdg/{appname}/{conf_name}.conf` exists, it is merged before (i.e.
+ with lower priority) than any user config files. It can be used to specify
+ system-wide defaults for all users. You can use either :code:`-` or
+ :file:`/dev/stdin` to read the config from STDIN.
+diff --git a/kitty/tab_bar.py b/kitty/tab_bar.py
+index 214c8b2..95556be 100644
+--- a/kitty/tab_bar.py
++++ b/kitty/tab_bar.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2018, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/tabs.py b/kitty/tabs.py
+index f1085da..ce9710a 100644
+--- a/kitty/tabs.py
++++ b/kitty/tabs.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import json
+diff --git a/kitty/terminfo.py b/kitty/terminfo.py
+index 390ffed..bc6665e 100644
+--- a/kitty/terminfo.py
++++ b/kitty/terminfo.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/types.py b/kitty/types.py
+index 4a154fc..5cb937e 100644
+--- a/kitty/types.py
++++ b/kitty/types.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ from collections.abc import Callable, Iterator, Mapping, Sequence
+diff --git a/kitty/typing_compat.py b/kitty/typing_compat.py
+index 8046348..559311e 100644
+--- a/kitty/typing_compat.py
++++ b/kitty/typing_compat.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+diff --git a/kitty/update_check.py b/kitty/update_check.py
+index 8e7cc9c..2bfbb12 100644
+--- a/kitty/update_check.py
++++ b/kitty/update_check.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2019, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+diff --git a/kitty/utils.py b/kitty/utils.py
+index ba6a590..3e7f2ad 100644
+--- a/kitty/utils.py
++++ b/kitty/utils.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import fcntl
+@@ -750,12 +750,12 @@ def system_paths_on_macos() -> tuple[str, ...]:
+                         entries.append(line)
+ 
+     try:
+-        files = os.listdir('/etc/paths.d')
++        files = os.listdir('/overlayer/syshub/etc/paths.d')
+     except (FileNotFoundError, PermissionError):
+         files = []
+     for name in sorted(files):
+-        add_from_file(os.path.join('/etc/paths.d', name))
+-    add_from_file('/etc/paths')
++        add_from_file(os.path.join('/overlayer/syshub/etc/paths.d', name))
++    add_from_file('/overlayer/syshub/etc/paths')
+     return tuple(entries)
+ 
+ 
+@@ -794,7 +794,7 @@ def which(name: str, only_system: bool = False) -> str | None:
+     if is_macos:
+         system_paths = system_paths_on_macos()
+     else:
+-        system_paths = ('/usr/local/bin', '/opt/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin')
++        system_paths = ('/overlayer/syshub/bin', '/opt/bin', '/overlayer/syshub/bin', '/overlayer/syshub/bin', '/overlayer/syshub/sbin', '/overlayer/syshub/sbin')
+     tried_paths |= set(paths)
+     system_paths = tuple(x for x in system_paths if x not in tried_paths)
+     if system_paths:
+diff --git a/kitty/window.py b/kitty/window.py
+index bf0c7a3..1a5aad5 100644
+--- a/kitty/window.py
++++ b/kitty/window.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import json
+diff --git a/kitty/window_list.py b/kitty/window_list.py
+index d348ee9..adfa228 100644
+--- a/kitty/window_list.py
++++ b/kitty/window_list.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2020, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import weakref
+diff --git a/kitty/window_title_bar.py b/kitty/window_title_bar.py
+index 7202868..aa9d91e 100644
+--- a/kitty/window_title_bar.py
++++ b/kitty/window_title_bar.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2024, kitty contributors
+ 
+ import os
+diff --git a/kitty/xdg.py b/kitty/xdg.py
+index d78254c..ceb8e25 100644
+--- a/kitty/xdg.py
++++ b/kitty/xdg.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import os
+@@ -10,7 +10,7 @@ from kitty.types import run_once
+ 
+ @run_once
+ def xdg_data_dirs() -> tuple[str, ...]:
+-    return tuple(os.environ.get('XDG_DATA_DIRS', '/usr/local/share/:/usr/share/').split(os.pathsep))
++    return tuple(os.environ.get('XDG_DATA_DIRS', '/overlayer/zexlib/union/share/:/overlayer/syshub/share/').split(os.pathsep))
+ 
+ 
+ @run_once
+@@ -67,7 +67,7 @@ class XDGIconCache:
+         for icdir in icon_dirs():
+             for theme in themes_to_search:
+                 self.scan_theme_dir(os.path.join(icdir, theme))
+-        self.scan_theme_dir('/usr/share/pixmaps')
++        self.scan_theme_dir('/overlayer/syshub/share/pixmaps')
+ 
+     def scan_theme_dir(self, base: str) -> None:
+         with suppress(OSError):
+diff --git a/logo/make.py b/logo/make.py
+index ceafc56..6c86e80 100755
+--- a/logo/make.py
++++ b/logo/make.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # vim:fileencoding=utf-8
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+diff --git a/publish.py b/publish.py
+index 7961737..4c29cee 100755
+--- a/publish.py
++++ b/publish.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import argparse
+diff --git a/rsync-and-build.sh b/rsync-and-build.sh
+index a92f05c..09efe07 100644
+--- a/rsync-and-build.sh
++++ b/rsync-and-build.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ 
+ # To be used via a script such as
+ : <<'COMMENT'
+diff --git a/setup.py b/setup.py
+index e2eee12..b48052b 100755
+--- a/setup.py
++++ b/setup.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ import argparse
+@@ -393,7 +393,7 @@ def libcrypto_flags() -> Tuple[List[str], List[str]]:
+             pats = f'{v[0]}.{v[1]}', f'{v[0]}'
+             for pat in pats:
+                 q = f'opt/openssl@{pat}/lib/pkgconfig'
+-                openssl_dirs = glob.glob(f'/opt/homebrew/{q}') + glob.glob(f'/usr/local/{q}')
++                openssl_dirs = glob.glob(f'/opt/homebrew/{q}') + glob.glob(f'/overlayer/syshub/{q}')
+                 if openssl_dirs:
+                     break
+             else:
+@@ -402,8 +402,8 @@ def libcrypto_flags() -> Tuple[List[str], List[str]]:
+         cflags = pkg_config('libcrypto', '--cflags-only-I', extra_pc_dir=extra_pc_dir)
+     ldflags = pkg_config('libcrypto', '--libs', extra_pc_dir=extra_pc_dir)
+     # Workaround bug in homebrew openssl package. This bug appears in CI only
+-    if is_macos and ldflags and 'homebrew/Cellar' in ldflags[0] and not ldflags[0].endswith('/lib'):
+-        ldflags.insert(0, ldflags[0] + '/lib')
++    if is_macos and ldflags and 'homebrew/Cellar' in ldflags[0] and not ldflags[0].endswith('/overlayer/syshub/lib'):
++        ldflags.insert(0, ldflags[0] + '/overlayer/syshub/lib')
+     return cflags, ldflags
+ 
+ 
+@@ -809,7 +809,7 @@ def kitty_env(args: Options) -> Env:
+     cflags.extend(pkg_config('harfbuzz', '--cflags-only-I'))
+     platform_libs.extend(pkg_config('harfbuzz', '--libs'))
+     pylib = get_python_flags(args, cflags)
+-    gl_libs = ['-framework', 'OpenGL'] if is_macos else pkg_config('gl', '--libs')
++    gl_libs = ['-framework', 'OpenGL'] if is_macos else pkg_config('opengl', '--libs')
+     libpng = pkg_config('libpng', '--libs')
+     lcms2 = pkg_config('lcms2', '--libs')
+     ans.ldpaths += pylib + platform_libs + gl_libs + libpng + lcms2 + libcrypto_ldflags + xxhash[1]
+diff --git a/shell-integration/bash/kitty.bash b/shell-integration/bash/kitty.bash
+index 9b9d09e..c096190 100644
+--- a/shell-integration/bash/kitty.bash
++++ b/shell-integration/bash/kitty.bash
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/overlayer/syshub/bin/bash
+ 
+ if [[ "$-" != *i* ]] ; then builtin return; fi  # check in interactive mode
+ if [[ -z "$KITTY_SHELL_INTEGRATION" ]]; then builtin return; fi
+@@ -10,13 +10,13 @@ if [[ -n "$KITTY_BASH_INJECT" ]]; then
+     builtin unset KITTY_SHELL_INTEGRATION  # ensure manual sourcing of this file in bashrc does not have any effect
+     builtin unset KITTY_BASH_INJECT ENV
+     if [[ -z "$HOME" ]]; then HOME=~; fi
+-    if [[ -z "$KITTY_BASH_ETC_LOCATION" ]]; then KITTY_BASH_ETC_LOCATION="/etc"; fi
++    if [[ -z "$KITTY_BASH_ETC_LOCATION" ]]; then KITTY_BASH_ETC_LOCATION="/overlayer/syshub/etc"; fi
+ 
+     _ksi_sourceable() {
+         [[ -f "$1" && -r "$1" ]] && builtin return 0; builtin return 1;
+     }
+ 
+-    if [[ -n "$ksi_val" && "$ksi_val" != *no-sudo* && -n "$TERMINFO" && ! ( -r "/usr/share/terminfo/x/xterm-kitty" || -r "/usr/share/terminfo/78/xterm-kitty" ) ]]; then
++    if [[ -n "$ksi_val" && "$ksi_val" != *no-sudo* && -n "$TERMINFO" && ! ( -r "/overlayer/syshub/share/terminfo/x/xterm-kitty" || -r "/overlayer/syshub/share/terminfo/78/xterm-kitty" ) ]]; then
+         # this must be done before sourcing user bashrc otherwise aliasing of sudo does not work
+             sudo() {
+                 # Ensure terminfo is available in sudo
+@@ -78,9 +78,9 @@ if [[ -n "$KITTY_BASH_INJECT" ]]; then
+             if [[ "$kitty_bash_inject" != *"no-rc"* ]]; then
+                 # Linux distros build bash with -DSYS_BASHRC. Unfortunately, there is
+                 # no way to probe bash for it and different distros use different files
+-                # Arch, Debian, Ubuntu use /etc/bash.bashrc
+-                # Fedora uses /etc/bashrc sourced from ~/.bashrc instead of SYS_BASHRC
+-                # Void Linux uses /etc/bash/bashrc
++                # Arch, Debian, Ubuntu use /overlayer/syshub/etc/bash.bashrc
++                # Fedora uses /overlayer/syshub/etc/bashrc sourced from ~/.bashrc instead of SYS_BASHRC
++                # Void Linux uses /overlayer/syshub/etc/bash/bashrc
+                 for _ksi_i in "$KITTY_BASH_ETC_LOCATION/bash.bashrc" "$KITTY_BASH_ETC_LOCATION/bash/bashrc" ; do
+                     _ksi_sourceable "$_ksi_i" && { builtin source "$_ksi_i"; break; }
+                 done
+diff --git a/shell-integration/fish/vendor_conf.d/kitty-shell-integration.fish b/shell-integration/fish/vendor_conf.d/kitty-shell-integration.fish
+index ced297e..0c358da 100644
+--- a/shell-integration/fish/vendor_conf.d/kitty-shell-integration.fish
++++ b/shell-integration/fish/vendor_conf.d/kitty-shell-integration.fish
+@@ -1,4 +1,4 @@
+-#!/bin/fish
++#!/overlayer/syshub/bin/fish
+ 
+ # To use fish's autoloading feature, kitty prepends the vendored integration script directory to XDG_DATA_DIRS.
+ # The original paths needs to be restored here to not affect other programs.
+@@ -141,7 +141,7 @@ function __ksi_schedule --on-event fish_prompt -d "Setup kitty integration after
+     # for sudo/run0 it will be clobbered by us, so only install these if they are not already functions
+     if not contains "no-sudo" $_ksi
+         and test -n "$TERMINFO"
+-        and not test -r "/usr/share/terminfo/x/xterm-kitty" -o -r "/usr/share/terminfo/78/xterm-kitty"
++        and not test -r "/overlayer/syshub/share/terminfo/x/xterm-kitty" -o -r "/overlayer/syshub/share/terminfo/78/xterm-kitty"
+         if test "file" = (type -t sudo 2> /dev/null || echo "x")
+             # Ensure terminfo is available in sudo
+             function sudo
+diff --git a/shell-integration/ssh/bootstrap-utils.sh b/shell-integration/ssh/bootstrap-utils.sh
+index 76e4668..107ae43 100644
+--- a/shell-integration/ssh/bootstrap-utils.sh
++++ b/shell-integration/ssh/bootstrap-utils.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # bootstrap-utils.sh
+ # Copyright (C) 2022 Kovid Goyal <kovid at kovidgoyal.net>
+@@ -35,12 +35,12 @@ compile_terminfo() {
+         command ln -sf "../x/xterm-kitty" "$1/$tname/78/xterm-kitty"
+     fi
+ 
+-    if [ -e "/usr/share/misc/terminfo.cdb" ]; then
++    if [ -e "/overlayer/syshub/share/misc/terminfo.cdb" ]; then
+         # NetBSD requires this file, see https://github.com/kovidgoyal/kitty/issues/4622
+         # Also compile terminfo using tic installed via pkgsrc,
+         # so that programs that depend on the new version of ncurses automatically fall back to this one.
+-        if [ -x "/usr/pkg/bin/tic" ]; then
+-            /usr/pkg/bin/tic -x -o "$1/$tname" "$1/.terminfo/kitty.terminfo" 2>/dev/null
++        if [ -x "/overlayer/syshub/pkg/bin/tic" ]; then
++            /overlayer/syshub/pkg/bin/tic -x -o "$1/$tname" "$1/.terminfo/kitty.terminfo" 2>/dev/null
+         fi
+         if [ ! -e "$1/$tname/x/xterm-kitty" ]; then
+             command ln -sf "../../.terminfo.cdb" "$1/$tname/x/xterm-kitty"
+@@ -89,7 +89,7 @@ using_perl() {
+ }
+ 
+ using_passwd() {
+-    [ -f "/etc/passwd" -a -r "/etc/passwd" ] && output=$(command grep "^$USER:" /etc/passwd 2>/dev/null) \
++    [ -f "/overlayer/syshub/etc/passwd" -a -r "/overlayer/syshub/etc/passwd" ] && output=$(command grep "^$USER:" /overlayer/syshub/etc/passwd 2>/dev/null) \
+     && login_shell_is_ok "$output"
+ }
+ 
+@@ -171,14 +171,14 @@ execute_sh_with_posix_env() {
+     sh_dir="$shell_integration_dir/sh"
+     command mkdir -p "$sh_dir" || die "Creating directory $sh_dir failed"
+     sh_script="$sh_dir/login_shell_env.sh"
+-    # Source /etc/profile, ~/.profile, and then check and source ENV
++    # Source /overlayer/syshub/etc/profile, ~/.profile, and then check and source ENV
+     printf "%s" '
+ if [ -n "$KITTY_SH_INJECT" ]; then
+     unset ENV; unset KITTY_SH_INJECT
+     _ksi_safe_source() { [ -f "$1" -a -r "$1" ] || return 1; . "$1"; return 0; }
+     [ -n "$KITTY_SH_POSIX_ENV" ] && export ENV="$KITTY_SH_POSIX_ENV"
+     unset KITTY_SH_POSIX_ENV
+-    _ksi_safe_source "/etc/profile"; _ksi_safe_source "${HOME-}/.profile"
++    _ksi_safe_source "/overlayer/syshub/etc/profile"; _ksi_safe_source "${HOME-}/.profile"
+     [ -n "$ENV" ] && _ksi_safe_source "$ENV"
+     unset -f _ksi_safe_source
+ fi' > "$sh_script"
+@@ -217,7 +217,7 @@ prepare_for_exec() {
+         /*) ;;
+         *)
+             if ! command -v "$login_shell" > /dev/null 2> /dev/null; then
+-                for i in /opt/homebrew/bin /opt/homebrew/sbin /opt/local/bin /opt/local/sbin /usr/local/bin /usr/bin /bin /usr/sbin /sbin
++                for i in /opt/homebrew/bin /opt/homebrew/sbin /opt/local/bin /opt/local/sbin /overlayer/syshub/bin /overlayer/syshub/bin /overlayer/syshub/bin /overlayer/syshub/sbin /overlayer/syshub/sbin
+                 do
+                     if [ -x "$i/$login_shell" ]; then
+                         login_shell="$i/$login_shell"
+diff --git a/shell-integration/ssh/bootstrap.py b/shell-integration/ssh/bootstrap.py
+index 1427ce3..51cfe9d 100644
+--- a/shell-integration/ssh/bootstrap.py
++++ b/shell-integration/ssh/bootstrap.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # License: GPLv3 Copyright: 2022, Kovid Goyal <kovid at kovidgoyal.net>
+ 
+ 
+@@ -21,7 +21,7 @@ echo_on = int('ECHO_ON')
+ data_dir = shell_integration_dir = ''
+ request_data = int('REQUEST_DATA')
+ leading_data = b''
+-login_shell = os.environ.get('SHELL') or '/bin/sh'
++login_shell = os.environ.get('SHELL') or '/overlayer/syshub/bin/sh'
+ try:
+     login_shell = pwd.getpwuid(os.geteuid()).pw_shell
+ except KeyError:
+@@ -180,7 +180,7 @@ def compile_terminfo(base):
+             if e.errno != errno.EEXIST:
+                 raise
+         os.symlink('../x/xterm-kitty', q)
+-    if os.path.exists('/usr/share/misc/terminfo.cdb'):
++    if os.path.exists('/overlayer/syshub/share/misc/terminfo.cdb'):
+         # NetBSD requires this
+         os.symlink('../../.terminfo.cdb', os.path.join(base, tname, 'x', 'xterm-kitty'))
+         tname += '.cdb'
+diff --git a/shell-integration/ssh/bootstrap.sh b/shell-integration/ssh/bootstrap.sh
+index 25418b2..c1b4a87 100644
+--- a/shell-integration/ssh/bootstrap.sh
++++ b/shell-integration/ssh/bootstrap.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ # Copyright (C) 2022 Kovid Goyal <kovid at kovidgoyal.net>
+ # Distributed under terms of the GPLv3 license.
+ 
+diff --git a/shell-integration/ssh/kitten b/shell-integration/ssh/kitten
+index ceb5203..ecb18b3 100755
+--- a/shell-integration/ssh/kitten
++++ b/shell-integration/ssh/kitten
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ # Copyright (C) 2018 Kovid Goyal <kovid at kovidgoyal.net>
+ #
+ # Distributed under terms of the GPLv3 license.
+diff --git a/shell-integration/ssh/kitty b/shell-integration/ssh/kitty
+index b7e5150..55c15c0 100755
+--- a/shell-integration/ssh/kitty
++++ b/shell-integration/ssh/kitty
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ # Copyright (C) 2018 Kovid Goyal <kovid at kovidgoyal.net>
+ #
+ # Distributed under terms of the GPLv3 license.
+diff --git a/shell-integration/zsh/kitty-integration b/shell-integration/zsh/kitty-integration
+index 40ef8bf..448316a 100644
+--- a/shell-integration/zsh/kitty-integration
++++ b/shell-integration/zsh/kitty-integration
+@@ -1,4 +1,4 @@
+-#!/bin/zsh
++#!/overlayer/syshub/bin/zsh
+ #
+ # Enables integration between zsh and kitty based on KITTY_SHELL_INTEGRATION.
+ # The latter is set by kitty based on kitty.conf.
+@@ -411,7 +411,7 @@ _ksi_deferred_init() {
+     builtin alias edit-in-kitty="kitten edit-in-kitty"
+ 
+     if (( ! opt[(Ie)no-sudo] )) ; then
+-        if [[ -n "$TERMINFO" && ! ( -r "/usr/share/terminfo/x/xterm-kitty" || -r "/usr/share/terminfo/78/xterm-kitty" ) ]]; then
++        if [[ -n "$TERMINFO" && ! ( -r "/overlayer/syshub/share/terminfo/x/xterm-kitty" || -r "/overlayer/syshub/share/terminfo/78/xterm-kitty" ) ]]; then
+             sudo() {
+                 # Ensure terminfo is available in sudo
+                 builtin local cannot_set_env_var="n"
+diff --git a/shell-integration/zsh/kitty.zsh b/shell-integration/zsh/kitty.zsh
+index e0aeebf..af07dc3 100644
+--- a/shell-integration/zsh/kitty.zsh
++++ b/shell-integration/zsh/kitty.zsh
+@@ -1,4 +1,4 @@
+-#!/bin/zsh
++#!/overlayer/syshub/bin/zsh
+ #
+ # This file can get sourced with aliases enabled. Moreover, it be sourced from
+ # zshrc, so the chance of having some aliases already defined is high. To avoid
+diff --git a/tools/config/api.go b/tools/config/api.go
+index 089694b..3e1d0bc 100644
+--- a/tools/config/api.go
++++ b/tools/config/api.go
+@@ -295,7 +295,7 @@ func (self *ConfigParser) ParseFiles(paths ...string) error {
+ }
+ 
+ func (self *ConfigParser) LoadConfig(name string, paths []string, overrides []string) (err error) {
+-	const SYSTEM_CONF = "/etc/xdg/kitty"
++	const SYSTEM_CONF = "/overlayer/syshub/etc/xdg/kitty"
+ 	system_conf := filepath.Join(SYSTEM_CONF, name)
+ 	add_if_exists := func(q string) {
+ 		err = self.ParseFiles(q)
+diff --git a/tools/ignorefiles/gitignore.go b/tools/ignorefiles/gitignore.go
+index 9e1840a..0673b02 100644
+--- a/tools/ignorefiles/gitignore.go
++++ b/tools/ignorefiles/gitignore.go
+@@ -269,7 +269,7 @@ func _get_global_gitconfig_excludesfile(home_gitconfig string) (ans string) {
+ 	if cfhome == "" {
+ 		cfhome = utils.Expanduser("~/.config")
+ 	}
+-	for _, candidate := range []string{"/etc/gitconfig", filepath.Join(cfhome, "git", "config"), home_gitconfig} {
++	for _, candidate := range []string{"/overlayer/syshub/etc/gitconfig", filepath.Join(cfhome, "git", "config"), home_gitconfig} {
+ 		if data, err := os.ReadFile(candidate); err == nil {
+ 			s := utils.NewLineScanner(utils.UnsafeBytesToString(data))
+ 			in_core := false
+diff --git a/tools/simdstring/benchmark.sh b/tools/simdstring/benchmark.sh
+index 3b77772..c6e2fa0 100755
+--- a/tools/simdstring/benchmark.sh
++++ b/tools/simdstring/benchmark.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # test.sh
+ # Copyright (C) 2024 Kovid Goyal <kovid at kovidgoyal.net>
+diff --git a/tools/simdstring/generate.sh b/tools/simdstring/generate.sh
+index 97698f2..a76159c 100755
+--- a/tools/simdstring/generate.sh
++++ b/tools/simdstring/generate.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # generate.sh
+ # Copyright (C) 2024 Kovid Goyal <kovid at kovidgoyal.net>
+diff --git a/tools/simdstring/test.sh b/tools/simdstring/test.sh
+index b106666..f5fa284 100755
+--- a/tools/simdstring/test.sh
++++ b/tools/simdstring/test.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # test.sh
+ # Copyright (C) 2024 Kovid Goyal <kovid at kovidgoyal.net>
+diff --git a/tools/tui/run.go b/tools/tui/run.go
+index 44359e8..449eaea 100644
+--- a/tools/tui/run.go
++++ b/tools/tui/run.go
+@@ -70,7 +70,7 @@ func get_shell_from_kitty_conf() (shell string) {
+ 	if shell == "." {
+ 		s, e := utils.LoginShellForCurrentUser()
+ 		if e != nil {
+-			shell = "/bin/sh"
++			shell = "/overlayer/syshub/bin/sh"
+ 		} else {
+ 			shell = s
+ 		}
+@@ -114,7 +114,7 @@ func ResolveShell(shell string) []string {
+ 	}
+ 	exe := utils.FindExe(shell_cmd[0])
+ 	if unix.Access(exe, unix.X_OK) != nil {
+-		shell_cmd = []string{"/bin/sh"}
++		shell_cmd = []string{"/overlayer/syshub/bin/sh"}
+ 	}
+ 	return shell_cmd
+ }
+diff --git a/tools/tui/shell_integration/api.go b/tools/tui/shell_integration/api.go
+index 2835233..cd7bffa 100644
+--- a/tools/tui/shell_integration/api.go
++++ b/tools/tui/shell_integration/api.go
+@@ -112,14 +112,14 @@ func PathToTerminfoDb(term string) (ans string) {
+ 	if td := os.Getenv("TERMINFO_DIRS"); td != "" {
+ 		for q := range strings.SplitSeq(td, string(os.PathListSeparator)) {
+ 			if q == "" {
+-				q = "/usr/share/terminfo"
++				q = "/overlayer/syshub/share/terminfo"
+ 			}
+ 			if ans = check_dir(q); ans != "" {
+ 				return ans
+ 			}
+ 		}
+ 	}
+-	for _, q := range []string{"/usr/share/terminfo", "/usr/lib/terminfo", "/usr/share/lib/terminfo"} {
++	for _, q := range []string{"/overlayer/syshub/share/terminfo", "/overlayer/syshub/lib/terminfo", "/overlayer/syshub/share/lib/terminfo"} {
+ 		if ans = check_dir(q); ans != "" {
+ 			return ans
+ 		}
+@@ -202,7 +202,7 @@ func zsh_setup_func(shell_integration_dir string, argv []string, env map[string]
+ 	final_argv, final_env = argv, env
+ 	if is_new_zsh_install(env, zdotdir) {
+ 		if zdotdir == "" {
+-			// Try to get ZDOTDIR from /etc/zshenv, when all startup files are not present
++			// Try to get ZDOTDIR from /overlayer/syshub/etc/zshenv, when all startup files are not present
+ 			zdotdir = get_zsh_zdotdir_from_global_zshenv(argv, env)
+ 			if zdotdir == "" || is_new_zsh_install(env, zdotdir) {
+ 				return final_argv, final_env, nil
+@@ -333,7 +333,7 @@ func bash_setup_func(shell_integration_dir string, argv []string, env map[string
+ 	argv = slices.Insert(argv, 1, `--posix`)
+ 
+ 	if bashrc := os.Getenv(`KITTY_RUNNING_BASH_INTEGRATION_TEST`); bashrc != `` && os.Getenv("KITTY_RUNNING_SHELL_INTEGRATION_TEST") == "1" {
+-		// prevent bash from sourcing /etc/profile which is not under our control
++		// prevent bash from sourcing /overlayer/syshub/etc/profile which is not under our control
+ 		env[`KITTY_BASH_INJECT`] += ` posix`
+ 		env[`KITTY_BASH_POSIX_ENV`] = bashrc
+ 	}
+diff --git a/tools/utils/machine_id/unix.go b/tools/utils/machine_id/unix.go
+index 81ba103..a6f8ed9 100644
+--- a/tools/utils/machine_id/unix.go
++++ b/tools/utils/machine_id/unix.go
+@@ -14,7 +14,7 @@ import (
+ var _ = fmt.Print
+ 
+ func read_machine_id() (string, error) {
+-	if data, err := os.ReadFile("/etc/machine-id"); err == nil {
++	if data, err := os.ReadFile("/overlayer/syshub/etc/machine-id"); err == nil {
+ 		ans := utils.UnsafeBytesToString(data)
+ 		return strings.TrimRightFunc(ans, unicode.IsSpace), nil
+ 	} else {
+diff --git a/tools/utils/mime_cache.go b/tools/utils/mime_cache.go
+index a8d8ecd..ccfaa4e 100644
+--- a/tools/utils/mime_cache.go
++++ b/tools/utils/mime_cache.go
+@@ -33,7 +33,7 @@ const (
+ 	mime_cache_literal_list_offset_pos  = 12
+ 	mime_cache_suffix_tree_offset_pos   = 16
+ 	mime_cache_glob_list_offset_pos     = 20
+-	mime_cache_default_data_dirs        = "/usr/local/share/:/usr/share/"
++	mime_cache_default_data_dirs        = "/overlayer/zexlib/union/share/:/overlayer/syshub/share/"
+ 	mime_cache_relative_path_in_datadir = "mime/mime.cache"
+ )
+ 
+diff --git a/tools/utils/passwd.go b/tools/utils/passwd.go
+index 1557508..faf179f 100644
+--- a/tools/utils/passwd.go
++++ b/tools/utils/passwd.go
+@@ -51,7 +51,7 @@ func ParsePasswdFile(path string) (ans map[string]PasswdEntry, err error) {
+ 
+ var passwd_err error
+ var passwd_database = sync.OnceValue(func() (ans map[string]PasswdEntry) {
+-	ans, passwd_err = ParsePasswdFile("/etc/passwd")
++	ans, passwd_err = ParsePasswdFile("/overlayer/syshub/etc/passwd")
+ 	return
+ })
+ 
+@@ -109,7 +109,7 @@ func parse_dscl_data(raw []byte) (ans map[string]PasswdEntry, err error) {
+ var dscl_error error
+ 
+ var dscl_user_database = sync.OnceValue(func() map[string]PasswdEntry {
+-	c := exec.Command("/usr/bin/dscl", "-plist", ".", "-readall", "/Users", "uid", "gid", "name", "realname", "home", "shell")
++	c := exec.Command("/overlayer/syshub/bin/dscl", "-plist", ".", "-readall", "/Users", "uid", "gid", "name", "realname", "home", "shell")
+ 	raw, err := c.Output()
+ 	if err != nil {
+ 		dscl_error = err
+diff --git a/tools/utils/paths.go b/tools/utils/paths.go
+index 179bf47..6820622 100644
+--- a/tools/utils/paths.go
++++ b/tools/utils/paths.go
+@@ -156,8 +156,8 @@ func macos_user_cache_dir() string {
+ 	// Note that given a user generateduid and uid we can derive this by using
+ 	// the algorithm at https://github.com/ydkhatri/MacForensics/blob/master/darwin_path_generator.py
+ 	// but I cant find a good way to get the generateduid. Requires calling dscl in which case we might as well call getconf
+-	// The data is in /var/db/dslocal/nodes/Default/users/<username>.plist but it needs root
+-	// So instead we use various hacks to get it quickly, falling back to running /usr/bin/getconf
++	// The data is in /overlayer/syshub/var/db/dslocal/nodes/Default/users/<username>.plist but it needs root
++	// So instead we use various hacks to get it quickly, falling back to running /overlayer/syshub/bin/getconf
+ 
+ 	is_ok := func(m string) bool {
+ 		s, err := os.Stat(m)
+@@ -182,7 +182,7 @@ func macos_user_cache_dir() string {
+ 			}
+ 		}
+ 	}
+-	out, err := exec.Command("/usr/bin/getconf", "DARWIN_USER_CACHE_DIR").Output()
++	out, err := exec.Command("/overlayer/syshub/bin/getconf", "DARWIN_USER_CACHE_DIR").Output()
+ 	if err == nil {
+ 		return strings.TrimRight(strings.TrimSpace(UnsafeBytesToString(out)), "/")
+ 	}
+diff --git a/tools/utils/which.go b/tools/utils/which.go
+index 4cbd270..407237d 100644
+--- a/tools/utils/which.go
++++ b/tools/utils/which.go
+@@ -15,7 +15,7 @@ import (
+ var _ = fmt.Print
+ 
+ var DefaultExeSearchPaths = sync.OnceValue(func() []string {
+-	candidates := [...]string{"/usr/local/bin", "/opt/bin", "/opt/homebrew/bin", "/usr/bin", "/bin", "/usr/sbin", "/sbin"}
++	candidates := [...]string{"/overlayer/syshub/bin", "/opt/bin", "/opt/homebrew/bin", "/overlayer/syshub/bin", "/overlayer/syshub/bin", "/overlayer/syshub/sbin", "/overlayer/syshub/sbin"}
+ 	ans := make([]string, 0, len(candidates))
+ 	for _, x := range candidates {
+ 		if s, err := os.Stat(x); err == nil && s.IsDir() {
+diff --git a/update-on-ox b/update-on-ox
+index f09ff88..dfd45f9 100755
+--- a/update-on-ox
++++ b/update-on-ox
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ # vim:fileencoding=utf-8
+ # License: GPL v3 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
+ 
