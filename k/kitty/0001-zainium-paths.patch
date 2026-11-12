@@ -595,6 +595,19 @@ index 5114397..d4c5886 100644
  # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
  
  
+diff --git a/kittens/ssh/config.go b/kittens/ssh/config.go
+index 0057e33..27a8d0e 100644
+--- a/kittens/ssh/config.go
++++ b/kittens/ssh/config.go
+@@ -239,7 +239,7 @@ func ParseCopyInstruction(spec string) (ans []*CopyInstruction, err error) {
+ 	if opts.SymlinkStrategy == "resolve" {
+ 		// The copied paths have their symlinks resolved, so HOME must be resolved
+ 		// as well, otherwise paths under a HOME that is itself reached via a
+-		// symlink, such as /home -> /usr/home, are not recognized as being in HOME.
++		// symlink, such as /home -> /overlayer/syshub/home, are not recognized as being in HOME.
+ 		// If HOME cannot be resolved fall back to using it as is.
+ 		if rh, err := filepath.EvalSymlinks(home); err == nil {
+ 			home = rh
 diff --git a/kittens/ssh/main.py b/kittens/ssh/main.py
 index 8644be0..a9e8ff9 100644
 --- a/kittens/ssh/main.py
@@ -824,7 +837,7 @@ index 51b3024..f56848e 100644
                  sentinel = os.path.join(cache_dir(), 'less-is-new-enough')
                  if not os.path.exists(sentinel):
 diff --git a/kitty/child.py b/kitty/child.py
-index da97631..8f89547 100644
+index da97631..114df17 100644
 --- a/kitty/child.py
 +++ b/kitty/child.py
 @@ -1,4 +1,4 @@
@@ -833,6 +846,15 @@ index da97631..8f89547 100644
  # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
  
  import os
+@@ -538,7 +538,7 @@ class Child:
+                 argv.extend(self.startup_command_via_shell_integration)
+             if is_macos and not pass_fds and not opts.forward_stdio:
+                 # In addition for getlogin() to work we need to run the shell
+-                # via the /usr/bin/login wrapper, sigh.
++                # via the /overlayer/syshub/bin/login wrapper, sigh.
+                 # And login on macOS looks for .hushlogin in CWD instead of
+                 # HOME, bloody idiotic so we cant cwd when running it.
+                 # https://github.com/kovidgoyal/kitty/issues/6511
 @@ -550,7 +550,7 @@ class Child:
                  if cwd:
                      argv.append('--cwd=' + cwd)
@@ -851,6 +873,15 @@ index da97631..8f89547 100644
          """
          if self.resolved_root_pid is not None:
              return self.resolved_root_pid
+@@ -751,7 +751,7 @@ class Child:
+                 # so we assume the one with the highest PID is as that is most
+                 # likely to be the newest process. This situation can happen
+                 # for example with a shell script such as:
+-                # #!/bin/bash
++                # #!/overlayer/syshub/bin/bash
+                 # cd /tmp
+                 # vim
+                 # With this script , the foreground process group will contain
 diff --git a/kitty/choose_entry.py b/kitty/choose_entry.py
 index 9d0cb6e..5184df0 100644
 --- a/kitty/choose_entry.py
@@ -1913,7 +1944,7 @@ index 89504dd..63125c4 100755
  import sys
  from pathlib import Path
 diff --git a/kitty/shell_integration.py b/kitty/shell_integration.py
-index c8d5942..a150020 100644
+index c8d5942..891d0e8 100644
 --- a/kitty/shell_integration.py
 +++ b/kitty/shell_integration.py
 @@ -1,4 +1,4 @@
@@ -1922,6 +1953,15 @@ index c8d5942..a150020 100644
  # License: GPLv3 Copyright: 2021, Kovid Goyal <kovid at kovidgoyal.net>
  
  
+@@ -52,7 +52,7 @@ def setup_zsh_env(env: dict[str, str], argv: list[str]) -> None:
+     zdotdir = env.get('ZDOTDIR')
+     if is_new_zsh_install(env, zdotdir):
+         if zdotdir is None:
+-            # Try to get ZDOTDIR from /etc/zshenv, when all startup files are not present
++            # Try to get ZDOTDIR from /overlayer/syshub/etc/zshenv, when all startup files are not present
+             zdotdir = get_zsh_zdotdir_from_global_zshenv(env, argv)
+             if zdotdir is None or is_new_zsh_install(env, zdotdir):
+                 return
 diff --git a/kitty/shm.py b/kitty/shm.py
 index a4fb2ad..0dc280e 100644
 --- a/kitty/shm.py
@@ -2184,7 +2224,7 @@ index e2eee12..b48052b 100755
      lcms2 = pkg_config('lcms2', '--libs')
      ans.ldpaths += pylib + platform_libs + gl_libs + libpng + lcms2 + libcrypto_ldflags + xxhash[1]
 diff --git a/shell-integration/bash/kitty.bash b/shell-integration/bash/kitty.bash
-index 9b9d09e..76e3322 100644
+index 9b9d09e..c096190 100644
 --- a/shell-integration/bash/kitty.bash
 +++ b/shell-integration/bash/kitty.bash
 @@ -1,4 +1,4 @@
@@ -2209,6 +2249,19 @@ index 9b9d09e..76e3322 100644
          # this must be done before sourcing user bashrc otherwise aliasing of sudo does not work
              sudo() {
                  # Ensure terminfo is available in sudo
+@@ -78,9 +78,9 @@ if [[ -n "$KITTY_BASH_INJECT" ]]; then
+             if [[ "$kitty_bash_inject" != *"no-rc"* ]]; then
+                 # Linux distros build bash with -DSYS_BASHRC. Unfortunately, there is
+                 # no way to probe bash for it and different distros use different files
+-                # Arch, Debian, Ubuntu use /etc/bash.bashrc
+-                # Fedora uses /etc/bashrc sourced from ~/.bashrc instead of SYS_BASHRC
+-                # Void Linux uses /etc/bash/bashrc
++                # Arch, Debian, Ubuntu use /overlayer/syshub/etc/bash.bashrc
++                # Fedora uses /overlayer/syshub/etc/bashrc sourced from ~/.bashrc instead of SYS_BASHRC
++                # Void Linux uses /overlayer/syshub/etc/bash/bashrc
+                 for _ksi_i in "$KITTY_BASH_ETC_LOCATION/bash.bashrc" "$KITTY_BASH_ETC_LOCATION/bash/bashrc" ; do
+                     _ksi_sourceable "$_ksi_i" && { builtin source "$_ksi_i"; break; }
+                 done
 diff --git a/shell-integration/fish/vendor_conf.d/kitty-shell-integration.fish b/shell-integration/fish/vendor_conf.d/kitty-shell-integration.fish
 index ced297e..0c358da 100644
 --- a/shell-integration/fish/vendor_conf.d/kitty-shell-integration.fish
@@ -2229,7 +2282,7 @@ index ced297e..0c358da 100644
              # Ensure terminfo is available in sudo
              function sudo
 diff --git a/shell-integration/ssh/bootstrap-utils.sh b/shell-integration/ssh/bootstrap-utils.sh
-index 76e4668..f94f24d 100644
+index 76e4668..107ae43 100644
 --- a/shell-integration/ssh/bootstrap-utils.sh
 +++ b/shell-integration/ssh/bootstrap-utils.sh
 @@ -1,4 +1,4 @@
@@ -2238,7 +2291,7 @@ index 76e4668..f94f24d 100644
  #
  # bootstrap-utils.sh
  # Copyright (C) 2022 Kovid Goyal <kovid at kovidgoyal.net>
-@@ -35,11 +35,11 @@ compile_terminfo() {
+@@ -35,12 +35,12 @@ compile_terminfo() {
          command ln -sf "../x/xterm-kitty" "$1/$tname/78/xterm-kitty"
      fi
  
@@ -2248,20 +2301,30 @@ index 76e4668..f94f24d 100644
          # Also compile terminfo using tic installed via pkgsrc,
          # so that programs that depend on the new version of ncurses automatically fall back to this one.
 -        if [ -x "/usr/pkg/bin/tic" ]; then
+-            /usr/pkg/bin/tic -x -o "$1/$tname" "$1/.terminfo/kitty.terminfo" 2>/dev/null
 +        if [ -x "/overlayer/syshub/pkg/bin/tic" ]; then
-             /usr/pkg/bin/tic -x -o "$1/$tname" "$1/.terminfo/kitty.terminfo" 2>/dev/null
++            /overlayer/syshub/pkg/bin/tic -x -o "$1/$tname" "$1/.terminfo/kitty.terminfo" 2>/dev/null
          fi
          if [ ! -e "$1/$tname/x/xterm-kitty" ]; then
+             command ln -sf "../../.terminfo.cdb" "$1/$tname/x/xterm-kitty"
 @@ -89,7 +89,7 @@ using_perl() {
  }
  
  using_passwd() {
 -    [ -f "/etc/passwd" -a -r "/etc/passwd" ] && output=$(command grep "^$USER:" /etc/passwd 2>/dev/null) \
-+    [ -f "/overlayer/syshub/etc/passwd" -a -r "/overlayer/syshub/etc/passwd" ] && output=$(command grep "^$USER:" /etc/passwd 2>/dev/null) \
++    [ -f "/overlayer/syshub/etc/passwd" -a -r "/overlayer/syshub/etc/passwd" ] && output=$(command grep "^$USER:" /overlayer/syshub/etc/passwd 2>/dev/null) \
      && login_shell_is_ok "$output"
  }
  
-@@ -178,7 +178,7 @@ if [ -n "$KITTY_SH_INJECT" ]; then
+@@ -171,14 +171,14 @@ execute_sh_with_posix_env() {
+     sh_dir="$shell_integration_dir/sh"
+     command mkdir -p "$sh_dir" || die "Creating directory $sh_dir failed"
+     sh_script="$sh_dir/login_shell_env.sh"
+-    # Source /etc/profile, ~/.profile, and then check and source ENV
++    # Source /overlayer/syshub/etc/profile, ~/.profile, and then check and source ENV
+     printf "%s" '
+ if [ -n "$KITTY_SH_INJECT" ]; then
+     unset ENV; unset KITTY_SH_INJECT
      _ksi_safe_source() { [ -f "$1" -a -r "$1" ] || return 1; . "$1"; return 0; }
      [ -n "$KITTY_SH_POSIX_ENV" ] && export ENV="$KITTY_SH_POSIX_ENV"
      unset KITTY_SH_POSIX_ENV
@@ -2270,6 +2333,15 @@ index 76e4668..f94f24d 100644
      [ -n "$ENV" ] && _ksi_safe_source "$ENV"
      unset -f _ksi_safe_source
  fi' > "$sh_script"
+@@ -217,7 +217,7 @@ prepare_for_exec() {
+         /*) ;;
+         *)
+             if ! command -v "$login_shell" > /dev/null 2> /dev/null; then
+-                for i in /opt/homebrew/bin /opt/homebrew/sbin /opt/local/bin /opt/local/sbin /usr/local/bin /usr/bin /bin /usr/sbin /sbin
++                for i in /opt/homebrew/bin /opt/homebrew/sbin /opt/local/bin /opt/local/sbin /overlayer/syshub/bin /overlayer/syshub/bin /overlayer/syshub/bin /overlayer/syshub/sbin /overlayer/syshub/sbin
+                 do
+                     if [ -x "$i/$login_shell" ]; then
+                         login_shell="$i/$login_shell"
 diff --git a/shell-integration/ssh/bootstrap.py b/shell-integration/ssh/bootstrap.py
 index 1427ce3..51cfe9d 100644
 --- a/shell-integration/ssh/bootstrap.py
@@ -2436,7 +2508,7 @@ index 44359e8..449eaea 100644
  	return shell_cmd
  }
 diff --git a/tools/tui/shell_integration/api.go b/tools/tui/shell_integration/api.go
-index 2835233..b9a1602 100644
+index 2835233..cd7bffa 100644
 --- a/tools/tui/shell_integration/api.go
 +++ b/tools/tui/shell_integration/api.go
 @@ -112,14 +112,14 @@ func PathToTerminfoDb(term string) (ans string) {
@@ -2456,6 +2528,24 @@ index 2835233..b9a1602 100644
  		if ans = check_dir(q); ans != "" {
  			return ans
  		}
+@@ -202,7 +202,7 @@ func zsh_setup_func(shell_integration_dir string, argv []string, env map[string]
+ 	final_argv, final_env = argv, env
+ 	if is_new_zsh_install(env, zdotdir) {
+ 		if zdotdir == "" {
+-			// Try to get ZDOTDIR from /etc/zshenv, when all startup files are not present
++			// Try to get ZDOTDIR from /overlayer/syshub/etc/zshenv, when all startup files are not present
+ 			zdotdir = get_zsh_zdotdir_from_global_zshenv(argv, env)
+ 			if zdotdir == "" || is_new_zsh_install(env, zdotdir) {
+ 				return final_argv, final_env, nil
+@@ -333,7 +333,7 @@ func bash_setup_func(shell_integration_dir string, argv []string, env map[string
+ 	argv = slices.Insert(argv, 1, `--posix`)
+ 
+ 	if bashrc := os.Getenv(`KITTY_RUNNING_BASH_INTEGRATION_TEST`); bashrc != `` && os.Getenv("KITTY_RUNNING_SHELL_INTEGRATION_TEST") == "1" {
+-		// prevent bash from sourcing /etc/profile which is not under our control
++		// prevent bash from sourcing /overlayer/syshub/etc/profile which is not under our control
+ 		env[`KITTY_BASH_INJECT`] += ` posix`
+ 		env[`KITTY_BASH_POSIX_ENV`] = bashrc
+ 	}
 diff --git a/tools/utils/machine_id/unix.go b/tools/utils/machine_id/unix.go
 index 81ba103..a6f8ed9 100644
 --- a/tools/utils/machine_id/unix.go
@@ -2505,9 +2595,20 @@ index 1557508..faf179f 100644
  	if err != nil {
  		dscl_error = err
 diff --git a/tools/utils/paths.go b/tools/utils/paths.go
-index 179bf47..f3f8265 100644
+index 179bf47..6820622 100644
 --- a/tools/utils/paths.go
 +++ b/tools/utils/paths.go
+@@ -156,8 +156,8 @@ func macos_user_cache_dir() string {
+ 	// Note that given a user generateduid and uid we can derive this by using
+ 	// the algorithm at https://github.com/ydkhatri/MacForensics/blob/master/darwin_path_generator.py
+ 	// but I cant find a good way to get the generateduid. Requires calling dscl in which case we might as well call getconf
+-	// The data is in /var/db/dslocal/nodes/Default/users/<username>.plist but it needs root
+-	// So instead we use various hacks to get it quickly, falling back to running /usr/bin/getconf
++	// The data is in /overlayer/syshub/var/db/dslocal/nodes/Default/users/<username>.plist but it needs root
++	// So instead we use various hacks to get it quickly, falling back to running /overlayer/syshub/bin/getconf
+ 
+ 	is_ok := func(m string) bool {
+ 		s, err := os.Stat(m)
 @@ -182,7 +182,7 @@ func macos_user_cache_dir() string {
  			}
  		}
