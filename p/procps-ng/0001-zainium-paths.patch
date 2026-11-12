@@ -1,0 +1,786 @@
+--- a/local/git-version-gen
++++ b/local/git-version-gen
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ # Print a version string.
+ scriptversion=2011-02-19.19; # UTC
+ 
+--- a/local/nls.h
++++ b/local/nls.h
+@@ -10,7 +10,7 @@
+ 
+ /* programs issuing bindtextdomain() also need LOCALEDIR string */
+ #ifndef LOCALEDIR
+-#define LOCALEDIR "/usr/share/locale"
++#define LOCALEDIR "/overlayer/syshub/share/locale"
+ #endif
+ 
+ #ifdef HAVE_LOCALE_H
+--- a/man/kill.1
++++ b/man/kill.1
+@@ -167,7 +167,7 @@
+ The shell (command-line interpreter) often has a built-in \[lq]kill\[rq]
+ command.
+ You may need to run the command described here as
+-.I /bin/\:kill
++.I /overlayer/syshub/bin/\:kill
+ to override the shell built-in.
+ .PP
+ If you use a negative operand,
+--- a/man/sysctl.8
++++ b/man/sysctl.8
+@@ -123,12 +123,12 @@
+ .TS
+ Li.
+ /proc/sys
+-/etc/sysctl.d/\fR*\fP.conf
++/overlayer/syshub/etc/sysctl.d/\fR*\fP.conf
+ /run/sysctl.d/\fR*\fP.conf
+-/usr/local/lib/sysctl.d/\fR*\fP.conf
++/overlayer/syshub/lib/sysctl.d/\fR*\fP.conf
+-/usr/lib/sysctl.d/\fR*\fP.conf
++/overlayer/syshub/lib/sysctl.d/\fR*\fP.conf
+-/lib/sysctl.d/\fR*\fP.conf
++/overlayer/syshub/lib/sysctl.d/\fR*\fP.conf
+-/etc/sysctl.conf
++/overlayer/syshub/etc/sysctl.conf
+ .TE
+ .SH NOTES
+ .SS System file precedence
+@@ -140,11 +140,11 @@
+ .P
+ .TS
+ Li.
+-/etc/sysctl.d/\fR*\fP.conf
++/overlayer/syshub/etc/sysctl.d/\fR*\fP.conf
+ /run/sysctl.d/\fR*\fP.conf
+-/usr/local/lib/sysctl.d/\fR*\fP.conf
++/overlayer/syshub/lib/sysctl.d/\fR*\fP.conf
+-/usr/lib/sysctl.d/\fR*\fP.conf
++/overlayer/syshub/lib/sysctl.d/\fR*\fP.conf
+-/lib/sysctl.d/\fR*\fP.conf
++/overlayer/syshub/lib/sysctl.d/\fR*\fP.conf
+ .TE
+ .P
+ All configuration files are sorted in lexicographic order, regardless of the
+@@ -177,21 +177,21 @@
+ This parameter returns no value but flushes per-cpu vm statistics.
+ 
+ .SH EXAMPLES
+-/sbin/sysctl \-a
++/overlayer/syshub/sbin/sysctl \-a
+ .br
+-/sbin/sysctl \-n kernel.hostname
++/overlayer/syshub/sbin/sysctl \-n kernel.hostname
+ .br
+-/sbin/sysctl \-w kernel.domainname="example.com"
++/overlayer/syshub/sbin/sysctl \-w kernel.domainname="example.com"
+ .br
+-/sbin/sysctl \-p/etc/sysctl.conf
++/overlayer/syshub/sbin/sysctl \-p/etc/sysctl.conf
+ .br
+-/sbin/sysctl \-a \-\-pattern forward
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward
+ .br
+-/sbin/sysctl \-a \-\-pattern forward$
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward$
+ .br
+-/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
+ .br
+-/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
++/overlayer/syshub/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
+ .SH SEE ALSO
+ .BR proc (5),
+ .BR sysctl.conf (5),
+--- a/man/sysctl.conf.5
++++ b/man/sysctl.conf.5
+@@ -65,15 +65,15 @@
+ .P
+ .RS
+ .TP
+-.IR /etc/sysctl.d/ * .conf
++.IR /overlayer/syshub/etc/sysctl.d/ * .conf
+ .TQ
+ .IR /run/sysctl.d/ * .conf
+ .TQ
+-.IR /usr/local/lib/sysctl.d/ * .conf
++.IR /overlayer/syshub/lib/sysctl.d/ * .conf
+ .TQ
+-.IR /usr/lib/sysctl.d/ * .conf
++.IR /overlayer/syshub/lib/sysctl.d/ * .conf
+ .TQ
+-.IR /lib/sysctl.d/ * .conf
++.IR /overlayer/syshub/lib/sysctl.d/ * .conf
+ .RE
+ .P
+ Finally,
+@@ -99,7 +99,7 @@
+ #
+ kernel.domainname = example.com
+ ; A value containing a space is written to the sysctl.
+-kernel.modprobe = /sbin/mod probe
++kernel.modprobe = /overlayer/syshub/sbin/mod probe
+ # A list of items for the value
+ net.ipv4.ip_local_reserved_ports=8080,9148
+ .EE
+--- a/man/top.1
++++ b/man/top.1
+@@ -305,7 +305,7 @@
+ .TP 3
+ \-\fBA\fR, \fB\-\-apply-defaults\fR
+ Run \*(We with build defaults only, ignoring all configuration files except
+-/etc/toprc.
++/overlayer/syshub/etc/toprc.
+ This option, when specified, must be the only command line option present.
+ 
+ .TP 3
+@@ -2691,7 +2691,7 @@
+   # pipe ^I Sockets ^I lsof -n -P -i 2>&1
+   pipe ^I Open Files ^I lsof -P -p %d 2>&1
+   file ^I NUMA Info ^I /proc/%d/numa_maps
+-  pipe ^I Log ^I tail -n100 /var/log/syslog | sort -Mr
++  pipe ^I Log ^I tail -n100 /overlayer/syshub/var/log/syslog | sort -Mr
+ .fi
+ 
+ Except for the commented entry above, these next examples show what could
+@@ -2706,7 +2706,7 @@
+ .nf
+   "pipe\\tOpen Files\\tlsof -P -p %d 2>&1" >> ~/.toprc
+   "file\\tNUMA Info\\t/proc/%d/numa_maps" >> ~/.toprc
+-  "pipe\\tLog\\ttail -n200 /var/log/syslog | sort -Mr" >> ~/.toprc
++  "pipe\\tLog\\ttail -n200 /overlayer/syshub/var/log/syslog | sort -Mr" >> ~/.toprc
+ .fi
+ 
+ If any inspect entry you create produces output with unprintable characters
+@@ -2732,7 +2732,7 @@
+ \*(We.
+ 
+ .nf
+-  pipe ^I Trace ^I /usr/bin/strace -p %d 2>&1
++  pipe ^I Trace ^I /overlayer/syshub/bin/strace -p %d 2>&1
+ .fi
+ 
+ Lastly,
+--- a/man/uptime.1
++++ b/man/uptime.1
+@@ -58,7 +58,7 @@
+ If $\fBPROCPS_CONTAINER\fR is set, then \fBuptime\fR behaves as if the \fB\-\-container\fR option has been given.
+ .SH FILES
+ .TP
+-.I /var/run/utmp
++.I /overlayer/syshub/var/run/utmp
+ information about who is currently logged on
+ .TP
+ .I /proc
+--- a/man/w.1
++++ b/man/w.1
+@@ -107,7 +107,7 @@
+ Override the default width of the from column.  Defaults to 16.
+ .SH FILES
+ .TP
+-.I /var/run/utmp
++.I /overlayer/syshub/var/run/utmp
+ information about who is currently logged on, only for non-systemd hosts.
+ .TP
+ .I /proc
+--- a/po-man/de/sysctl.8
++++ b/po-man/de/sysctl.8
+@@ -112,12 +112,12 @@
+ .TS
+ Li.
+ /proc/sys
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/etc/sysctl.conf
++/overlayer/syshub/etc/sysctl.conf
+ .TE
+ .SH ANMERKUNGEN
+ .SS "Bevorzugung von Systemdateien"
+@@ -129,11 +129,11 @@
+ .P
+ .TS
+ Li.
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+ .TE
+ .P
+ Alle Konfigurationsdateien werden lexikografisch aufgelistet, unabhängig
+@@ -166,21 +166,21 @@
+ VM\-Statistiken.
+ 
+ .SH BEISPIELE
+-/sbin/sysctl \-a
++/overlayer/syshub/sbin/sysctl \-a
+ .br
+-/sbin/sysctl \-n kernel.hostname
++/overlayer/syshub/sbin/sysctl \-n kernel.hostname
+ .br
+-/sbin/sysctl \-w kernel.domainname="example.com"
++/overlayer/syshub/sbin/sysctl \-w kernel.domainname="example.com"
+ .br
+-/sbin/sysctl \-p/etc/sysctl.conf
++/overlayer/syshub/sbin/sysctl \-p/etc/sysctl.conf
+ .br
+-/sbin/sysctl \-a \-\-pattern forward
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward
+ .br
+-/sbin/sysctl \-a \-\-pattern forward$
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward$
+ .br
+-/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
+ .br
+-/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
++/overlayer/syshub/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
+ .SH "SIEHE AUCH"
+ \fBproc\fP(5), \fBsysctl.conf\fP(5), \fBregex\fP(7)
+ .SH "FEHLER MELDEN"
+--- a/po-man/de/sysctl.conf.5
++++ b/po-man/de/sysctl.conf.5
+@@ -78,7 +78,7 @@
+ #
+ kernel.domainname = example.com
+ ; Ein Wert, der ein Leerzeichen enthält, wird in sysctl geschrieben.
+-kernel.modprobe = /sbin/mod probe
++kernel.modprobe = /overlayer/syshub/sbin/mod probe
+ # Eine Liste der Elemente für den Wert
+ net.ipv4.ip_local_reserved_ports=8080,9148
+ .EE
+--- a/po-man/ro/sysctl.8
++++ b/po-man/ro/sysctl.8
+@@ -116,12 +116,12 @@
+ .TS
+ Li.
+ /proc/sys
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/etc/sysctl.conf
++/overlayer/syshub/etc/sysctl.conf
+ .TE
+ .SH NOTE
+ .SS "Prioritatea fișierelor de sistem"
+@@ -132,11 +132,11 @@
+ .P
+ .TS
+ Li.
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+ .TE
+ .P
+ Toate fișierele de configurare sunt sortate în ordine lexicografică,
+@@ -167,21 +167,21 @@
+ per\-cpu.
+ 
+ .SH EXEMPLE
+-/sbin/sysctl \-a
++/overlayer/syshub/sbin/sysctl \-a
+ .br
+-/sbin/sysctl \-n kernel.hostname
++/overlayer/syshub/sbin/sysctl \-n kernel.hostname
+ .br
+-/sbin/sysctl \-w kernel.domainname="example.com"
++/overlayer/syshub/sbin/sysctl \-w kernel.domainname="example.com"
+ .br
+-/sbin/sysctl \-p/etc/sysctl.conf
++/overlayer/syshub/sbin/sysctl \-p/etc/sysctl.conf
+ .br
+-/sbin/sysctl \-a \-\-pattern forward
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward
+ .br
+-/sbin/sysctl \-a \-\-pattern forward$
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward$
+ .br
+-/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
+ .br
+-/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
++/overlayer/syshub/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
+ .SH "CONSULTAȚI ȘI"
+ \fBproc\fP(5), \fBsysctl.conf\fP(5), \fBregex\fP(7)
+ .SH "RAPORTAREA ERORILOR"
+--- a/po-man/ro/sysctl.conf.5
++++ b/po-man/ro/sysctl.conf.5
+@@ -75,7 +75,7 @@
+ #
+    kernel.domainname = example.com
+ ; O valoare care conține un spațiu este scrisă în sysctl.
+-   kernel.modprobe = /sbin/mod probe
++   kernel.modprobe = /overlayer/syshub/sbin/mod probe
+ 
+ # O listă cu elemente pentru valoare
+    net.ipv4.ip_local_reserved_ports=8080,9148
+--- a/po-man/ro/top.1
++++ b/po-man/ro/top.1
+@@ -311,7 +311,7 @@
+ .TP  3
+ \-\fBA\fP, \fB\-\-apply\-defaults\fP
+ Rulează \*(We numai cu opțiunile implicite de compilare, ignorând toate
+-fișierele de configurare, cu excepția /etc/toprc.  Această opțiune, atunci
++fișierele de configurare, cu excepția /overlayer/syshub/etc/toprc.  Această opțiune, atunci
+ când este specificată, trebuie să fie singura opțiune de linie de comandă
+ prezentă.
+ 
+@@ -2743,7 +2743,7 @@
+   # pipe ^I Socluri ^I lsof \-n \-P \-i 2>&1
+   pipe ^I Fișiere deschise ^I lsof \-P \-p %d 2>&1
+   file ^I Informații NUMA ^I /proc/%d/numa_maps
+-  pipe ^I Jurnal ^I tail \-n100 /var/log/syslog | sort \-Mr
++  pipe ^I Jurnal ^I tail \-n100 /overlayer/syshub/var/log/syslog | sort \-Mr
+ .fi
+ 
+ Cu excepția intrării comentate de mai sus, următoarele exemple arată ce ar
+@@ -2757,7 +2757,7 @@
+ .nf
+   "pipe\etFișiere deschise\etlsof \-P \-p %d 2>&1" >> ~/.toprc
+   "file\etInformații NUMA\et/proc/%d/numa_maps" >> ~/.toprc
+-  "pipe\etJurnal\ettail \-n200 /var/log/syslog | sort \-Mr" >> ~/.toprc
++  "pipe\etJurnal\ettail \-n200 /overlayer/syshub/var/log/syslog | sort \-Mr" >> ~/.toprc
+ .fi
+ 
+ În cazul în care orice intrare de inspectare pe care o creați produce o
+@@ -2783,7 +2783,7 @@
+ asemenea și \*(We.
+ 
+ .nf
+-  pipe ^I Trace ^I /usr/bin/strace \-p %d 2>&1
++  pipe ^I Trace ^I /overlayer/syshub/bin/strace \-p %d 2>&1
+ .fi
+ 
+ În sfârșit, în timp ce intrările de tip „pipe” au fost discutate în termeni
+--- a/po-man/sv/sysctl.8
++++ b/po-man/sv/sysctl.8
+@@ -110,12 +110,12 @@
+ .TS
+ Li.
+ /proc/sys
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/etc/sysctl.conf
++/overlayer/syshub/etc/sysctl.conf
+ .TE
+ .SH OBSERVERA
+ .SS Systemfilsprecedens
+@@ -126,11 +126,11 @@
+ .P
+ .TS
+ Li.
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+ .TE
+ .P
+ Alla konfigurationsfiler sorteras i lexikografisk ordning, oavsett vilken
+@@ -160,21 +160,21 @@
+ cpu.
+ 
+ .SH EXEMPEL
+-/sbin/sysctl \-a
++/overlayer/syshub/sbin/sysctl \-a
+ .br
+-/sbin/sysctl \-n kernel.hostname
++/overlayer/syshub/sbin/sysctl \-n kernel.hostname
+ .br
+-/sbin/sysctl \-w kernel.domainname="example.com"
++/overlayer/syshub/sbin/sysctl \-w kernel.domainname="example.com"
+ .br
+-/sbin/sysctl \-p/etc/sysctl.conf
++/overlayer/syshub/sbin/sysctl \-p/etc/sysctl.conf
+ .br
+-/sbin/sysctl \-a \-\-pattern forward
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward
+ .br
+-/sbin/sysctl \-a \-\-pattern forward$
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward$
+ .br
+-/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
+ .br
+-/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
++/overlayer/syshub/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
+ .SH "SE ÄVEN"
+ \fBproc\fP(5), \fBsysctl.conf\fP(5), \fBregex\fP(7)
+ .SH "RAPPORTERA FEL"
+--- a/po-man/sv/sysctl.conf.5
++++ b/po-man/sv/sysctl.conf.5
+@@ -74,7 +74,7 @@
+ #
+ kernel.domainname = example.com
+ ; Ett värde som innehåller ett melanrum skrivs till sysctl.
+-kernel.modprobe = /sbin/mod probe
++kernel.modprobe = /overlayer/syshub/sbin/mod probe
+ # En lista af poster som värde
+ net.ipv4.ip_local_reserved_ports=8080,9148
+ .EE
+--- a/po-man/sv/top.1
++++ b/po-man/sv/top.1
+@@ -303,7 +303,7 @@
+ .TP  3
+ \-\fBA\fP, \fB\-\-apply\-defaults\fP
+ Kör \*(We med endast standardvärden från bygget, ignorera alla
+-konfigurationsfile utom /etc/toprc. Denna flagga måste, när den anges, vara
++konfigurationsfile utom /overlayer/syshub/etc/toprc. Denna flagga måste, när den anges, vara
+ den enda kommandoradsflaggan som ges.
+ 
+ .TP  3
+@@ -2575,7 +2575,7 @@
+   # pipe ^I Uttag ^I lsof \-n \-P \-i 2>&1
+   pipe ^I Öppna filer ^I lsof \-P \-p %d 2>&1
+   file ^I NUMA\-info ^I /proc/%d/numa_maps
+-  pipe ^I Logg ^I tail \-n100 /var/log/syslog | sort \-Mr
++  pipe ^I Logg ^I tail \-n100 /overlayer/syshub/var/log/syslog | sort \-Mr
+ .fi
+ 
+ Med undantag för den utkommenterade posten ovan visar dessa exempel vad som
+@@ -2588,7 +2588,7 @@
+ .nf
+   "pipe\etÖppna filer\etlsof \-P \-p %d 2>&1" >> ~/.toprc
+   "file\etNUMA\-info\et/proc/%d/numa_maps" >> ~/.toprc
+-  "pipe\etLogg\ettail \-n200 /var/log/syslog | sort \-Mr" >> ~/.toprc
++  "pipe\etLogg\ettail \-n200 /overlayer/syshub/var/log/syslog | sort \-Mr" >> ~/.toprc
+ .fi
+ 
+ Om någon inspektionspost man skapar ger utdata med oskrivbara tecken kommer
+@@ -2612,7 +2612,7 @@
+ \[rq]^C\[rq] inte även kommer avsluta \*(We.
+ 
+ .nf
+-  pipe ^I Spåra ^I /usr/bin/strace \-p %d 2>&1
++  pipe ^I Spåra ^I /overlayer/syshub/bin/strace \-p %d 2>&1
+ .fi
+ 
+ Slutligen, även om poster av typen \[rq]\fBpipe\fP\[rq] har diskuterats i
+--- a/po-man/uk/sysctl.8
++++ b/po-man/uk/sysctl.8
+@@ -114,12 +114,12 @@
+ .TS
+ Li.
+ /proc/sys
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/etc/sysctl.conf
++/overlayer/syshub/etc/sysctl.conf
+ .TE
+ .SH ЗАУВАЖЕННЯ
+ .SS "Пріоритетність файлів системи"
+@@ -130,11 +130,11 @@
+ .P
+ .TS
+ Li.
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+ .TE
+ .P
+ Усі файли налаштувань буде упорядковано за абеткою у назвах, незалежно від
+@@ -165,21 +165,21 @@
+ окремих процесорів віртуальної машини.
+ 
+ .SH ПРИКЛАДИ
+-/sbin/sysctl \-a
++/overlayer/syshub/sbin/sysctl \-a
+ .br
+-/sbin/sysctl \-n kernel.hostname
++/overlayer/syshub/sbin/sysctl \-n kernel.hostname
+ .br
+-/sbin/sysctl \-w kernel.domainname="example.com"
++/overlayer/syshub/sbin/sysctl \-w kernel.domainname="example.com"
+ .br
+-/sbin/sysctl \-p/etc/sysctl.conf
++/overlayer/syshub/sbin/sysctl \-p/etc/sysctl.conf
+ .br
+-/sbin/sysctl \-a \-\-pattern forward
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward
+ .br
+-/sbin/sysctl \-a \-\-pattern forward$
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward$
+ .br
+-/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
+ .br
+-/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
++/overlayer/syshub/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
+ .SH "ТАКОЖ ПЕРЕГЛЯНЬТЕ"
+ \fBproc\fP(5), \fBsysctl.conf\fP(5), \fBregex\fP(7)
+ .SH "Як надіслати звіт про вади"
+--- a/po-man/uk/sysctl.conf.5
++++ b/po-man/uk/sysctl.conf.5
+@@ -74,7 +74,7 @@
+ #
+ kernel.domainname = example.com
+ ; Значення, що містить пробіл буде записано до sysctl.
+-kernel.modprobe = /sbin/mod probe
++kernel.modprobe = /overlayer/syshub/sbin/mod probe
+ # Список записів для значення
+ net.ipv4.ip_local_reserved_ports=8080,9148
+ .EE
+--- a/po-man/uk/top.1
++++ b/po-man/uk/top.1
+@@ -307,7 +307,7 @@
+ .TP  3
+ \-\fBA\fP, \fB\-\-apply\-defaults\fP
+ Запустити \*(We лише з типовими параметрами збирання, ігноруючи усі файли
+-налаштувань, окрім /etc/toprc. Цей параметр, якщо його вказано, має бути
++налаштувань, окрім /overlayer/syshub/etc/toprc. Цей параметр, якщо його вказано, має бути
+ єдиним параметром командного рядка.
+ 
+ .TP  3
+@@ -2675,7 +2675,7 @@
+   # pipe ^I Sockets ^I lsof \-n \-P \-i 2>&1
+   pipe ^I Open Files ^I lsof \-P \-p %d 2>&1
+   file ^I NUMA Info ^I /proc/%d/numa_maps
+-  pipe ^I Log ^I tail \-n100 /var/log/syslog | sort \-Mr
++  pipe ^I Log ^I tail \-n100 /overlayer/syshub/var/log/syslog | sort \-Mr
+ .fi
+ 
+ Окрім коментованого запису вище, у наступних прикладах показано, що можна
+@@ -2688,7 +2688,7 @@
+ .nf
+   "pipe\etOpen Files\etlsof \-P \-p %d 2>&1" >> ~/.toprc
+   "file\etNUMA Info\et/proc/%d/numa_maps" >> ~/.toprc
+-  "pipe\etLog\ettail \-n200 /var/log/syslog | sort \-Mr" >> ~/.toprc
++  "pipe\etLog\ettail \-n200 /overlayer/syshub/var/log/syslog | sort \-Mr" >> ~/.toprc
+ .fi
+ 
+ Якщо будь\-який зі створених вами записів інспектування виводитиме дані із
+@@ -2713,7 +2713,7 @@
+ єдиний випадок, коли «^C» не завершить також і роботу \*(We.
+ 
+ .nf
+-  pipe ^I Trace ^I /usr/bin/strace \-p %d 2>&1
++  pipe ^I Trace ^I /overlayer/syshub/bin/strace \-p %d 2>&1
+ .fi
+ 
+ Нарешті, хоча ми описували записи типу «\fBpipe\fP» у термінах конвеєрів і
+--- a/po-man/zh_CN/sysctl.8
++++ b/po-man/zh_CN/sysctl.8
+@@ -96,12 +96,12 @@
+ .TS
+ Li.
+ /proc/sys
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/etc/sysctl.conf
++/overlayer/syshub/etc/sysctl.conf
+ .TE
+ .SH 备注
+ .SS 系统文件优先级
+@@ -110,11 +110,11 @@
+ .P
+ .TS
+ Li.
+-/etc/sysctl.d/*.conf
++/overlayer/syshub/etc/sysctl.d/*.conf
+ /run/sysctl.d/*.conf
+-/usr/local/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/usr/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+-/lib/sysctl.d/*.conf
++/overlayer/syshub/lib/sysctl.d/*.conf
+ .TE
+ .P
+ 所有配置文件将按字典序排序，无论它们位于哪个目录。配置文件可以被完全替换（通过在更高优先级的目录中放置同名的新配置文件）或部分替换（通过使用排序在更后面的配置文件）。
+@@ -134,21 +134,21 @@
+ 这个参数不返回任何值，但会刷新各个 CPU 的 VM 统计信息。
+ 
+ .SH 示例
+-/sbin/sysctl \-a
++/overlayer/syshub/sbin/sysctl \-a
+ .br
+-/sbin/sysctl \-n kernel.hostname
++/overlayer/syshub/sbin/sysctl \-n kernel.hostname
+ .br
+-/sbin/sysctl \-w kernel.domainname="example.com"
++/overlayer/syshub/sbin/sysctl \-w kernel.domainname="example.com"
+ .br
+-/sbin/sysctl \-p/etc/sysctl.conf
++/overlayer/syshub/sbin/sysctl \-p/etc/sysctl.conf
+ .br
+-/sbin/sysctl \-a \-\-pattern forward
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward
+ .br
+-/sbin/sysctl \-a \-\-pattern forward$
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern forward$
+ .br
+-/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
++/overlayer/syshub/sbin/sysctl \-a \-\-pattern 'net.ipv4.conf.(eth|wlan)0.arp'
+ .br
+-/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
++/overlayer/syshub/sbin/sysctl \-\-pattern '\[char94]net.ipv6' \-\-system
+ .SH 参见
+ \fBproc\fP(5), \fBsysctl.conf\fP(5), \fBregex\fP(7)
+ .SH 报告错误
+--- a/po-man/zh_CN/sysctl.conf.5
++++ b/po-man/zh_CN/sysctl.conf.5
+@@ -64,7 +64,7 @@
+ #
+ kernel.domainname = example.com
+ ; 含有空格的值也会被写入 sysctl。
+-kernel.modprobe = /sbin/mod probe
++kernel.modprobe = /overlayer/syshub/sbin/mod probe
+ # 值是一个项目列表
+ net.ipv4.ip_local_reserved_ports=8080,9148
+ .EE
+--- a/po-man/zh_CN/top.1
++++ b/po-man/zh_CN/top.1
+@@ -256,7 +256,7 @@
+ 
+ .TP  3
+ \-\fBA\fP, \fB\-\-apply\-defaults\fP
+-使用编译时的默认值运行 \*(We，忽略除 /etc/toprc 之外的所有配置文件。指定此选项时，它必须是命令行里唯一的选项。
++使用编译时的默认值运行 \*(We，忽略除 /overlayer/syshub/etc/toprc 之外的所有配置文件。指定此选项时，它必须是命令行里唯一的选项。
+ 
+ .TP  3
+ \-\fBb\fP, \fB\-\-batch\fP
+@@ -1936,7 +1936,7 @@
+   # pipe ^I 套接字 ^I lsof \-n \-P \-i 2>&1
+   pipe ^I 打开的文件 ^I lsof \-P \-p %d 2>&1
+   file ^I NUMA 信息 ^I /proc/%d/numa_maps
+-  pipe ^I 日志 ^I tail \-n100 /var/log/syslog | sort \-Mr
++  pipe ^I 日志 ^I tail \-n100 /overlayer/syshub/var/log/syslog | sort \-Mr
+ .fi
+ 
+ 除开上面被注释掉的条目，接下来的示例展示了如何通过 echo 实现类似的结果（假设 rc 文件名为
+@@ -1946,7 +1946,7 @@
+ .nf
+   "pipe\et打开的文件\etlsof \-P \-p %d 2>&1" >> ~/.toprc
+   "file\etNUMA 信息\et/proc/%d/numa_maps" >> ~/.toprc
+-  "pipe\et日志\ettail \-n200 /var/log/syslog | sort \-Mr" >> ~/.toprc
++  "pipe\et日志\ettail \-n200 /overlayer/syshub/var/log/syslog | sort \-Mr" >> ~/.toprc
+ .fi
+ 
+ 如果您创建的任何检视条目生成了带有不可打印字符的输出，它们将以 ^C 表示法或十六进制 <FF>
+@@ -1964,7 +1964,7 @@
+ 来终止它才能查看结果。这是 "^C" 不会同时终止 \*(We 的唯一情况。
+ 
+ .nf
+-  pipe ^I 追踪 ^I /usr/bin/strace \-p %d 2>&1
++  pipe ^I 追踪 ^I /overlayer/syshub/bin/strace \-p %d 2>&1
+ .fi
+ 
+ 最后，虽然到目前为止，关于 "\fBpipe\fP" 类型条目的讨论使用的都是管道和命令，但没有什么可以阻止您使用
+--- a/src/ps/display.c
++++ b/src/ps/display.c
+@@ -656,7 +656,7 @@
+   setlocale (LC_ALL, "");
+   bindtextdomain(PACKAGE, LOCALEDIR);
+   textdomain(PACKAGE);
+-  setenv("TZ", ":/etc/localtime", 0);
++  setenv("TZ", ":/overlayer/syshub/etc/localtime", 0);
+ 
+ #ifdef DEBUG
+   init_stack_trace(argv[0]);
+--- a/src/sysctl.c
++++ b/src/sysctl.c
+@@ -59,7 +59,7 @@
+  *    Globals...
+  */
+ static const char PROC_PATH[] = "/proc/sys/";
+-static const char DEFAULT_PRELOAD[] = "/etc/sysctl.conf";
++static const char DEFAULT_PRELOAD[] = "/overlayer/syshub/etc/sysctl.conf";
+ static const char *DEPRECATED[] = {
+ 	"base_reachable_time",
+ 	"retrans_time",
+@@ -836,11 +836,11 @@
+ {
+ 	unsigned di, i;
+ 	const char *dirs[] = {
+-		"/etc/sysctl.d",
++		"/overlayer/syshub/etc/sysctl.d",
+ 		"/run/sysctl.d",
+-		"/usr/local/lib/sysctl.d",
++		"/overlayer/syshub/lib/sysctl.d",
+-		"/usr/lib/sysctl.d",
++		"/overlayer/syshub/lib/sysctl.d",
+-		"/lib/sysctl.d",
++		"/overlayer/syshub/lib/sysctl.d",
+ 	};
+ 	struct pair **cfgs = NULL;
+ 	unsigned ncfgs = 0;
+--- a/src/top/top_nls.c
++++ b/src/top/top_nls.c
+@@ -541,9 +541,9 @@
+       "Another way to add entries is illustrated below, but it risks overwriting the\n"
+       "rcfile.  Redirected echoes must not replace (>) but append (>>) to that file.\n"
+       "\n"
+-      "  /bin/echo -e \"pipe\\tOpen Files\\tlsof -P -p %d 2>&1\" >> ~/.toprc\n"
++      "  /overlayer/syshub/bin/echo -e \"pipe\\tOpen Files\\tlsof -P -p %d 2>&1\" >> ~/.toprc\n"
+-      "  /bin/echo -e \"file\\tNUMA Info\\t/proc/%d/numa_maps\" >> ~/.toprc\n"
++      "  /overlayer/syshub/bin/echo -e \"file\\tNUMA Info\\t/proc/%d/numa_maps\" >> ~/.toprc\n"
+-      "  /bin/echo -e \"pipe\\tLog\\ttail -n200 /var/log/syslog | sort -Mr\" >> ~/.toprc\n"
++      "  /overlayer/syshub/bin/echo -e \"pipe\\tLog\\ttail -n200 /overlayer/syshub/var/log/syslog | sort -Mr\" >> ~/.toprc\n"
+       "\n"
+       "If you don't know the location or name of the top rcfile, use the 'W' command\n"
+       "and note those details.  After backing up the current rcfile, try issuing the\n"
+@@ -756,7 +756,7 @@
+       "   %%Cpu(s):~3  76.5 ~2user,~3  11.2 ~2system,~3   0.0 ~2nice,~3  12.3 ~2idle~3\n"
+       "   ~1 Nasty Message! ~4  -or-  ~1Input Prompt~5\n"
+       "   ~1  PID TTY     PR  NI %%CPU    TIME+   VIRT SWAP S COMMAND    ~6\n"
+-      "   17284 ~8pts/2  ~7  8   0  0.0   0:00.75  1380    0 S /bin/bash   ~8\n"
++      "   17284 ~8pts/2  ~7  8   0  0.0   0:00.75  1380    0 S /overlayer/syshub/bin/bash   ~8\n"
+       "   ~1 8601 pts/1    7 -10  0.4   0:00.03   916    0 R color -b -z~7\n"
+       "   11005 ~8?      ~7  9   0  0.0   0:02.50  2852 1008 S amor -sessi~8\n"
+       "   available toggles: ~1B~2 =disable bold globally (~1%s~2),\n"

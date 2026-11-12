@@ -1,0 +1,34 @@
+[package]
+name             = "procps-ng"
+version          = "4.0.7"
+description      = "top, watch, vmstat and other process tools"
+license          = "GPL-2.0-or-later AND LGPL-2.1-or-later"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://gitlab.com/procps-ng/procps"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "ncurses"]
+provides         = ["top", "watch", "vmstat", "procps-ng", "libproc2"]
+tags             = ["utility", "cli", "system"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+etc     = "/overlayer/zexlib/union/etc"
+share   = "/overlayer/zexlib/union/share"
+var     = "/overlayer/zexlib/union/var"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
