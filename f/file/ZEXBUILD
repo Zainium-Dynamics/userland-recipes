@@ -1,0 +1,28 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=file
+pkgver=5.48
+pkgrel=0
+source="https://astron.com/pub/file/file-$pkgver.tar.gz
+0001-zainium-paths.patch"
+sha256sums="ed14656883b23a364b4057c05595d93252da9bc473d30106519519d0da141283  file-$pkgver.tar.gz"
+
+# file and libmagic. The build runs its own file to compile the magic database, so the
+# compressed-file readers stay off: that binary needs nothing but the C library.
+# 0001-zainium-paths.patch is made by replant.
+build() {
+    patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --datadir=/overlayer/syshub/share \
+        --mandir=/overlayer/syshub/share/man \
+        --disable-static \
+        --disable-zlib --disable-bzlib --disable-xzlib --disable-zstdlib --disable-lzlib \
+        --disable-libseccomp
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+}
