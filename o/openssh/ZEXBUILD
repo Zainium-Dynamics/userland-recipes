@@ -23,6 +23,8 @@ build() {
         --with-pid-dir=/run \
         --with-ssl-dir=/overlayer/syshub \
         --with-mantype=man \
+        --with-default-path=/overlayer/syshub/bin:/overlayer/zexlib/union/bin \
+        --with-superuser-path=/overlayer/syshub/bin:/overlayer/syshub/sbin:/overlayer/zexlib/union/bin \
         --disable-strip
     make
 }
