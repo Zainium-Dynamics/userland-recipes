@@ -13,11 +13,9 @@ sha256sums="01f20d0b253af0a7e041394a501adc83483f2eee01faf607a933c028343ab71a  ki
 needs_toolchain="gcc-musl binutils linux-headers libglvnd libglvnd-dev gettext python python-dev pixman pixman-dev glib glib-dev pcre2 pcre2-dev libffi libffi-dev expat expat-dev bzip2 bzip2-dev brotli brotli-dev libdrm libdrm-dev util-linux cairo cairo-dev harfbuzz harfbuzz-dev fontconfig fontconfig-dev freetype freetype-dev libxkbcommon libxkbcommon-dev wayland wayland-dev wayland-protocols dbus dbus-dev systemd systemd-dev libpng libpng-dev zlib zlib-dev openssl openssl-dev mesa mesa-dev ncurses ncurses-dev pkgconf"
 makedepends="go ncurses gcompat libstdc++ lcms2-dev lcms2-static xxhash-dev simde-dev font-nerd-fonts-symbols"
 
-# The kitty terminal. 0001-zainium-paths.patch moves the paths kitty and its
-# kitten helper read at run time to the Zainium layout: the system config in
-# /overlayer/syshub/etc/xdg/kitty, the default XDG data dirs, terminfo, /etc/passwd,
-# /etc/machine-id, the fallback shell and login. kitten is a static Go program, so
-# sys_resolver can not redirect its paths; the patch has to.
+# The kitty terminal. 0001-zainium-paths.patch moves every path kitty and its kitten
+# helper use to the Zainium layout, shebangs and man pages too (made with replant):
+# kitten is a static Go program, so sys_resolver can not redirect its paths.
 # The patch also links desktop OpenGL from libglvnd's libOpenGL (opengl.pc) and
 # loads libOpenGL.so.0 first, because Zainium is Wayland only and has no libGL.
 build() {
