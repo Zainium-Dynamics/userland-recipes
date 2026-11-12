@@ -19,6 +19,21 @@
         sysless file is found.)  On MS‐DOS and Windows systems, the system‐wide
         lesskey  file  is  c:\_syslesskey.   On  OS/2  systems, the system‐wide
         lesskey file is c:\syslesskey.ini.
+--- a/less.nro
++++ b/less.nro
+@@ -2348,10 +2348,10 @@
+ Otherwise,
+ .B less
+ looks in a standard place for the system-wide lesskey file:
+-On Unix systems, the system-wide lesskey file is /usr/local/etc/syslesskey.
++On Unix systems, the system-wide lesskey file is /overlayer/syshub/etc/syslesskey.
+ (However, if
+ .B less
+-was built with a different sysconf directory than /usr/local/etc,
++was built with a different sysconf directory than /overlayer/syshub/etc,
+ that directory is where the sysless file is found.)
+ On MS-DOS and Windows systems, the system-wide lesskey file is c:\e_syslesskey.
+ On OS/2 systems, the system-wide lesskey file is c:\esyslesskey.ini.
 --- a/lesstest/extract
 +++ b/lesstest/extract
 @@ -1,4 +1,4 @@
