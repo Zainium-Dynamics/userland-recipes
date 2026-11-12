@@ -26,4 +26,6 @@ build() {
 
 package() {
     make DESTDIR="$PAYLOAD_DIR" install
+    # developer docs only (valgrind suppressions, library notes)
+    rm -rf "$PAYLOAD_DIR/overlayer/syshub/share/doc/procps-ng"
 }
