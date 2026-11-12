@@ -30,6 +30,15 @@
  If you use a negative operand,
 --- a/man/sysctl.8
 +++ b/man/sysctl.8
+@@ -66,7 +66,7 @@
+ they cannot be parsed this way.
+ .TP
+ \fB\-p\fR[\fIFILE\fR], \fB\-\-load\fR[=\fIFILE\fR]
+-Load in \fBsysctl\fR settings from the file specified or \fI/etc/sysctl.conf\fR
++Load in \fBsysctl\fR settings from the file specified or \fI/overlayer/syshub/etc/sysctl.conf\fR
+ if none given.  Specifying \- as filename means reading data from standard
+ input. Using this option will mean arguments to
+ .B sysctl
 @@ -123,12 +123,12 @@
  .TS
  Li.
@@ -64,6 +73,15 @@
  .TE
  .P
  All configuration files are sorted in lexicographic order, regardless of the
+@@ -153,7 +153,7 @@
+ directory of higher priority) or partially replaced (by having a configuration
+ file that is ordered later).
+ .P
+-The file \fI/etc/sysctl.conf\fR is read last which means it can replace/override any
++The file \fI/overlayer/syshub/etc/sysctl.conf\fR is read last which means it can replace/override any
+ parameters previously set in files in the listed directories.
+ 
+ .SS Deprecated parameters
 @@ -177,21 +177,21 @@
  This parameter returns no value but flushes per-cpu vm statistics.
  
@@ -145,7 +163,15 @@
  .fi
  
  Except for the commented entry above, these next examples show what could
-@@ -2706,7 +2706,7 @@
+@@ -2699,14 +2699,14 @@
+ assuming the rcfile name was \[oq].toprc\[cq].
+ However,
+ due to the embedded tab characters,
+-each of these lines should be preceded by \[oq]\fB/bin/echo \-e\fR\[cq],
++each of these lines should be preceded by \[oq]\fB/overlayer/syshub/bin/echo \-e\fR\[cq],
+ not just a simple an \[oq]echo\[cq],
+ to enable backslash interpretation regardless of which shell you use.
+ 
  .nf
    "pipe\\tOpen Files\\tlsof -P -p %d 2>&1" >> ~/.toprc
    "file\\tNUMA Info\\t/proc/%d/numa_maps" >> ~/.toprc
@@ -163,6 +189,24 @@
  .fi
  
  Lastly,
+@@ -2776,7 +2776,7 @@
+ 
+ 2. Add and test any desired \[oq]inspect\[cq] entries.
+ 
+-3. Copy that \*(CF to the \fI/etc/\fR directory as
++3. Copy that \*(CF to the \fI/overlayer/syshub/etc/\fR directory as
+ \[oq]\fBtopdefaultrc\fR\[cq].
+ 
+ .\" ......................................................................
+@@ -2795,7 +2795,7 @@
+ .fi
+ 
+ This \*(CF is not created by \*(We.
+-Rather, it is created manually and placed it in the \fI/etc/\fR
++Rather, it is created manually and placed it in the \fI/overlayer/syshub/etc/\fR
+ directory as \[oq]\fBtoprc\fR\[cq].
+ 
+ It should have exactly two lines, as shown in this example:
 --- a/man/uptime.1
 +++ b/man/uptime.1
 @@ -58,7 +58,7 @@
@@ -185,8 +229,28 @@
  information about who is currently logged on, only for non-systemd hosts.
  .TP
  .I /proc
+--- a/po-man/de/kill.1
++++ b/po-man/de/kill.1
+@@ -87,7 +87,7 @@
+ .SH ANMERKUNGEN
+ Die Shell (der Befehlszeileninterpreter) verfügt oft über einen eingebauten
+ Kill\-Befehl. In diesem Fall müssen Sie den hier beschriebenen Befehl als
+-\fI/bin/\:kill\fP aufrufen, um den eingebauten Shell\-Befehl außer Kraft zu
++\fI/overlayer/syshub/bin/\:kill\fP aufrufen, um den eingebauten Shell\-Befehl außer Kraft zu
+ setzen.
+ .PP
+ Falls Sie einen negativen Operanden verwenden, geben Sie zuerst einen
 --- a/po-man/de/sysctl.8
 +++ b/po-man/de/sysctl.8
+@@ -62,7 +62,7 @@
+ .TP 
+ \fB\-p\fP[\fIDATEI\fP], \fB\-\-load\fP[=\fIDATEI\fP]
+ lädt \fBsysctl\fP\-Einstellungen aus der angegebenen Datei oder aus
+-\fI/etc/sysctl.conf\fP, falls keine Datei angegeben ist. Die Angabe von \fB\-\fP
++\fI/overlayer/syshub/etc/sysctl.conf\fP, falls keine Datei angegeben ist. Die Angabe von \fB\-\fP
+ als Dateiname bewirkt, dass die Daten aus der Standardeingabe gelesen
+ werden. Mit dieser Option sieht \fBsysctl\fP Argumente als Dateien an, die in
+ der Reihenfolge gelesen werden, in der sie angegeben sind. Das
 @@ -112,12 +112,12 @@
  .TS
  Li.
@@ -221,6 +285,15 @@
  .TE
  .P
  Alle Konfigurationsdateien werden lexikografisch aufgelistet, unabhängig
+@@ -143,7 +143,7 @@
+ teilweise ersetzt werden (indem eine nachgeordnete Konfigurationsdatei
+ vorhanden ist).
+ .P
+-Die Datei \fI/etc/sysctl.conf\fP wird als letzte gelesen, was bedeutet, dass
++Die Datei \fI/overlayer/syshub/etc/sysctl.conf\fP wird als letzte gelesen, was bedeutet, dass
+ sie sämtliche Parameter, die zuvor in Dateien in den angegebenen
+ Verzeichnissen gelesen wurden, ersetzen bzw. außer Kraft setzen kann.
+ 
 @@ -166,21 +166,21 @@
  VM\-Statistiken.
  
@@ -253,6 +326,26 @@
  .SH "FEHLER MELDEN"
 --- a/po-man/de/sysctl.conf.5
 +++ b/po-man/de/sysctl.conf.5
+@@ -53,15 +53,15 @@
+ .P
+ .RS
+ .TP 
+-\fI/etc/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/etc/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+ \fI/run/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/local/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .RE
+ .P
+ Zum Schluss liest die \fIprocps\fP\-Version von \fBsysctl\fP die Datei
 @@ -78,7 +78,7 @@
  #
  kernel.domainname = example.com
@@ -262,8 +355,50 @@
  # Eine Liste der Elemente für den Wert
  net.ipv4.ip_local_reserved_ports=8080,9148
  .EE
+--- a/po-man/de/uptime.1
++++ b/po-man/de/uptime.1
+@@ -64,7 +64,7 @@
+ die Option \fB\-\-container\fP angegeben wurde.
+ .SH DATEIEN
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ Informationen darüber, wer aktuell angemeldet ist
+ .TP 
+ \fI/proc\fP
+--- a/po-man/de/w.1
++++ b/po-man/de/w.1
+@@ -102,7 +102,7 @@
+ setzt die vorgegebene Breite der From\-Spalte außer Kraft. Standardmäßig 16.
+ .SH DATEIEN
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ Informationen darüber, wer aktuell angemeldet ist, jedoch nur für Rechner
+ ohne Systemd.
+ .TP 
+--- a/po-man/ro/kill.1
++++ b/po-man/ro/kill.1
+@@ -88,7 +88,7 @@
+ .SH NOTE
+ Shell\-ul dumneavoastră (interpretul de linie de comandă) poate avea o
+ comandă «kill» încorporată. Poate fi necesar să rulați comanda descrisă aici
+-ca \fI/bin/\:kill\fP pentru a rezolva conflictul.
++ca \fI/overlayer/syshub/bin/\:kill\fP pentru a rezolva conflictul.
+ .PP
+ Dacă utilizați un operand negativ, specificați mai întâi un semnal prin nume
+ sau număr, astfel încât \fBkill\fP să îl poată distinge de un grup de
 --- a/po-man/ro/sysctl.8
 +++ b/po-man/ro/sysctl.8
+@@ -64,7 +64,7 @@
+ .TP 
+ \fB\-p\fP[\fIFIȘIER\fP], \fB\-\-load\fP[=\fIFIȘIER\fP]
+ Încărcați configurările \fIsysctl\fP din fișierul specificat sau
+-\fI/etc/sysctl.conf\fP dacă nu este specificat niciunul. Specificarea „\-” ca
++\fI/overlayer/syshub/etc/sysctl.conf\fP dacă nu este specificat niciunul. Specificarea „\-” ca
+ nume de fișier înseamnă citirea datelor de la intrarea standard. Utilizarea
+ acestei opțiuni va însemna că argumentele pentru \fBsysctl\fP sunt fișiere,
+ care sunt citite în ordinea în care sunt specificate. Argumentul fișier
 @@ -116,12 +116,12 @@
  .TS
  Li.
@@ -298,6 +433,15 @@
  .TE
  .P
  Toate fișierele de configurare sunt sortate în ordine lexicografică,
+@@ -145,7 +145,7 @@
+ nume într\-un director cu prioritate mai mare), fie parțial înlocuite (prin a
+ avea un fișier de configurare care este ordonat ulterior).
+ .P
+-Fișierul \fI/etc/sysctl.conf\fP este citit ultimul, ceea ce înseamnă că poate
++Fișierul \fI/overlayer/syshub/etc/sysctl.conf\fP este citit ultimul, ceea ce înseamnă că poate
+ înlocui/anula orice parametri definiți anterior în fișierele din
+ directoarele enumerate.
+ 
 @@ -167,21 +167,21 @@
  per\-cpu.
  
@@ -330,6 +474,26 @@
  .SH "RAPORTAREA ERORILOR"
 --- a/po-man/ro/sysctl.conf.5
 +++ b/po-man/ro/sysctl.conf.5
+@@ -51,15 +51,15 @@
+ .P
+ .RS
+ .TP 
+-\fI/etc/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/etc/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+ \fI/run/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/local/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .RE
+ .P
+ În final, \fIprocps\fP \fBsysctl\fP citește \fI\%/etc/\:\%sysctl\:\%.conf\fP. Acest
 @@ -75,7 +75,7 @@
  #
     kernel.domainname = example.com
@@ -350,7 +514,7 @@
  când este specificată, trebuie să fie singura opțiune de linie de comandă
  prezentă.
  
-@@ -2743,7 +2743,7 @@
+@@ -2743,21 +2743,21 @@
    # pipe ^I Socluri ^I lsof \-n \-P \-i 2>&1
    pipe ^I Fișiere deschise ^I lsof \-P \-p %d 2>&1
    file ^I Informații NUMA ^I /proc/%d/numa_maps
@@ -359,7 +523,14 @@
  .fi
  
  Cu excepția intrării comentate de mai sus, următoarele exemple arată ce ar
-@@ -2757,7 +2757,7 @@
+ putea fi transmis pentru a obține rezultate similare, presupunând că numele
+ fișierului de configurare este „.toprc”. Cu toate acestea, din cauza
+ caracterelor de tabulare încorporate, fiecare dintre aceste linii ar trebui
+-să fie precedată de „\fB/bin/echo \-e\fP”, nu doar de un simplu „echo”, pentru a
++să fie precedată de „\fB/overlayer/syshub/bin/echo \-e\fP”, nu doar de un simplu „echo”, pentru a
+ permite interpretarea barelor oblice inverse indiferent de shell\-ul
+ utilizat.
+ 
  .nf
    "pipe\etFișiere deschise\etlsof \-P \-p %d 2>&1" >> ~/.toprc
    "file\etInformații NUMA\et/proc/%d/numa_maps" >> ~/.toprc
@@ -377,8 +548,68 @@
  .fi
  
  În sfârșit, în timp ce intrările de tip „pipe” au fost discutate în termeni
+@@ -2824,7 +2824,7 @@
+ 
+ 2. Adăugați și testați toate intrările de „inspect\-are” dorite.
+ 
+-3. Copiați acest fișier de configurare în directorul \fI/etc/\fP ca
++3. Copiați acest fișier de configurare în directorul \fI/overlayer/syshub/etc/\fP ca
+ „\fBtopdefaultrc\fP”.
+ 
+ .\" ......................................................................
+@@ -2843,7 +2843,7 @@
+ .fi
+ 
+ Acest fișier de configurare nu este creat de \*(We. Mai degrabă, este creat
+-manual și plasat în directorul \fI/etc/\fP sub numele de „\fBtoprc\fP”.
++manual și plasat în directorul \fI/overlayer/syshub/etc/\fP sub numele de „\fBtoprc\fP”.
+ 
+ Acesta trebuie să aibă exact două linii, așa cum se arată în acest exemplu:
+ .nf
+--- a/po-man/ro/uptime.1
++++ b/po-man/ro/uptime.1
+@@ -65,7 +65,7 @@
+ cum ar fi fost dată opțiunea \fB\-\-container\fP.
+ .SH FIȘIERE
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ informații despre cine este conectat în prezent
+ .TP 
+ \fI/proc\fP
+--- a/po-man/ro/w.1
++++ b/po-man/ro/w.1
+@@ -106,7 +106,7 @@
+ Suprascrie lățimea implicită a coloanei „din”.  Valoarea implicită este 16.
+ .SH FIȘIERE
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ informații despre cine este conectat în prezent, doar pentru gazdele
+ non\-systemd.
+ .TP 
+--- a/po-man/sv/kill.1
++++ b/po-man/sv/kill.1
+@@ -85,7 +85,7 @@
+ Lista signalnamn i tabellformat.
+ .SH OBSERVERA
+ Skalet (kommandoradstolk) har ofta ett inbyggt \[rq]kill\[rq]\-kommando. Man
+-kan behöva köra kommandot som beskrivs här som \fI/bin/\:kill\fP för att
++kan behöva köra kommandot som beskrivs här som \fI/overlayer/syshub/bin/\:kill\fP för att
+ åsidosätta skalets inbyggda.
+ .PP
+ Om du använder en negativ operand, ange en signal med namn eller nummer
 --- a/po-man/sv/sysctl.8
 +++ b/po-man/sv/sysctl.8
+@@ -60,7 +60,7 @@
+ .TP 
+ \fB\-p\fP[\fIFIL\fP], \fB\-\-load\fP[=\fIFIL\fP]
+ Läs in \fBsysctl\fP\-inställningar från filen som anges eller
+-\fI/etc/sysctl.conf\fP om ingen anges. Att ange \- som ett filnamn betyder att
++\fI/overlayer/syshub/etc/sysctl.conf\fP om ingen anges. Att ange \- som ett filnamn betyder att
+ läsa data från standard in. Användning av denna flagga kommer betyda att
+ argument till \fBsysctl\fP är filer, vilka läses i den ordning de
+ anges. Filargumentet kan anges som ett reguljärt uttryck.
 @@ -110,12 +110,12 @@
  .TS
  Li.
@@ -413,6 +644,15 @@
  .TE
  .P
  Alla konfigurationsfiler sorteras i lexikografisk ordning, oavsett vilken
+@@ -139,7 +139,7 @@
+ prioritet) eller ersättas delvis (genom att ha en konfigurationsfil som
+ ordnas senare).
+ .P
+-Filen \fI/etc/sysctl.conf\fP läses sist vilket betyder att den kan
++Filen \fI/overlayer/syshub/etc/sysctl.conf\fP läses sist vilket betyder att den kan
+ ersätta/åsidosätta alla parametrar som satts tidigare i filer i de listade
+ katalogerna.
+ 
 @@ -160,21 +160,21 @@
  cpu.
  
@@ -445,6 +685,26 @@
  .SH "RAPPORTERA FEL"
 --- a/po-man/sv/sysctl.conf.5
 +++ b/po-man/sv/sysctl.conf.5
+@@ -51,15 +51,15 @@
+ .P
+ .RS
+ .TP 
+-\fI/etc/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/etc/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+ \fI/run/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/local/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .RE
+ .P
+ Slutligen läser \fIprocps\fP \fBsysctl\fP \fI\%/etc/\:\%sysctl\:\%.conf\fP. Denna fil
 @@ -74,7 +74,7 @@
  #
  kernel.domainname = example.com
@@ -465,7 +725,7 @@
  den enda kommandoradsflaggan som ges.
  
  .TP  3
-@@ -2575,7 +2575,7 @@
+@@ -2575,20 +2575,20 @@
    # pipe ^I Uttag ^I lsof \-n \-P \-i 2>&1
    pipe ^I Öppna filer ^I lsof \-P \-p %d 2>&1
    file ^I NUMA\-info ^I /proc/%d/numa_maps
@@ -474,7 +734,13 @@
  .fi
  
  Med undantag för den utkommenterade posten ovan visar dessa exempel vad som
-@@ -2588,7 +2588,7 @@
+ skulle kunna echo:as för att åstadkomma liknande resultat, under antagandet
+ att rcfil:ens namn var \[rq].toprc\[rq]. På grund av de inbäddade
+ tabulatortecknen skall dock var och en av dessa rader föregås av
+-\[rq]\fB/bin/echo \-e\fP\[rq], inte bara ett ensamt \[rq]echo\[rq], för att
++\[rq]\fB/overlayer/syshub/bin/echo \-e\fP\[rq], inte bara ett ensamt \[rq]echo\[rq], för att
+ aktivera tolkning av omvända snedstreck oavsett vilket skal man använder.
+ 
  .nf
    "pipe\etÖppna filer\etlsof \-P \-p %d 2>&1" >> ~/.toprc
    "file\etNUMA\-info\et/proc/%d/numa_maps" >> ~/.toprc
@@ -492,8 +758,68 @@
  .fi
  
  Slutligen, även om poster av typen \[rq]\fBpipe\fP\[rq] har diskuterats i
+@@ -2651,7 +2651,7 @@
+ 
+ 2. Lägg till och prova eventuella önskade \[rq]inspektions\[rq]\-poster.
+ 
+-3. Kopiera den \*(CFen till katalogen \fI/etc/\fP som
++3. Kopiera den \*(CFen till katalogen \fI/overlayer/syshub/etc/\fP som
+ \[rq]\fBtopdefaultrc\fP\[rq].
+ 
+ .\" ......................................................................
+@@ -2669,7 +2669,7 @@
+ .fi
+ 
+ Denna \*(CF skapas inte av \*(We. Istället skapas den manuellt och placeras
+-i katalogen \fI/etc/\fP som \[rq]\fBtoprc\fP\[rq].
++i katalogen \fI/overlayer/syshub/etc/\fP som \[rq]\fBtoprc\fP\[rq].
+ 
+ Den skall ha precis två rader, som visas i detta exempel:
+ .nf
+--- a/po-man/sv/uptime.1
++++ b/po-man/sv/uptime.1
+@@ -61,7 +61,7 @@
+ \fB\-\-container\fP gavs.
+ .SH FILER
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ information om vem som är inloggad för närvarande
+ .TP 
+ \fI/proc\fP
+--- a/po-man/sv/w.1
++++ b/po-man/sv/w.1
+@@ -102,7 +102,7 @@
+ Åsidosätt standardbredden på kolumnen från.  Standard är 16.
+ .SH FILER
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ information om vem som är inloggad för närvarande, endast för
+ icke\-systemd\-värdar.
+ .TP 
+--- a/po-man/uk/kill.1
++++ b/po-man/uk/kill.1
+@@ -86,7 +86,7 @@
+ .SH ЗАУВАЖЕННЯ
+ В оболонці (інтерпретаторі командного рядка) часто може бути вбудована
+ команда \[lq]kill\[rq]. Щоб позбутися конфлікту команд, вам слід запускати
+-описану тут команду як \fI/bin/\:kill\fP.
++описану тут команду як \fI/overlayer/syshub/bin/\:kill\fP.
+ .PP
+ Якщо ви використовуєте негативний операнд, спочатку вкажіть сигнал за назвою
+ або номером, щоб \fBkill\fP міг відрізнити його від групи процесів. Наприклад,
 --- a/po-man/uk/sysctl.8
 +++ b/po-man/uk/sysctl.8
+@@ -63,7 +63,7 @@
+ .TP 
+ \fB\-p\fP[\fIФАЙЛ\fP], \fB\-\-load\fP[=\fIФАЙЛ\fP]
+ Завантажити параметри \fBsysctl\fP із вказаного файла або із
+-\fI/etc/sysctl.conf\fP, якщо файл не вказано. Якщо вказати замість назви файла
++\fI/overlayer/syshub/etc/sysctl.conf\fP, якщо файл не вказано. Якщо вказати замість назви файла
+ \-, дані буде прочитано із стандартного джерела вхідних даних. Використання
+ цього параметра означає, що аргументами \fBsysctl\fP є файли, які буде
+ прочитано у порядку, у якому їх було вказано. Аргумент файла може бути
 @@ -114,12 +114,12 @@
  .TS
  Li.
@@ -528,6 +854,15 @@
  .TE
  .P
  Усі файли налаштувань буде упорядковано за абеткою у назвах, незалежно від
+@@ -143,7 +143,7 @@
+ каталозі із вищою пріоритетністю), або частково (за допомогою файла
+ налаштувань, який йде далі за порядком).
+ .P
+-Файл \fI/etc/sysctl.conf\fP буде прочитано останнім, що означає, що у ньому
++Файл \fI/overlayer/syshub/etc/sysctl.conf\fP буде прочитано останнім, що означає, що у ньому
+ може бути замінено або перевизначено будь\-які параметри, які раніше
+ встановлені у файлах з каталогів списку.
+ 
 @@ -165,21 +165,21 @@
  окремих процесорів віртуальної машини.
  
@@ -560,6 +895,26 @@
  .SH "Як надіслати звіт про вади"
 --- a/po-man/uk/sysctl.conf.5
 +++ b/po-man/uk/sysctl.conf.5
+@@ -51,15 +51,15 @@
+ .P
+ .RS
+ .TP 
+-\fI/etc/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/etc/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+ \fI/run/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/local/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .RE
+ .P
+ Нарешті, \fBsysctl\fP \fIprocps\fP читає \fI\%/etc/\:\%sysctl\:\%.conf\fP. Цей файл
 @@ -74,7 +74,7 @@
  #
  kernel.domainname = example.com
@@ -580,7 +935,7 @@
  єдиним параметром командного рядка.
  
  .TP  3
-@@ -2675,7 +2675,7 @@
+@@ -2675,20 +2675,20 @@
    # pipe ^I Sockets ^I lsof \-n \-P \-i 2>&1
    pipe ^I Open Files ^I lsof \-P \-p %d 2>&1
    file ^I NUMA Info ^I /proc/%d/numa_maps
@@ -589,7 +944,13 @@
  .fi
  
  Окрім коментованого запису вище, у наступних прикладах показано, що можна
-@@ -2688,7 +2688,7 @@
+ переспрямувати з echo для отримання подібних результатів, у припущенні, що
+ файлом rc є файл «.toprc». Втім, через вбудовані символи табуляції перед
+-кожним з цих рядків слід дописувати «\fB/bin/echo \-e\fP», а не просто «echo»,
++кожним з цих рядків слід дописувати «\fB/overlayer/syshub/bin/echo \-e\fP», а не просто «echo»,
+ щоб уможливити обробку символів зворотної похилої риски, незалежно від
+ використаної вами командної оболонки.
+ 
  .nf
    "pipe\etOpen Files\etlsof \-P \-p %d 2>&1" >> ~/.toprc
    "file\etNUMA Info\et/proc/%d/numa_maps" >> ~/.toprc
@@ -607,8 +968,68 @@
  .fi
  
  Нарешті, хоча ми описували записи типу «\fBpipe\fP» у термінах конвеєрів і
+@@ -2752,7 +2752,7 @@
+ 
+ 2. Додайте і перевірте роботу будь\-яких бажаних записів «inspect».
+ 
+-3. Скопіюйте файл налаштувань до каталогу \fI/etc/\fP, скориставшись для нього
++3. Скопіюйте файл налаштувань до каталогу \fI/overlayer/syshub/etc/\fP, скориставшись для нього
+ назвою `\fBtopdefaultrc\fP'.
+ 
+ .\" ......................................................................
+@@ -2771,7 +2771,7 @@
+ .fi
+ 
+ Цей файл налаштувань не буде створено \*(We. Замість цього, його створюють
+-вручну і зберігають у каталозі \fI/etc/\fP із назвою «\fBtoprc\fP».
++вручну і зберігають у каталозі \fI/overlayer/syshub/etc/\fP із назвою «\fBtoprc\fP».
+ 
+ У ньому має бути точно два рядки, як це показано у прикладі:
+ .nf
+--- a/po-man/uk/uptime.1
++++ b/po-man/uk/uptime.1
+@@ -66,7 +66,7 @@
+ вказано параметр \fB\-\-container\fP.
+ .SH ФАЙЛИ
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ Дані щодо тих, хто зараз працює у системі.
+ .TP 
+ \fI/proc\fP
+--- a/po-man/uk/w.1
++++ b/po-man/uk/w.1
+@@ -105,7 +105,7 @@
+ символів.
+ .SH ФАЙЛИ
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ Дані щодо тих, хто зараз працює у системі, лише для вузлів без systemd.
+ .TP 
+ \fI/proc\fP
+--- a/po-man/zh_CN/kill.1
++++ b/po-man/zh_CN/kill.1
+@@ -69,7 +69,7 @@
+ \fB\-\-table\fP
+ 以表格形式列出信号名称。
+ .SH 备注
+-系统的 shell（命令行解释器）常常有一个内置的 "kill" 命令。您可能需要使用 \fI/bin/\:kill\fP 来运行此处描述的命令，以覆盖
++系统的 shell（命令行解释器）常常有一个内置的 "kill" 命令。您可能需要使用 \fI/overlayer/syshub/bin/\:kill\fP 来运行此处描述的命令，以覆盖
+ shell 的内置命令。
+ .PP
+ 如果您想使用负的操作数，请先用名称或编号指定信号，这样 \fBkill\fP 才能将它和进程组区别开来。例如，命令 "\fBkill 123 \-9\fP"
 --- a/po-man/zh_CN/sysctl.8
 +++ b/po-man/zh_CN/sysctl.8
+@@ -51,7 +51,7 @@
+ 强制所有参数为写入参数，如果无法以这种方式解析它们，则输出一个错误。
+ .TP 
+ \fB\-p\fP[\fI文件\fP], \fB\-\-load\fP[=\fI文件\fP]
+-从指定的文件加载 \fBsysctl\fP 设置，如果没有指定，则加载 \fI/etc/sysctl.conf\fP。指定 \-
++从指定的文件加载 \fBsysctl\fP 设置，如果没有指定，则加载 \fI/overlayer/syshub/etc/sysctl.conf\fP。指定 \-
+ 作为文件名意味着从标准输入读取数据。使用此选项意味着 \fBsysctl\fP 的参数是文件，按照指定的顺序读取。文件参数可以是正则表达式。
+ .TP 
+ \fB\-a\fP, \fB\-\-all\fP
 @@ -96,12 +96,12 @@
  .TS
  Li.
@@ -627,7 +1048,7 @@
  .TE
  .SH 备注
  .SS 系统文件优先级
-@@ -110,11 +110,11 @@
+@@ -110,16 +110,16 @@
  .P
  .TS
  Li.
@@ -643,6 +1064,12 @@
  .TE
  .P
  所有配置文件将按字典序排序，无论它们位于哪个目录。配置文件可以被完全替换（通过在更高优先级的目录中放置同名的新配置文件）或部分替换（通过使用排序在更后面的配置文件）。
+ .P
+-文件 \fI/etc/sysctl.conf\fP 将最后读取，也就是说它可以替代/覆盖上面列出的目录中的较靠前的文件设置的参数。
++文件 \fI/overlayer/syshub/etc/sysctl.conf\fP 将最后读取，也就是说它可以替代/覆盖上面列出的目录中的较靠前的文件设置的参数。
+ 
+ .SS 已弃用的参数
+ \fBbase_reachable_time\fP 和 \fBretrans_time\fP 已弃用。\fBsysctl\fP
 @@ -134,21 +134,21 @@
  这个参数不返回任何值，但会刷新各个 CPU 的 VM 统计信息。
  
@@ -675,6 +1102,26 @@
  .SH 报告错误
 --- a/po-man/zh_CN/sysctl.conf.5
 +++ b/po-man/zh_CN/sysctl.conf.5
+@@ -43,15 +43,15 @@
+ .P
+ .RS
+ .TP 
+-\fI/etc/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/etc/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+ \fI/run/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/local/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/usr/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .TQ
+-\fI/lib/sysctl.d/\fP*\fI.conf\fP
++\fI/overlayer/syshub/lib/sysctl.d/\fP*\fI.conf\fP
+ .RE
+ .P
+ 最后，\fIprocps\fP \fBsysctl\fP 将读取 \fI\%/etc/\:\%sysctl\:\%.conf\fP。\fBsystemd\-sysctl\fP
 @@ -64,7 +64,7 @@
  #
  kernel.domainname = example.com
@@ -695,7 +1142,7 @@
  
  .TP  3
  \-\fBb\fP, \fB\-\-batch\fP
-@@ -1936,7 +1936,7 @@
+@@ -1936,17 +1936,17 @@
    # pipe ^I 套接字 ^I lsof \-n \-P \-i 2>&1
    pipe ^I 打开的文件 ^I lsof \-P \-p %d 2>&1
    file ^I NUMA 信息 ^I /proc/%d/numa_maps
@@ -704,7 +1151,10 @@
  .fi
  
  除开上面被注释掉的条目，接下来的示例展示了如何通过 echo 实现类似的结果（假设 rc 文件名为
-@@ -1946,7 +1946,7 @@
+-".toprc"）。然而，由于存在嵌入的制表符，每一行的开头都应该加上 "\fB/bin/echo \-e\fP"，而不仅仅是一个简单的
++".toprc"）。然而，由于存在嵌入的制表符，每一行的开头都应该加上 "\fB/overlayer/syshub/bin/echo \-e\fP"，而不仅仅是一个简单的
+ "echo"，这样无论您使用哪种 shell，都能正确解释反斜杠。
+ 
  .nf
    "pipe\et打开的文件\etlsof \-P \-p %d 2>&1" >> ~/.toprc
    "file\etNUMA 信息\et/proc/%d/numa_maps" >> ~/.toprc
@@ -722,6 +1172,46 @@
  .fi
  
  最后，虽然到目前为止，关于 "\fBpipe\fP" 类型条目的讨论使用的都是管道和命令，但没有什么可以阻止您使用
+@@ -1993,7 +1993,7 @@
+ 
+ 2. 添加并测试任何想要的\[oq]检视\[cq]条目。
+ 
+-3. 将此\*(CF复制到 \fI/etc/\fP，并命名为\[oq]\fBtopdefaultrc\fP\[cq]。
++3. 将此\*(CF复制到 \fI/overlayer/syshub/etc/\fP，并命名为\[oq]\fBtopdefaultrc\fP\[cq]。
+ 
+ .\" ......................................................................
+ .SS "6d. 系统限制文件"
+@@ -2007,7 +2007,7 @@
+     d 或 s   更改延迟/睡眠间隔
+ .fi
+ 
+-这个\*(CF不应该由 \*(We 创建。相反，需要手动创建它，并将其放置在 \fI/etc/\fP 目录中，命名为 "\fBtoprc\fP"。
++这个\*(CF不应该由 \*(We 创建。相反，需要手动创建它，并将其放置在 \fI/overlayer/syshub/etc/\fP 目录中，命名为 "\fBtoprc\fP"。
+ 
+ 它应该只有两行，如下面的例子所示：
+ .nf
+--- a/po-man/zh_CN/uptime.1
++++ b/po-man/zh_CN/uptime.1
+@@ -53,7 +53,7 @@
+ 如果设置了 $\fBPROCPS_CONTAINER\fP，那么 \fBuptime\fP 执行时将视为使用了 \fB\-\-container\fP 选项。
+ .SH 文件
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ 关于当前谁已登录的信息
+ .TP 
+ \fI/proc\fP
+--- a/po-man/zh_CN/w.1
++++ b/po-man/zh_CN/w.1
+@@ -82,7 +82,7 @@
+ 覆盖 "来自" 列的默认宽度。默认为 16。
+ .SH 文件
+ .TP 
+-\fI/var/run/utmp\fP
++\fI/overlayer/syshub/var/run/utmp\fP
+ 关于当前谁已登录的信息，只适用于非 systemd 的主机。
+ .TP 
+ \fI/proc\fP
 --- a/src/ps/display.c
 +++ b/src/ps/display.c
 @@ -656,7 +656,7 @@
