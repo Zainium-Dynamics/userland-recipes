@@ -1,0 +1,34 @@
+[package]
+name             = "mandoc"
+version          = "1.14.6"
+description      = "man, apropos and whatis: format and show manual pages"
+license          = "ISC"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://mandoc.bsd.lv/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "zlib"]
+provides         = ["mandoc", "man", "apropos", "whatis"]
+tags             = ["utility", "cli", "documentation"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+etc     = "/overlayer/zexlib/union/etc"
+share   = "/overlayer/zexlib/union/share"
+var     = "/overlayer/zexlib/union/var"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]

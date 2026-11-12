@@ -1,0 +1,240 @@
+--- a/apropos.1
++++ b/apropos.1
+@@ -377,7 +377,7 @@
+ name of the
+ .Xr makewhatis 8
+ keyword database
+-.It Pa /etc/man.conf
++.It Pa /overlayer/syshub/etc/man.conf
+ default
+ .Xr man 1
+ configuration file
+--- a/gmdiff
++++ b/gmdiff
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ # Copyright (c) 2013,2014,2015,2017,2018 Ingo Schwarze <schwarze@openbsd.org>
+ #
+ # Permission to use, copy, modify, and distribute this software for any
+@@ -25,7 +25,7 @@
+ 
+ if [ "X$1" = "X-h" ]; then
+   shift
+-  export PATH="/usr/local/heirloom-doctools/bin:$PATH"
++  export PATH="/overlayer/syshub/heirloom-doctools/bin:$PATH"
+   EQN="neqn"
+   ROFF="nroff"
+   MOPT="-Ios=BSD -Tascii $MOPT"
+--- a/makewhatis.8
++++ b/makewhatis.8
+@@ -154,7 +154,7 @@
+ A database of manpages relative to the directory of the file.
+ This file is portable across architectures and systems, so long as the
+ manpage hierarchy it indexes does not change.
+-.It Pa /etc/man.conf
++.It Pa /overlayer/syshub/etc/man.conf
+ The default
+ .Xr man 1
+ configuration file.
+--- a/man.1
++++ b/man.1
+@@ -224,7 +224,7 @@
+ entries in the
+ .Xr man.conf 5
+ file, or with
+-.Pa /usr/share/man : Ns Pa /usr/X11R6/man : Ns Pa /usr/local/man
++.Pa /overlayer/syshub/share/man : Ns Pa /overlayer/syshub/X11R6/man : Ns Pa /overlayer/syshub/man
+ by default.
+ Within each of these, directories are searched in the order provided.
+ Within each directory, the search proceeds according to the following
+@@ -333,8 +333,8 @@
+ is used.
+ .El
+ .Sh FILES
+-.Bl -tag -width /etc/man.conf -compact
++.Bl -tag -width /overlayer/syshub/etc/man.conf -compact
+-.It Pa /etc/man.conf
++.It Pa /overlayer/syshub/etc/man.conf
+ default
+ .Nm
+ configuration file
+--- a/man.cgi.8
++++ b/man.cgi.8
+@@ -81,7 +81,7 @@
+ .It
+ A dropdown menu to select a manual tree.
+ If the configuration file
+-.Pa /var/www/man/manpath.conf
++.Pa /overlayer/syshub/var/www/man/manpath.conf
+ contains only one manpath, the dropdown menu is not shown.
+ By default, the first manpath given in the file is used.
+ .El
+@@ -125,28 +125,28 @@
+ .El
+ .Ss Setup
+ For each manual tree, create one first-level subdirectory below
+-.Pa /var/www/man .
++.Pa /overlayer/syshub/var/www/man .
+ The name of one of these directories is called a
+ .Dq manpath
+ in the context of
+ .Nm .
+ Create a single ASCII text file
+-.Pa /var/www/man/manpath.conf
++.Pa /overlayer/syshub/var/www/man/manpath.conf
+ containing the names of these directories, one per line.
+ The directory given first is used as the default manpath.
+ .Pp
+ Inside each of these directories, use the same directory and file
+ structure as found below
+-.Pa /usr/share/man ,
++.Pa /overlayer/syshub/share/man ,
+ that is, second-level subdirectories
+-.Pa /var/www/man/*/man1 , /var/www/man/*/man2
++.Pa /overlayer/syshub/var/www/man/*/man1 , /overlayer/syshub/var/www/man/*/man2
+ etc. containing source
+ .Xr mdoc 7
+ and
+ .Xr man 7
+ manuals with file name extensions matching the section numbers,
+ second-level subdirectories
+-.Pa /var/www/man/*/cat1 , /var/www/man/*/cat2
++.Pa /overlayer/syshub/var/www/man/*/cat1 , /overlayer/syshub/var/www/man/*/cat2
+ etc. containing preformatted manuals with the file name extension
+ .Sq 0 ,
+ and optional third-level subdirectories for architectures.
+@@ -342,7 +342,7 @@
+ .El
+ .Sh FILES
+ .Bl -tag -width Ds
+-.It Pa /var/www
++.It Pa /overlayer/syshub/var/www
+ Default web server
+ .Xr chroot 2
+ directory.
+--- a/man.conf.5
++++ b/man.conf.5
+@@ -103,8 +103,8 @@
+ .El
+ .El
+ .Sh FILES
+-.Bl -tag -width /etc/examples/man.conf -compact
++.Bl -tag -width /overlayer/syshub/etc/examples/man.conf -compact
+-.It Pa /etc/man.conf
++.It Pa /overlayer/syshub/etc/man.conf
+ .El
+ .Sh EXAMPLES
+ The following configuration file reproduces the defaults:
+@@ -112,9 +112,9 @@
+ .Nm
+ file at all.
+ .Bd -literal -offset indent
+-manpath /usr/share/man
++manpath /overlayer/syshub/share/man
+-manpath /usr/X11R6/man
++manpath /overlayer/syshub/X11R6/man
+-manpath /usr/local/man
++manpath /overlayer/syshub/man
+ .Ed
+ .Sh SEE ALSO
+ .Xr apropos 1 ,
+--- a/mandoc.1
++++ b/mandoc.1
+@@ -348,7 +348,7 @@
+ blocks use MathML.
+ .Pp
+ The file
+-.Pa /usr/share/misc/mandoc.css
++.Pa /overlayer/syshub/share/misc/mandoc.css
+ documents style-sheet classes available for customising output.
+ If a style-sheet is not specified with
+ .Fl O Cm style ,
+@@ -738,14 +738,14 @@
+ .Dl $ mandoc -l mandoc.1 man.1 apropos.1 makewhatis.8
+ .Pp
+ To produce HTML manuals with
+-.Pa /usr/share/misc/mandoc.css
++.Pa /overlayer/syshub/share/misc/mandoc.css
+ as the style-sheet:
+ .Pp
+-.Dl $ mandoc \-T html -O style=/usr/share/misc/mandoc.css mdoc.7 > mdoc.7.html
++.Dl $ mandoc \-T html -O style=/overlayer/syshub/share/misc/mandoc.css mdoc.7 > mdoc.7.html
+ .Pp
+ To check over a large set of manuals:
+ .Pp
+-.Dl $ mandoc \-T lint \(gafind /usr/src -name \e*\e.[1-9]\(ga
++.Dl $ mandoc \-T lint \(gafind /overlayer/syshub/src -name \e*\e.[1-9]\(ga
+ .Pp
+ To produce a series of PostScript manuals for A4 paper:
+ .Pp
+@@ -1016,7 +1016,7 @@
+ When running with
+ .Fl W Cm base ,
+ the search is restricted to the base system, by default to
+-.Pa /usr/share/man : Ns Pa /usr/X11R6/man .
++.Pa /overlayer/syshub/share/man : Ns Pa /overlayer/syshub/X11R6/man .
+ This path can be configured at compile time using the
+ .Dv MANPATH_BASE
+ preprocessor macro.
+@@ -1033,7 +1033,7 @@
+ environment variable, the
+ .Xr man.conf 5
+ file and falling back to the default of
+-.Pa /usr/share/man : Ns Pa /usr/X11R6/man : Ns Pa /usr/local/man ,
++.Pa /overlayer/syshub/share/man : Ns Pa /overlayer/syshub/X11R6/man : Ns Pa /overlayer/syshub/man ,
+ also configurable at compile time using the
+ .Dv MANPATH_DEFAULT
+ preprocessor macro.
+--- a/mandoc.db.5
++++ b/mandoc.db.5
+@@ -186,14 +186,14 @@
+ followed by the number 0.
+ .El
+ .Sh FILES
+-.Bl -tag -width /usr/share/man/mandoc.db -compact
++.Bl -tag -width /overlayer/syshub/share/man/mandoc.db -compact
+-.It Pa /usr/share/man/mandoc.db
++.It Pa /overlayer/syshub/share/man/mandoc.db
+ The manual page database for the base system.
+-.It Pa /usr/X11R6/man/mandoc.db
++.It Pa /overlayer/syshub/X11R6/man/mandoc.db
+ The same for the
+ .Xr X 7
+ Window System.
+-.It Pa /usr/local/man/mandoc.db
++.It Pa /overlayer/syshub/man/mandoc.db
+ The same for
+ .Xr packages 7 .
+ .El
+@@ -203,7 +203,7 @@
+ files in a human-readable format suitable for
+ .Xr diff 1
+ is provided in the directory
+-.Pa /usr/src/regress/usr.bin/mandoc/db/dbm_dump/ .
++.Pa /overlayer/syshub/src/regress/usr.bin/mandoc/db/dbm_dump/ .
+ .Sh SEE ALSO
+ .Xr apropos 1 ,
+ .Xr man 1 ,
+@@ -211,7 +211,7 @@
+ .Xr makewhatis 8
+ .Sh HISTORY
+ A manual page database
+-.Pa /usr/lib/whatis
++.Pa /overlayer/syshub/lib/whatis
+ first appeared in
+ .Bx 2 .
+ The present format first appeared in
+--- a/mdoc.7
++++ b/mdoc.7
+@@ -2143,8 +2143,8 @@
+ is used as a default.
+ .Pp
+ Examples:
+-.Dl \&.Pa /usr/bin/mandoc
++.Dl \&.Pa /overlayer/syshub/bin/mandoc
+-.Dl \&.Pa /usr/share/man/man7/mdoc.7
++.Dl \&.Pa /overlayer/syshub/share/man/man7/mdoc.7
+ .Pp
+ See also
+ .Ic \&Lk .
