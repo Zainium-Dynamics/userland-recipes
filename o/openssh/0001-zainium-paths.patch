@@ -1,0 +1,1200 @@
+--- a/audit-bsm.c
++++ b/audit-bsm.c
+@@ -427,7 +427,7 @@
+ 
+ 	case SSH_NOLOGIN:
+ 		bsm_audit_record(1,
+-		    gettext("logins disabled by /etc/nologin"), AUE_openssh);
++		    gettext("logins disabled by /overlayer/syshub/etc/nologin"), AUE_openssh);
+ 		break;
+ 
+ 	case SSH_LOGIN_EXCEED_MAXTRIES:
+--- a/auth-rhosts.c
++++ b/auth-rhosts.c
+@@ -240,7 +240,7 @@
+ 		if (check_rhosts_file(_PATH_RHOSTS_EQUIV, hostname, ipaddr,
+ 		    client_user, pw->pw_name)) {
+ 			auth_debug_add("Accepted for %.100s [%.100s] by "
+-			    "/etc/hosts.equiv.", hostname, ipaddr);
++			    "/overlayer/syshub/etc/hosts.equiv.", hostname, ipaddr);
+ 			return 1;
+ 		}
+ 		if (check_rhosts_file(_PATH_SSH_HOSTS_EQUIV, hostname, ipaddr,
+--- a/buildpkg.sh.in
++++ b/buildpkg.sh.in
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # Fake Root Solaris/SVR4/SVR5 Build System - Prototype
+ #
+@@ -58,7 +58,7 @@
+ #
+ # list of system directories we do NOT want to change owner/group/perms
+ # when installing our package
+-SYSTEM_DIR="/etc	\
++SYSTEM_DIR="/overlayer/syshub/etc	\
+ /etc/init.d		\
+ /etc/rcS.d		\
+ /etc/rc0.d		\
+@@ -104,11 +104,11 @@
+ 	[ $? -ne 0 ] && PATH=$PATH:/opt/bin
+ }
+ [ -d /usr/local/bin ]  &&  {
+-	echo $PATH | grep ":/usr/local/bin"  > /dev/null 2>&1
++	echo $PATH | grep ":/overlayer/syshub/bin"  > /dev/null 2>&1
+ 	[ $? -ne 0 ] && PATH=$PATH:/usr/local/bin
+ }
+ [ -d /usr/ccs/bin ]  &&  {
+-	echo $PATH | grep ":/usr/ccs/bin"  > /dev/null 2>&1
++	echo $PATH | grep ":/overlayer/syshub/ccs/bin"  > /dev/null 2>&1
+ 	[ $? -ne 0 ] && PATH=$PATH:/usr/ccs/bin
+ }
+ export PATH
+@@ -645,7 +645,7 @@
+ 
+ # /usr/local is a symlink on some systems
+ [ "${USR_LOCAL_IS_SYMLINK}" = yes ]  &&  {
+-	grep -v "^d none /usr/local ? ? ?$" prototype > prototype.new
++	grep -v "^d none /overlayer/syshub ? ? ?$" prototype > prototype.new
+ 	mv prototype.new prototype
+ }
+ 
+--- a/contrib/aix/buildbff.sh
++++ b/contrib/aix/buildbff.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # buildbff.sh: Create AIX SMIT-installable OpenSSH packages
+ #
+@@ -266,7 +266,7 @@
+ 		mv /etc/rc.tcpip /etc/rc.tcpip.old && \
+ 		mv /etc/rc.tcpip.new /etc/rc.tcpip
+ 	else
+-		echo "Updating /etc/rc.tcpip failed, please check."
++		echo "Updating /overlayer/syshub/etc/rc.tcpip failed, please check."
+ 	fi
+ else
+ 	# Add to system startup if required
+--- a/contrib/aix/inventory.sh
++++ b/contrib/aix/inventory.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # inventory.sh
+ #
+--- a/contrib/aix/pam.conf
++++ b/contrib/aix/pam.conf
+@@ -4,17 +4,17 @@
+ #
+ 
+ # Authentication Management
+-sshd    auth            required        /usr/lib/security/pam_aix
++sshd    auth            required        /overlayer/syshub/lib/security/pam_aix
+-OTHER   auth            required        /usr/lib/security/pam_aix
++OTHER   auth            required        /overlayer/syshub/lib/security/pam_aix
+ 
+ # Account Management
+-sshd    account         required        /usr/lib/security/pam_aix
++sshd    account         required        /overlayer/syshub/lib/security/pam_aix
+-OTHER   account         required        /usr/lib/security/pam_aix
++OTHER   account         required        /overlayer/syshub/lib/security/pam_aix
+ 
+ # Password Management
+-sshd    password        required        /usr/lib/security/pam_aix
++sshd    password        required        /overlayer/syshub/lib/security/pam_aix
+-OTHER   password        required        /usr/lib/security/pam_aix
++OTHER   password        required        /overlayer/syshub/lib/security/pam_aix
+ 
+ # Session Management
+-sshd    session         required        /usr/lib/security/pam_aix
++sshd    session         required        /overlayer/syshub/lib/security/pam_aix
+-OTHER   session         required        /usr/lib/security/pam_aix
++OTHER   session         required        /overlayer/syshub/lib/security/pam_aix
+--- a/contrib/cygwin/ssh-host-config
++++ b/contrib/cygwin/ssh-host-config
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/overlayer/syshub/bin/bash
+ #
+ # ssh-host-config, Copyright 2000-2014 Red Hat Inc.
+ #
+@@ -281,9 +281,9 @@
+     then
+       if [ "${_with_comment}" -eq 0 ]
+       then
+-	echo 'ssh  stream  tcp     nowait  root    /usr/sbin/sshd sshd -i' >> "${_inetcnf}"
++	echo 'ssh  stream  tcp     nowait  root    /overlayer/syshub/sbin/sshd sshd -i' >> "${_inetcnf}"
+       else
+-	echo '# ssh  stream  tcp     nowait  root    /usr/sbin/sshd sshd -i' >> "${_inetcnf}"
++	echo '# ssh  stream  tcp     nowait  root    /overlayer/syshub/sbin/sshd sshd -i' >> "${_inetcnf}"
+       fi
+       if [ $? -eq 0 ]
+       then
+@@ -500,7 +500,7 @@
+ # them if they already exist.  In both cases, color
+ # escape sequences are suppressed, so as to prevent
+ # cluttering setup's logfiles.
+-if [ "$PROGDIR" = "/etc/postinstall" ]
++if [ "$PROGDIR" = "/overlayer/syshub/etc/postinstall" ]
+ then
+   csih_auto_answer="no"
+   csih_disable_color
+--- a/contrib/cygwin/ssh-user-config
++++ b/contrib/cygwin/ssh-user-config
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/overlayer/syshub/bin/bash
+ #
+ # ssh-user-config, Copyright 2000-2014 Red Hat Inc.
+ #
+@@ -177,7 +177,7 @@
+ # them if they already exist.  In both cases, color
+ # escape sequences are suppressed, so as to prevent
+ # cluttering setup's logfiles.
+-if [ "$PROGDIR" = "/etc/postinstall" ]
++if [ "$PROGDIR" = "/overlayer/syshub/etc/postinstall" ]
+ then
+   csih_auto_answer="no"
+   csih_disable_color
+--- a/contrib/findssl.sh
++++ b/contrib/findssl.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # findssl.sh
+ #	Search for all instances of OpenSSL headers and libraries
+--- a/contrib/hpux/egd.rc
++++ b/contrib/hpux/egd.rc
+@@ -1,4 +1,4 @@
+-#!/sbin/sh
++#!/overlayer/syshub/sbin/sh
+ 
+ #
+ # egd.rc: EGD start-up and shutdown script
+--- a/contrib/hpux/sshd.rc
++++ b/contrib/hpux/sshd.rc
+@@ -1,4 +1,4 @@
+-#!/sbin/sh
++#!/overlayer/syshub/sbin/sh
+ 
+ #
+ # sshd.rc: SSH daemon start-up and shutdown script
+--- a/contrib/redhat/sshd.init
++++ b/contrib/redhat/sshd.init
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/overlayer/syshub/bin/bash
+ #
+ # Init file for OpenSSH server daemon
+ #
+--- a/contrib/ssh-copy-id
++++ b/contrib/ssh-copy-id
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ 
+ # Copyright (c) 1999-2025 Philip Hands <phil@hands.com>
+ #               2025 Denis Ovsienko <denis@ovsienko.info>
+--- a/contrib/suse/rc.sshd
++++ b/contrib/suse/rc.sshd
+@@ -1,4 +1,4 @@
+-#! /bin/sh
++#! /overlayer/syshub/bin/sh
+ # Copyright (c) 1995-2000 SuSE GmbH Nuernberg, Germany.
+ #
+ # Author: Jiri Smid <feedback@suse.de>
+--- a/defines.h
++++ b/defines.h
+@@ -436,7 +436,7 @@
+ /* Paths */
+ 
+ #ifndef _PATH_BSHELL
+-# define _PATH_BSHELL "/bin/sh"
++# define _PATH_BSHELL "/overlayer/syshub/bin/sh"
+ #endif
+ 
+ #ifdef USER_PATH
+@@ -447,7 +447,7 @@
+ #endif
+ 
+ #ifndef _PATH_STDPATH
+-# define _PATH_STDPATH "/usr/bin:/bin:/usr/sbin:/sbin"
++# define _PATH_STDPATH "/overlayer/syshub/bin:/overlayer/syshub/bin:/overlayer/syshub/sbin:/overlayer/syshub/sbin"
+ #endif
+ 
+ #ifndef SUPERUSER_PATH
+@@ -468,7 +468,7 @@
+ #endif
+ 
+ #ifndef _PATH_NOLOGIN
+-# define _PATH_NOLOGIN "/etc/nologin"
++# define _PATH_NOLOGIN "/overlayer/syshub/etc/nologin"
+ #endif
+ 
+ /* Define this to be the path of the xauth program. */
+@@ -479,7 +479,7 @@
+ /* derived from XF4/xc/lib/dps/Xlibnet.h */
+ #ifndef X_UNIX_PATH
+ #  ifdef __hpux
+-#    define X_UNIX_PATH "/var/spool/sockets/X11/%u"
++#    define X_UNIX_PATH "/overlayer/syshub/var/spool/sockets/X11/%u"
+ #  else
+ #    define X_UNIX_PATH "/tmp/.X11-unix/X%u"
+ #  endif
+--- a/ed25519.sh
++++ b/ed25519.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #       $OpenBSD: ed25519.sh,v 1.8 2026/09/16 00:59:12 djm Exp $
+ #       Placed in the Public Domain.
+ 
+--- a/fixalgorithms
++++ b/fixalgorithms
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # fixalgorithms - remove unsupported ciphers from man pages.
+ # Usage: fixalgorithms /path/to/sed cipher1 [cipher2] <infile >outfile
+--- a/fixpaths
++++ b/fixpaths
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # fixpaths  - substitute makefile variables into text files
+ # Usage: fixpaths -Dsomething=somethingelse ...
+--- a/mdoc2man.awk
++++ b/mdoc2man.awk
+@@ -1,4 +1,4 @@
+-#!/usr/bin/awk
++#!/overlayer/syshub/bin/awk
+ #
+ # Version history:
+ #  v4+ Adapted for OpenSSH Portable (see cvs Id and history)
+--- a/mlkem_mldsa.sh
++++ b/mlkem_mldsa.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #       $OpenBSD: mlkem_mldsa.sh,v 1.1 2026/06/14 03:59:34 djm Exp $
+ #       Placed in the Public Domain.
+ #
+--- a/moduli.5
++++ b/moduli.5
+@@ -21,7 +21,7 @@
+ .Nd Diffie-Hellman moduli
+ .Sh DESCRIPTION
+ The
+-.Pa /etc/moduli
++.Pa /overlayer/syshub/etc/moduli
+ file contains prime numbers and generators for use by
+ .Xr sshd 8
+ in the Diffie-Hellman Group Exchange key exchange method.
+@@ -110,7 +110,7 @@
+ Diffie-Hellman output to sufficiently key the selected symmetric cipher.
+ .Xr sshd 8
+ then randomly selects a modulus from
+-.Fa /etc/moduli
++.Fa /overlayer/syshub/etc/moduli
+ that best meets the size requirement.
+ .Sh SEE ALSO
+ .Xr ssh-keygen 1 ,
+--- a/openbsd-compat/port-uw.c
++++ b/openbsd-compat/port-uw.c
+@@ -94,7 +94,7 @@
+ int
+ nischeck(char *namep)
+ {
+-	char password_file[] = "/etc/passwd";
++	char password_file[] = "/overlayer/syshub/etc/passwd";
+ 	FILE *fd;
+ 	struct passwd *ent = NULL;
+ 
+--- a/pathnames.h
++++ b/pathnames.h
+@@ -12,14 +12,14 @@
+  * called by a name other than "ssh" or "Secure Shell".
+  */
+ 
+-#define ETCDIR				"/etc"
++#define ETCDIR				"/overlayer/syshub/etc"
+ 
+ #ifndef SSHDIR
+ #define SSHDIR				ETCDIR "/ssh"
+ #endif
+ 
+ #ifndef _PATH_SSH_PIDDIR
+-#define _PATH_SSH_PIDDIR		"/var/run"
++#define _PATH_SSH_PIDDIR		"/overlayer/syshub/var/run"
+ #endif
+ 
+ /*
+@@ -43,15 +43,15 @@
+ #define _PATH_DH_MODULI			SSHDIR "/moduli"
+ 
+ #ifndef _PATH_SSH_PROGRAM
+-#define _PATH_SSH_PROGRAM		"/usr/bin/ssh"
++#define _PATH_SSH_PROGRAM		"/overlayer/syshub/bin/ssh"
+ #endif
+ 
+ /* Binary paths for the sshd components */
+ #ifndef _PATH_SSHD_SESSION
+-#define _PATH_SSHD_SESSION		"/usr/libexec/sshd-session"
++#define _PATH_SSHD_SESSION		"/overlayer/syshub/libexec/sshd-session"
+ #endif
+ #ifndef _PATH_SSHD_AUTH
+-#define _PATH_SSHD_AUTH			"/usr/libexec/sshd-auth"
++#define _PATH_SSHD_AUTH			"/overlayer/syshub/libexec/sshd-auth"
+ #endif
+ 
+ /*
+@@ -131,33 +131,33 @@
+  * ~/.rhosts and /etc/hosts.equiv if rhosts authentication is enabled.
+  */
+ #define _PATH_SSH_HOSTS_EQUIV		SSHDIR "/shosts.equiv"
+-#define _PATH_RHOSTS_EQUIV		"/etc/hosts.equiv"
++#define _PATH_RHOSTS_EQUIV		"/overlayer/syshub/etc/hosts.equiv"
+ 
+ /*
+  * Default location of askpass
+  */
+ #ifndef _PATH_SSH_ASKPASS_DEFAULT
+-#define _PATH_SSH_ASKPASS_DEFAULT	"/usr/X11R6/bin/ssh-askpass"
++#define _PATH_SSH_ASKPASS_DEFAULT	"/overlayer/syshub/X11R6/bin/ssh-askpass"
+ #endif
+ 
+ /* Location of ssh-keysign for hostbased authentication */
+ #ifndef _PATH_SSH_KEY_SIGN
+-#define _PATH_SSH_KEY_SIGN		"/usr/libexec/ssh-keysign"
++#define _PATH_SSH_KEY_SIGN		"/overlayer/syshub/libexec/ssh-keysign"
+ #endif
+ 
+ /* Location of ssh-pkcs11-helper to support keys in tokens */
+ #ifndef _PATH_SSH_PKCS11_HELPER
+-#define _PATH_SSH_PKCS11_HELPER		"/usr/libexec/ssh-pkcs11-helper"
++#define _PATH_SSH_PKCS11_HELPER		"/overlayer/syshub/libexec/ssh-pkcs11-helper"
+ #endif
+ 
+ /* Location of ssh-sk-helper to support keys in security keys */
+ #ifndef _PATH_SSH_SK_HELPER
+-#define _PATH_SSH_SK_HELPER		"/usr/libexec/ssh-sk-helper"
++#define _PATH_SSH_SK_HELPER		"/overlayer/syshub/libexec/ssh-sk-helper"
+ #endif
+ 
+ /* xauth for X11 forwarding */
+ #ifndef _PATH_XAUTH
+-#define _PATH_XAUTH			"/usr/X11R6/bin/xauth"
++#define _PATH_XAUTH			"/overlayer/syshub/X11R6/bin/xauth"
+ #endif
+ 
+ /* UNIX domain socket for X11 server; displaynum will replace %u */
+@@ -172,7 +172,7 @@
+ 
+ /* for sftp */
+ #ifndef _PATH_SFTP_SERVER
+-#define _PATH_SFTP_SERVER		"/usr/libexec/sftp-server"
++#define _PATH_SFTP_SERVER		"/overlayer/syshub/libexec/sftp-server"
+ #endif
+ #ifndef _PATH_LS
+ #define _PATH_LS			"ls"
+@@ -180,15 +180,15 @@
+ 
+ /* chroot directory for unprivileged user when UsePrivilegeSeparation=yes */
+ #ifndef _PATH_PRIVSEP_CHROOT_DIR
+-#define _PATH_PRIVSEP_CHROOT_DIR	"/var/empty"
++#define _PATH_PRIVSEP_CHROOT_DIR	"/overlayer/syshub/var/empty"
+ #endif
+ 
+ /* for passwd change */
+ #ifndef _PATH_PASSWD_PROG
+-#define _PATH_PASSWD_PROG		"/usr/bin/passwd"
++#define _PATH_PASSWD_PROG		"/overlayer/syshub/bin/passwd"
+ #endif
+ 
+ /* Askpass program define */
+ #ifndef ASKPASS_PROGRAM
+-#define ASKPASS_PROGRAM         "/usr/lib/ssh/ssh-askpass"
++#define ASKPASS_PROGRAM         "/overlayer/syshub/lib/ssh/ssh-askpass"
+ #endif /* ASKPASS_PROGRAM */
+--- a/session.c
++++ b/session.c
+@@ -751,10 +751,10 @@
+ 
+ 	if (options.print_motd) {
+ #ifdef HAVE_LOGIN_CAP
+-		f = fopen(login_getcapstr(lc, "welcome", "/etc/motd",
++		f = fopen(login_getcapstr(lc, "welcome", "/overlayer/syshub/etc/motd",
+-		    "/etc/motd"), "r");
++		    "/overlayer/syshub/etc/motd"), "r");
+ #else
+-		f = fopen("/etc/motd", "r");
++		f = fopen("/overlayer/syshub/etc/motd", "r");
+ #endif
+ 		if (f) {
+ 			while (fgets(buf, sizeof(buf), f))
+@@ -874,7 +874,7 @@
+ 	 * so we use a temporary environment and copy the variables we're
+ 	 * interested in.
+ 	 */
+-	read_environment_file(&tmpenv, &tmpenvsize, "/etc/default/login",
++	read_environment_file(&tmpenv, &tmpenvsize, "/overlayer/syshub/etc/default/login",
+ 	    options.permit_user_env_allowlist);
+ 
+ 	if (tmpenv == NULL)
+@@ -1047,7 +1047,7 @@
+ 
+ 		if ((cp = getenv("AUTHSTATE")) != NULL)
+ 			child_set_env(&env, &envsize, "AUTHSTATE", cp);
+-		read_environment_file(&env, &envsize, "/etc/environment",
++		read_environment_file(&env, &envsize, "/overlayer/syshub/etc/environment",
+ 		    options.permit_user_env_allowlist);
+ 	}
+ #endif
+--- a/sntrup761.sh
++++ b/sntrup761.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #       $OpenBSD: sntrup761.sh,v 1.10 2026/01/20 22:56:11 dtucker Exp $
+ #       Placed in the Public Domain.
+ #
+--- a/ssh-add.1
++++ b/ssh-add.1
+@@ -152,9 +152,9 @@
+ known hosts files:
+ .Pa ~/.ssh/known_hosts ,
+ .Pa ~/.ssh/known_hosts2 ,
+-.Pa /etc/ssh/ssh_known_hosts ,
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts ,
+ and
+-.Pa /etc/ssh/ssh_known_hosts2 .
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts2 .
+ .It Fl h Ar destination_constraint
+ When adding keys, constrain them to be usable only through specific hosts or to
+ specific destinations.
+--- a/ssh-agent.1
++++ b/ssh-agent.1
+@@ -191,7 +191,7 @@
+ .Xr ssh-add 1 .
+ Libraries that do not match the pattern list will be refused.
+ The default list is
+-.Dq /usr/lib*/*,/usr/local/lib*/* .
++.Dq /overlayer/syshub/lib*/*,/overlayer/syshub/lib*/* .
+ .Pp
+ See PATTERNS in
+ .Xr ssh_config 5
+--- a/ssh-agent.c
++++ b/ssh-agent.c
+@@ -84,7 +84,7 @@
+ #include "version.h"
+ 
+ #ifndef DEFAULT_ALLOWED_PROVIDERS
+-# define DEFAULT_ALLOWED_PROVIDERS "/usr/lib*/*,/usr/local/lib*/*"
++# define DEFAULT_ALLOWED_PROVIDERS "/overlayer/syshub/lib*/*,/overlayer/syshub/lib*/*"
+ #endif
+ #ifndef DEFAULT_WEBSAFE_ALLOWLIST
+ # define DEFAULT_WEBSAFE_ALLOWLIST "ssh:*"
+--- a/ssh-keygen.1
++++ b/ssh-keygen.1
+@@ -214,7 +214,7 @@
+ .Pa ~/.ssh/id_rsa .
+ Additionally, the system administrator may use this to generate host keys,
+ as seen in
+-.Pa /etc/rc .
++.Pa /overlayer/syshub/etc/rc .
+ .Pp
+ Normally this program generates the key and asks for a file in which
+ to store the private key.
+@@ -280,7 +280,7 @@
+ has also been specified, its argument is used as a prefix to the
+ default path for the resulting host key files.
+ This is used by
+-.Pa /etc/rc
++.Pa /overlayer/syshub/etc/rc
+ to generate new host keys.
+ .It Fl a Ar rounds
+ When saving a private key, this option specifies the number of KDF
+@@ -434,7 +434,7 @@
+ This will accept a list of candidate numbers and test that they are
+ safe (Sophie Germain) primes with acceptable group generators.
+ The results of this operation may be added to the
+-.Pa /etc/moduli
++.Pa /overlayer/syshub/etc/moduli
+ file.
+ See the
+ .Sx MODULI GENERATION
+@@ -893,7 +893,7 @@
+ Valid generator values are 2, 3, and 5.
+ .Pp
+ Screened DH groups may be installed in
+-.Pa /etc/moduli .
++.Pa /overlayer/syshub/etc/moduli .
+ It is important that this file contains moduli of a range of bit lengths.
+ .Pp
+ A number of options are available for moduli generation and screening via the
+@@ -1360,7 +1360,7 @@
+ where the user wishes to log in using public key authentication.
+ There is no need to keep the contents of this file secret.
+ .Pp
+-.It Pa /etc/moduli
++.It Pa /overlayer/syshub/etc/moduli
+ Contains Diffie-Hellman groups used for DH-GEX.
+ The file format is described in
+ .Xr moduli 5 .
+--- a/ssh-keyscan.1
++++ b/ssh-keyscan.1
+@@ -162,7 +162,7 @@
+ can help in the detection of tampered keyfiles or man in the middle
+ attacks which have begun after the ssh_known_hosts file was created.
+ .Sh FILES
+-.Pa /etc/ssh/ssh_known_hosts
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts
+ .Sh EXAMPLES
+ Print the RSA host key for machine
+ .Ar hostname :
+--- a/ssh-keysign.8
++++ b/ssh-keysign.8
+@@ -40,7 +40,7 @@
+ .Nm
+ is disabled by default and can only be enabled in the
+ global client configuration file
+-.Pa /etc/ssh/ssh_config
++.Pa /overlayer/syshub/etc/ssh/ssh_config
+ by setting
+ .Cm EnableSSHKeysign
+ to
+@@ -56,15 +56,15 @@
+ for more information about host-based authentication.
+ .Sh FILES
+ .Bl -tag -width Ds -compact
+-.It Pa /etc/ssh/ssh_config
++.It Pa /overlayer/syshub/etc/ssh/ssh_config
+ Controls whether
+ .Nm
+ is enabled.
+ .Pp
+-.It Pa /etc/ssh/ssh_host_ecdsa_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ecdsa_key
+-.It Pa /etc/ssh/ssh_host_ed25519_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ed25519_key
+-.It Pa /etc/ssh/ssh_host_mldsa44_ed25519_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_mldsa44_ed25519_key
+-.It Pa /etc/ssh/ssh_host_rsa_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_rsa_key
+ These files contain the private parts of the host keys used to
+ generate the digital signature.
+ They should be owned by root, readable only by root, and not
+@@ -73,10 +73,10 @@
+ .Nm
+ must be set-uid root if host-based authentication is used.
+ .Pp
+-.It Pa /etc/ssh/ssh_host_ecdsa_key-cert.pub
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ecdsa_key-cert.pub
+-.It Pa /etc/ssh/ssh_host_ed25519_key-cert.pub
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ed25519_key-cert.pub
+-.It Pa /etc/ssh/ssh_host_mldsa44_ed25519_key-cert.pub
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_mldsa44_ed25519_key-cert.pub
+-.It Pa /etc/ssh/ssh_host_rsa_key-cert.pub
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_rsa_key-cert.pub
+ If these files exist, they are assumed to contain public certificate
+ information corresponding with the private keys above.
+ .El
+--- a/ssh.1
++++ b/ssh.1
+@@ -237,7 +237,7 @@
+ Specifies an alternative per-user configuration file.
+ If a configuration file is given on the command line,
+ the system-wide configuration file
+-.Pq Pa /etc/ssh/ssh_config
++.Pq Pa /overlayer/syshub/etc/ssh/ssh_config
+ will be ignored.
+ The default for the per-user configuration file is
+ .Pa ~/.ssh/config .
+@@ -815,9 +815,9 @@
+ .Pp
+ Host-based authentication works as follows:
+ If the machine the user logs in from is listed in
+-.Pa /etc/hosts.equiv
++.Pa /overlayer/syshub/etc/hosts.equiv
+ or
+-.Pa /etc/shosts.equiv
++.Pa /overlayer/syshub/etc/shosts.equiv
+ on the remote machine, the user is non-root and the user names are
+ the same on both sides, or if the files
+ .Pa ~/.rhosts
+@@ -831,7 +831,7 @@
+ .Em must
+ be able to verify the client's
+ host key (see the description of
+-.Pa /etc/ssh/ssh_known_hosts
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts
+ and
+ .Pa ~/.ssh/known_hosts ,
+ below)
+@@ -839,7 +839,7 @@
+ This authentication method closes security holes due to IP
+ spoofing, DNS spoofing, and routing spoofing.
+ [Note to the administrator:
+-.Pa /etc/hosts.equiv ,
++.Pa /overlayer/syshub/etc/hosts.equiv ,
+ .Pa ~/.rhosts ,
+ and the rlogin/rsh protocol in general, are inherently insecure and should be
+ disabled if security is desired.]
+@@ -960,7 +960,7 @@
+ .Pa ~/.ssh/known_hosts
+ in the user's home directory.
+ Additionally, the file
+-.Pa /etc/ssh/ssh_known_hosts
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts
+ is automatically checked for known hosts.
+ Any new hosts are automatically added to the user's file.
+ If a host's identification ever changes,
+@@ -1188,7 +1188,7 @@
+ Fingerprints can be determined using
+ .Xr ssh-keygen 1 :
+ .Pp
+-.Dl $ ssh-keygen -l -f /etc/ssh/ssh_host_ed25519_key
++.Dl $ ssh-keygen -l -f /overlayer/syshub/etc/ssh/ssh_host_ed25519_key
+ .Pp
+ If the fingerprint is already known, it can be matched
+ and the key can be accepted or rejected.
+@@ -1304,8 +1304,8 @@
+ is set to
+ .Dq forced-commands-only :
+ .Bd -literal -offset 2n
+-tunnel="1",command="sh /etc/netstart tun1" ssh-rsa ... jane
++tunnel="1",command="sh /overlayer/syshub/etc/netstart tun1" ssh-rsa ... jane
+-tunnel="2",command="sh /etc/netstart tun2" ssh-rsa ... john
++tunnel="2",command="sh /overlayer/syshub/etc/netstart tun2" ssh-rsa ... john
+ .Ed
+ .Pp
+ Since an SSH-based setup entails a fair amount of overhead,
+@@ -1535,29 +1535,29 @@
+ .Xr sshd 8
+ manual page for more information.
+ .Pp
+-.It Pa /etc/hosts.equiv
++.It Pa /overlayer/syshub/etc/hosts.equiv
+ This file is for host-based authentication (see above).
+ It should only be writable by root.
+ .Pp
+-.It Pa /etc/shosts.equiv
++.It Pa /overlayer/syshub/etc/shosts.equiv
+ This file is used in exactly the same way as
+ .Pa hosts.equiv ,
+ but allows host-based authentication without permitting login with
+ rlogin/rsh.
+ .Pp
+-.It Pa /etc/ssh/ssh_config
++.It Pa /overlayer/syshub/etc/ssh/ssh_config
+ Systemwide configuration file.
+ The file format and configuration options are described in
+ .Xr ssh_config 5 .
+ .Pp
+-.It Pa /etc/ssh/ssh_host_ecdsa_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ecdsa_key
+-.It Pa /etc/ssh/ssh_host_ed25519_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ed25519_key
+-.It Pa /etc/ssh/ssh_host_mldsa44_ed25519_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_mldsa44_ed25519_key
+-.It Pa /etc/ssh/ssh_host_rsa_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_rsa_key
+ These files contain the private parts of the host keys
+ and are used for host-based authentication.
+ .Pp
+-.It Pa /etc/ssh/ssh_known_hosts
++.It Pa /overlayer/syshub/etc/ssh/ssh_known_hosts
+ Systemwide list of known host keys.
+ This file should be prepared by the
+ system administrator to contain the public host keys of all machines in the
+@@ -1567,7 +1567,7 @@
+ .Xr sshd 8
+ for further details of the format of this file.
+ .Pp
+-.It Pa /etc/ssh/sshrc
++.It Pa /overlayer/syshub/etc/ssh/sshrc
+ Commands in this file are executed by
+ .Nm
+ when the user logs in, just before the user's shell (or command) is started.
+--- a/ssh_config.5
++++ b/ssh_config.5
+@@ -53,7 +53,7 @@
+ .Pq Pa ~/.ssh/config
+ .It
+ system-wide configuration file
+-.Pq Pa /etc/ssh/ssh_config
++.Pq Pa /overlayer/syshub/etc/ssh/ssh_config
+ .El
+ .Pp
+ Unless noted otherwise, for each configuration directive, the first
+@@ -301,7 +301,7 @@
+ Files without absolute paths are assumed to be in
+ .Pa ~/.ssh
+ if included in a user configuration file or
+-.Pa /etc/ssh
++.Pa /overlayer/syshub/etc/ssh
+ if included from the system configuration file.
+ .Cm Include
+ directive may appear inside a
+@@ -828,7 +828,7 @@
+ Setting this option to
+ .Cm yes
+ in the global client configuration file
+-.Pa /etc/ssh/ssh_config
++.Pa /overlayer/syshub/etc/ssh/ssh_config
+ enables the use of the helper program
+ .Xr ssh-keysign 8
+ during
+@@ -1008,8 +1008,8 @@
+ Specifies one or more files to use for the global
+ host key database, separated by whitespace.
+ The default is
+-.Pa /etc/ssh/ssh_known_hosts ,
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts ,
+-.Pa /etc/ssh/ssh_known_hosts2 .
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts2 .
+ .It Cm GSSAPIAuthentication
+ Specifies whether user authentication based on GSSAPI is allowed.
+ The default is
+@@ -1646,7 +1646,7 @@
+ For example, the following directive would connect via an HTTP proxy at
+ 192.0.2.0:
+ .Bd -literal -offset 3n
+-ProxyCommand /usr/bin/nc -X connect -x 192.0.2.0:8080 %h %p
++ProxyCommand /overlayer/syshub/bin/nc -X connect -x 192.0.2.0:8080 %h %p
+ .Ed
+ .It Cm ProxyJump
+ Specifies one or more jump proxies as either
+@@ -2043,7 +2043,7 @@
+ file, and refuses to connect to hosts whose host key has changed.
+ This provides maximum protection against man-in-the-middle (MITM) attacks,
+ though it can be annoying when the
+-.Pa /etc/ssh/ssh_known_hosts
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts
+ file is poorly maintained or when connections to new hosts are
+ frequently made.
+ This option forces the user to manually
+@@ -2281,7 +2281,7 @@
+ .Xr xauth 1
+ program.
+ The default is
+-.Pa /usr/X11R6/bin/xauth .
++.Pa /overlayer/syshub/X11R6/bin/xauth .
+ .El
+ .Sh PATTERNS
+ A
+@@ -2478,7 +2478,7 @@
+ This file is used by the SSH client.
+ Because of the potential for abuse, this file must have strict permissions:
+ read/write for the user, and not writable by others.
+-.It Pa /etc/ssh/ssh_config
++.It Pa /overlayer/syshub/etc/ssh/ssh_config
+ Systemwide configuration file.
+ This file provides defaults for those
+ values that are not specified in the user's configuration file, and
+--- a/sshd-debug.sh
++++ b/sshd-debug.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ 
+ # ssh-debug
+ 
+--- a/sshd.8
++++ b/sshd.8
+@@ -64,7 +64,7 @@
+ .Nm
+ listens for connections from clients.
+ It is normally started at boot from
+-.Pa /etc/rc .
++.Pa /overlayer/syshub/etc/rc .
+ It forks a new
+ daemon for each incoming connection.
+ The forked daemons handle
+@@ -81,7 +81,7 @@
+ rereads its configuration file when it receives a hangup signal,
+ .Dv SIGHUP ,
+ by executing itself with the name and options it was started with, e.g.\&
+-.Pa /usr/sbin/sshd .
++.Pa /overlayer/syshub/sbin/sshd .
+ .Pp
+ The options are as follows:
+ .Bl -tag -width Ds
+@@ -155,7 +155,7 @@
+ .It Fl f Ar config_file
+ Specifies the name of the configuration file.
+ The default is
+-.Pa /etc/ssh/sshd_config .
++.Pa /overlayer/syshub/etc/ssh/sshd_config .
+ .Nm
+ refuses to start if there is no configuration file.
+ .It Fl G
+@@ -180,11 +180,11 @@
+ is not run as root (as the normal
+ host key files are normally not readable by anyone but root).
+ The default is
+-.Pa /etc/ssh/ssh_host_ecdsa_key ,
++.Pa /overlayer/syshub/etc/ssh/ssh_host_ecdsa_key ,
+-.Pa /etc/ssh/ssh_host_ed25519_key ,
++.Pa /overlayer/syshub/etc/ssh/ssh_host_ed25519_key ,
+-.Pa /etc/ssh/ssh_host_mldsa44_ed25519_key
++.Pa /overlayer/syshub/etc/ssh/ssh_host_mldsa44_ed25519_key
+ and
+-.Pa /etc/ssh/ssh_host_rsa_key .
++.Pa /overlayer/syshub/etc/ssh/ssh_host_rsa_key .
+ It is possible to have multiple host key files for
+ the different host key algorithms.
+ .It Fl i
+@@ -346,7 +346,7 @@
+ .It
+ If the login is on a tty, and no command has been specified,
+ prints last login time and
+-.Pa /etc/motd
++.Pa /overlayer/syshub/etc/motd
+ (unless prevented in the configuration file or by
+ .Pa ~/.hushlogin ;
+ see the
+@@ -356,7 +356,7 @@
+ If the login is on a tty, records login time.
+ .It
+ Checks
+-.Pa /etc/nologin ;
++.Pa /overlayer/syshub/etc/nologin ;
+ if it exists, prints contents and quits
+ (unless root).
+ .It
+@@ -380,7 +380,7 @@
+ .Xr sshd_config 5
+ .Cm PermitUserRC
+ option is set, runs it; else if
+-.Pa /etc/ssh/sshrc
++.Pa /overlayer/syshub/etc/ssh/sshrc
+ exists, runs
+ it; otherwise runs
+ .Xr xauth 1 .
+@@ -435,7 +435,7 @@
+ .Ed
+ .Pp
+ If this file does not exist,
+-.Pa /etc/ssh/sshrc
++.Pa /overlayer/syshub/etc/ssh/sshrc
+ is run, and if that
+ does not exist either, xauth is used to add the cookie.
+ .Sh AUTHORIZED_KEYS FILE FORMAT
+@@ -704,7 +704,7 @@
+ # Restriction of ssh -R forwarding listeners
+ permitlisten="localhost:8080",permitlisten="[::1]:22000" ssh-rsa ...
+ # Configuration for tunnel forwarding
+-tunnel="0",command="sh /etc/netstart tun0" ssh-rsa ...
++tunnel="0",command="sh /overlayer/syshub/etc/netstart tun0" ssh-rsa ...
+ # Override of restriction to allow PTY allocation
+ restrict,pty,command="nethack" ssh-rsa ...
+ # Allow FIDO key without requiring touch
+@@ -716,7 +716,7 @@
+ .Ed
+ .Sh SSH_KNOWN_HOSTS FILE FORMAT
+ The
+-.Pa /etc/ssh/ssh_known_hosts
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts
+ and
+ .Pa ~/.ssh/known_hosts
+ files contain host public keys for all known hosts.
+@@ -783,7 +783,7 @@
+ .Pp
+ The keytype and base64-encoded key are taken directly from the host key; they
+ can be obtained, for example, from
+-.Pa /etc/ssh/ssh_host_rsa_key.pub .
++.Pa /overlayer/syshub/etc/ssh/ssh_host_rsa_key.pub .
+ The optional comment field continues to the end of the line, and is not used.
+ .Pp
+ Lines starting with
+@@ -823,7 +823,7 @@
+ Rather, generate them by a script,
+ .Xr ssh-keyscan 1
+ or by taking, for example,
+-.Pa /etc/ssh/ssh_host_rsa_key.pub
++.Pa /overlayer/syshub/etc/ssh/ssh_host_rsa_key.pub
+ and adding the host names at the front.
+ .Xr ssh-keygen 1
+ also offers some basic automated editing for
+@@ -847,7 +847,7 @@
+ .Bl -tag -width Ds -compact
+ .It Pa ~/.hushlogin
+ This file is used to suppress printing the last login time and
+-.Pa /etc/motd ,
++.Pa /overlayer/syshub/etc/motd ,
+ if
+ .Cm PrintLastLog
+ and
+@@ -929,12 +929,12 @@
+ This file should be writable only by the user, and need not be
+ readable by anyone else.
+ .Pp
+-.It Pa /etc/hosts.equiv
++.It Pa /overlayer/syshub/etc/hosts.equiv
+ This file is for host-based authentication (see
+ .Xr ssh 1 ) .
+ It should only be writable by root.
+ .Pp
+-.It Pa /etc/moduli
++.It Pa /overlayer/syshub/etc/moduli
+ Contains Diffie-Hellman groups used for the "Diffie-Hellman Group Exchange"
+ key exchange method.
+ The file format is described in
+@@ -942,11 +942,11 @@
+ If no usable groups are found in this file then fixed internal groups will
+ be used.
+ .Pp
+-.It Pa /etc/motd
++.It Pa /overlayer/syshub/etc/motd
+ See
+ .Xr motd 5 .
+ .Pp
+-.It Pa /etc/nologin
++.It Pa /overlayer/syshub/etc/nologin
+ If this file exists,
+ .Nm
+ refuses to let anyone except root log in.
+@@ -955,16 +955,16 @@
+ refused.
+ The file should be world-readable.
+ .Pp
+-.It Pa /etc/shosts.equiv
++.It Pa /overlayer/syshub/etc/shosts.equiv
+ This file is used in exactly the same way as
+ .Pa hosts.equiv ,
+ but allows host-based authentication without permitting login with
+ rlogin/rsh.
+ .Pp
+-.It Pa /etc/ssh/ssh_host_ecdsa_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ecdsa_key
+-.It Pa /etc/ssh/ssh_host_ed25519_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ed25519_key
+-.It Pa /etc/ssh/ssh_host_mldsa44_ed25519_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_mldsa44_ed25519_key
+-.It Pa /etc/ssh/ssh_host_rsa_key
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_rsa_key
+ These files contain the private parts of the host keys.
+ These files should only be owned by root, readable only by root, and not
+ accessible to others.
+@@ -972,10 +972,10 @@
+ .Nm
+ does not start if these files are group/world-accessible.
+ .Pp
+-.It Pa /etc/ssh/ssh_host_ecdsa_key.pub
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ecdsa_key.pub
+-.It Pa /etc/ssh/ssh_host_ed25519_key.pub
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_ed25519_key.pub
+-.It Pa /etc/ssh/ssh_host_mldsa44_ed25519_key.pub
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_mldsa44_ed25519_key.pub
+-.It Pa /etc/ssh/ssh_host_rsa_key.pub
++.It Pa /overlayer/syshub/etc/ssh/ssh_host_rsa_key.pub
+ These files contain the public parts of the host keys.
+ These files should be world-readable but writable only by
+ root.
+@@ -986,7 +986,7 @@
+ These files are created using
+ .Xr ssh-keygen 1 .
+ .Pp
+-.It Pa /etc/ssh/ssh_known_hosts
++.It Pa /overlayer/syshub/etc/ssh/ssh_known_hosts
+ Systemwide list of known host keys.
+ This file should be prepared by the
+ system administrator to contain the public host keys of all machines in the
+@@ -995,20 +995,20 @@
+ This file should be writable only by root/the owner and
+ should be world-readable.
+ .Pp
+-.It Pa /etc/ssh/sshd_config
++.It Pa /overlayer/syshub/etc/ssh/sshd_config
+ Contains configuration data for
+ .Nm sshd .
+ The file format and configuration options are described in
+ .Xr sshd_config 5 .
+ .Pp
+-.It Pa /etc/ssh/sshrc
++.It Pa /overlayer/syshub/etc/ssh/sshrc
+ Similar to
+ .Pa ~/.ssh/rc ,
+ it can be used to specify
+ machine-specific login-time initializations globally.
+ This file should be writable only by root, and should be world-readable.
+ .Pp
+-.It Pa /var/empty
++.It Pa /overlayer/syshub/var/empty
+ .Xr chroot 2
+ directory used by
+ .Nm
+@@ -1016,7 +1016,7 @@
+ The directory should not contain any files and must be owned by root
+ and not group or world-writable.
+ .Pp
+-.It Pa /var/run/sshd.pid
++.It Pa /overlayer/syshub/var/run/sshd.pid
+ Contains the process ID of the
+ .Nm
+ listening for connections (if there are several daemons running
+--- a/sshd_config.5
++++ b/sshd_config.5
+@@ -43,7 +43,7 @@
+ .Sh DESCRIPTION
+ .Xr sshd 8
+ reads configuration data from
+-.Pa /etc/ssh/sshd_config
++.Pa /overlayer/syshub/etc/ssh/sshd_config
+ (or the file specified with
+ .Fl f
+ on the command line).
+@@ -844,7 +844,7 @@
+ .Qq ssh -Q HostbasedAcceptedAlgorithms .
+ This was formerly named HostbasedAcceptedKeyTypes.
+ .It Cm HostbasedAuthentication
+-Specifies whether rhosts or /etc/hosts.equiv authentication together
++Specifies whether rhosts or /overlayer/syshub/etc/hosts.equiv authentication together
+ with successful public key client host authentication is allowed
+ (host-based authentication).
+ The default is
+@@ -855,7 +855,7 @@
+ .Pa ~/.shosts ,
+ .Pa ~/.rhosts ,
+ and
+-.Pa /etc/hosts.equiv
++.Pa /overlayer/syshub/etc/hosts.equiv
+ files during
+ .Cm HostbasedAuthentication .
+ A setting of
+@@ -878,11 +878,11 @@
+ Specifies a file containing a private host key
+ used by SSH.
+ The defaults are
+-.Pa /etc/ssh/ssh_host_ecdsa_key ,
++.Pa /overlayer/syshub/etc/ssh/ssh_host_ecdsa_key ,
+-.Pa /etc/ssh/ssh_host_ed25519_key ,
++.Pa /overlayer/syshub/etc/ssh/ssh_host_ed25519_key ,
+-.Pa /etc/ssh/ssh_host_mldsa44_ed25519_key ,
++.Pa /overlayer/syshub/etc/ssh/ssh_host_mldsa44_ed25519_key ,
+ and
+-.Pa /etc/ssh/ssh_host_rsa_key .
++.Pa /overlayer/syshub/etc/ssh/ssh_host_rsa_key .
+ .Pp
+ Note that
+ .Xr sshd 8
+@@ -939,9 +939,9 @@
+ files during
+ .Cm HostbasedAuthentication .
+ The system-wide
+-.Pa /etc/hosts.equiv
++.Pa /overlayer/syshub/etc/hosts.equiv
+ and
+-.Pa /etc/shosts.equiv
++.Pa /overlayer/syshub/etc/shosts.equiv
+ are still used regardless of this setting.
+ .Pp
+ Accepted values are
+@@ -966,7 +966,7 @@
+ during
+ .Cm HostbasedAuthentication
+ and use only the system-wide known hosts file
+-.Pa /etc/ssh/ssh_known_hosts .
++.Pa /overlayer/syshub/etc/ssh/ssh_known_hosts .
+ The default is
+ .Dq no .
+ .It Cm Include
+@@ -975,7 +975,7 @@
+ .Xr glob 7
+ wildcards that will be expanded and processed in lexical order.
+ Files without absolute paths are assumed to be in
+-.Pa /etc/ssh .
++.Pa /overlayer/syshub/etc/ssh .
+ An
+ .Cm Include
+ directive may appear inside a
+@@ -1053,7 +1053,7 @@
+ If password authentication through Kerberos fails then
+ the password will be validated via any additional local mechanism
+ such as
+-.Pa /etc/passwd .
++.Pa /overlayer/syshub/etc/passwd .
+ The default is
+ .Cm yes .
+ .It Cm KerberosTicketCleanup
+@@ -1447,7 +1447,7 @@
+ .Dq diffie-hellman-group-exchange-sha256
+ key exchange methods.
+ The default is
+-.Pa /etc/moduli .
++.Pa /overlayer/syshub/etc/moduli .
+ .It Cm PAMServiceName
+ Specifies the service name used for Pluggable Authentication Modules (PAM)
+ authentication, authorisation and session controls when
+@@ -1738,7 +1738,7 @@
+ .Cm none
+ to not write one.
+ The default is
+-.Pa /var/run/sshd.pid .
++.Pa /overlayer/syshub/var/run/sshd.pid .
+ .It Cm Port
+ Specifies the port number that
+ .Xr sshd 8
+@@ -1758,10 +1758,10 @@
+ Specifies whether
+ .Xr sshd 8
+ should print
+-.Pa /etc/motd
++.Pa /overlayer/syshub/etc/motd
+ when a user logs in interactively.
+ (On some systems it is also printed by the shell,
+-.Pa /etc/profile ,
++.Pa /overlayer/syshub/etc/profile ,
+ or equivalent.)
+ The default is
+ .Cm yes .
+@@ -1953,14 +1953,14 @@
+ .Cm sshd-auth
+ binary that is invoked to complete user authentication.
+ The default is
+-.Pa /usr/libexec/sshd-auth .
++.Pa /overlayer/syshub/libexec/sshd-auth .
+ This option is intended for use by tests.
+ .It Cm SshdSessionPath
+ Overrides the default path to the
+ .Cm sshd-session
+ binary that is invoked to handle each connection.
+ The default is
+-.Pa /usr/libexec/sshd-session .
++.Pa /overlayer/syshub/libexec/sshd-session .
+ This option is intended for use by tests.
+ .It Cm StreamLocalBindMask
+ Sets the octal file creation mode mask
+@@ -2231,7 +2231,7 @@
+ .Cm none
+ to not use one.
+ The default is
+-.Pa /usr/X11R6/bin/xauth .
++.Pa /overlayer/syshub/X11R6/bin/xauth .
+ .El
+ .Sh TIME FORMATS
+ .Xr sshd 8
+@@ -2341,7 +2341,7 @@
+ accepts the token %D.
+ .Sh FILES
+ .Bl -tag -width Ds
+-.It Pa /etc/ssh/sshd_config
++.It Pa /overlayer/syshub/etc/ssh/sshd_config
+ Contains configuration data for
+ .Xr sshd 8 .
+ This file should be writable by root only, but it is recommended
+--- a/survey.sh.in
++++ b/survey.sh.in
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ #
+ # Copyright (c) 2004, 2005 Darren Tucker
+ #
