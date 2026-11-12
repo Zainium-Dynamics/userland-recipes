@@ -1,0 +1,24 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=less
+pkgver=710
+pkgrel=0
+source="https://www.greenwoodsoftware.com/less/less-$pkgver.tar.gz
+0001-zainium-paths.patch"
+sha256sums="d1008fb78dcae1323ddab664bcb352a61f022b1b131bd8018548e021d975ec7a  less-$pkgver.tar.gz"
+makedepends="ncurses-dev pcre2-dev"
+
+# less. 0001-zainium-paths.patch is made by replant.
+build() {
+    patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --mandir=/overlayer/syshub/share/man \
+        --with-regex=pcre2
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+}
