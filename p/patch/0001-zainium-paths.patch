@@ -1,0 +1,11 @@
+--- a/patch.man
++++ b/patch.man
+@@ -238,7 +238,7 @@
+ something like the following shell command:
+ .Sp
+ .RS
+-\fBpatch \-d /usr/src/local/blurfl\fP
++\fBpatch \-d /overlayer/syshub/src/local/blurfl\fP
+ .RE
+ .Sp
+ and patch a file in the
