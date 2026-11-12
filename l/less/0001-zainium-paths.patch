@@ -1,0 +1,92 @@
+--- a/less-osc8-open.sh
++++ b/less-osc8-open.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/overlayer/syshub/bin/sh
+ 
+ # Less OSC 8 handler.
+ 
+--- a/less.man
++++ b/less.man
+@@ -1802,8 +1802,8 @@
+        LESSKEYIN_SYSTEM  is set, [1mless [22muses that as the name of the system‐wide
+        lesskey file.  Otherwise, [1mless [22mlooks in a standard place for  the  sys‐
+        tem‐wide lesskey file: On Unix systems, the system‐wide lesskey file is
+-       /usr/local/etc/syslesskey.   (However, if [1mless [22mwas built with a differ‐
++       /overlayer/syshub/etc/syslesskey.   (However, if [1mless [22mwas built with a differ‐
+-       ent sysconf directory than /usr/local/etc, that directory is where  the
++       ent sysconf directory than /overlayer/syshub/etc, that directory is where  the
+        sysless file is found.)  On MS‐DOS and Windows systems, the system‐wide
+        lesskey  file  is  c:\_syslesskey.   On  OS/2  systems, the system‐wide
+        lesskey file is c:\syslesskey.ini.
+--- a/less.nro
++++ b/less.nro
+@@ -2348,10 +2348,10 @@
+ Otherwise,
+ .B less
+ looks in a standard place for the system-wide lesskey file:
+-On Unix systems, the system-wide lesskey file is /usr/local/etc/syslesskey.
++On Unix systems, the system-wide lesskey file is /overlayer/syshub/etc/syslesskey.
+ (However, if
+ .B less
+-was built with a different sysconf directory than /usr/local/etc,
++was built with a different sysconf directory than /overlayer/syshub/etc,
+ that directory is where the sysless file is found.)
+ On MS-DOS and Windows systems, the system-wide lesskey file is c:\e_syslesskey.
+ On OS/2 systems, the system-wide lesskey file is c:\esyslesskey.ini.
+--- a/lesstest/extract
++++ b/lesstest/extract
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env perl
++#!/overlayer/syshub/bin/env perl
+ use strict;
+ use Getopt::Std;
+ 
+--- a/lesstest/ltview
++++ b/lesstest/ltview
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env perl
++#!/overlayer/syshub/bin/env perl
+ use strict;
+ use Getopt::Std;
+ use IO::Stty;
+--- a/lesstest/maketest
++++ b/lesstest/maketest
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env perl
++#!/overlayer/syshub/bin/env perl
+ use strict;
+ 
+ # Create a test file.
+--- a/lesstest/runtest
++++ b/lesstest/runtest
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env perl
++#!/overlayer/syshub/bin/env perl
+ use strict;
+ 
+ # Run one or more test files.
+--- a/mkhelp.pl
++++ b/mkhelp.pl
+@@ -1,4 +1,4 @@
+-#! /usr/bin/env perl
++#! /overlayer/syshub/bin/env perl
+ use strict;
+ 
+ # Silly little program to generate the help.c source file
+--- a/mkhelp.py
++++ b/mkhelp.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/overlayer/syshub/bin/env python
+ 
+ import time
+ import sys
+--- a/mkutable
++++ b/mkutable
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env perl
++#!/overlayer/syshub/bin/env perl
+ use strict;
+ 
+ my $USAGE = <<__EOF__;
