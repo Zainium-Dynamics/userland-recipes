@@ -1,0 +1,29 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=mandoc
+pkgver=1.14.6
+pkgrel=0
+source="https://mandoc.bsd.lv/snapshots/mandoc-$pkgver.tar.gz
+0001-zainium-paths.patch"
+sha256sums="8bf0d570f01e70a6e124884088870cbed7537f36328d512909eb10cd53179d9c  mandoc-$pkgver.tar.gz"
+makedepends="zlib-dev"
+
+# man, apropos and whatis. 0001-zainium-paths.patch is made by replant.
+build() {
+    patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    cat > configure.local <<EOF
+PREFIX=/overlayer/syshub
+BINDIR=/overlayer/syshub/bin
+SBINDIR=/overlayer/syshub/bin
+MANDIR=/overlayer/syshub/share/man
+MANPATH_DEFAULT=/overlayer/syshub/share/man:/overlayer/zexlib/union/share/man
+MANPATH_BASE=/overlayer/syshub/share/man
+UTF8_LOCALE=C.UTF-8
+LDFLAGS="$LDFLAGS"
+EOF
+    ./configure
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" base-install
+}
