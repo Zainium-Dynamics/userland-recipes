@@ -1,0 +1,25 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=iputils
+pkgver=20250605
+pkgrel=0
+source="https://github.com/iputils/iputils/releases/download/$pkgver/iputils-$pkgver.tar.xz"
+sha256sums="6f213700dbf96b5cc4499ca70cb15ecd69c09f405b06785bb4a1a10b572b6276  iputils-$pkgver.tar.xz"
+makedepends="meson"
+
+# ping, arping and tracepath. ping uses unprivileged ICMP sockets
+# (net.ipv4.ping_group_range, which systemd opens to everyone), so no setuid or capabilities.
+build() {
+    meson setup build \
+        --prefix=/overlayer/syshub \
+        --buildtype=release \
+        -DUSE_CAP=false \
+        -DUSE_IDN=false \
+        -DUSE_GETTEXT=false \
+        -DBUILD_MANS=false \
+        -DSKIP_TESTS=true
+    meson compile -C build
+}
+
+package() {
+    DESTDIR="$PAYLOAD_DIR" meson install -C build
+}

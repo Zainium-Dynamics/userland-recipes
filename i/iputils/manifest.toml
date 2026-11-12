@@ -1,0 +1,34 @@
+[package]
+name             = "iputils"
+version          = "20250605"
+description      = "ping, arping and tracepath"
+license          = "GPL-2.0-or-later AND BSD-3-Clause"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://github.com/iputils/iputils"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["ping", "arping", "tracepath", "iputils"]
+tags             = ["network", "cli"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+etc     = "/overlayer/zexlib/union/etc"
+share   = "/overlayer/zexlib/union/share"
+var     = "/overlayer/zexlib/union/var"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
