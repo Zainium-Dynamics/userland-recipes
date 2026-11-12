@@ -1,0 +1,38 @@
+--- a/magic/scripts/create_filemagic_flac
++++ b/magic/scripts/create_filemagic_flac
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env bash
++#!/overlayer/syshub/bin/env bash
+ 
+ ## bash script to generate file magic support for flac.
+ ## https://github.com/file/file/blob/master/magic/Magdir/audio
+--- a/python/example.py
++++ b/python/example.py
+@@ -1,13 +1,13 @@
+-#! /usr/bin/python
++#! /overlayer/syshub/bin/python
+ 
+ import magic
+ 
+ ms = magic.open(magic.NONE)
+ ms.load()
+-tp = ms.file("/bin/ls")
++tp = ms.file("/overlayer/syshub/bin/ls")
+ print (tp)
+ 
+-f = open("/bin/ls", "rb")
++f = open("/overlayer/syshub/bin/ls", "rb")
+ buf = f.read(4096)
+ f.close()
+ 
+--- a/src/file.h
++++ b/src/file.h
+@@ -96,7 +96,7 @@
+ #define ENABLE_CONDITIONALS
+ 
+ #ifndef MAGIC
+-#define MAGIC "/etc/magic"
++#define MAGIC "/overlayer/syshub/etc/magic"
+ #endif
+ 
+ #if defined(__EMX__) || defined (WIN32)

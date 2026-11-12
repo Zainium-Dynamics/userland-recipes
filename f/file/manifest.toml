@@ -1,0 +1,34 @@
+[package]
+name             = "file"
+version          = "5.48"
+description      = "file: tell what kind of data a file holds"
+license          = "BSD-2-Clause"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://www.darwinsys.com/file/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["file", "libmagic"]
+tags             = ["utility", "cli"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+etc     = "/overlayer/zexlib/union/etc"
+share   = "/overlayer/zexlib/union/share"
+var     = "/overlayer/zexlib/union/var"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
