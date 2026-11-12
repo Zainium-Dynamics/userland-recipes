@@ -1,0 +1,34 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=openssh
+pkgver=10.6p2
+pkgrel=0
+source="https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-$pkgver.tar.gz
+0001-zainium-paths.patch"
+sha256sums="9ae44872090cf2f06b3cf9ff147e7f16f309671340763ed2f99248398ae29d5b  openssh-$pkgver.tar.gz"
+needs_toolchain="openssl openssl-dev zlib zlib-dev"
+
+# The ssh client tools and sshd. Built against Zainium's openssl and zlib; host keys are
+# not made here (make install-nokeys). 0001-zainium-paths.patch is made by replant.
+build() {
+    patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    export CPPFLAGS="-I/overlayer/syshub/include ${CPPFLAGS:-}"
+    export LDFLAGS="-L/overlayer/syshub/lib ${LDFLAGS:-}"
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc/ssh \
+        --libexecdir=/overlayer/syshub/libexec \
+        --mandir=/overlayer/syshub/share/man \
+        --with-privsep-path=/overlayer/syshub/var/empty \
+        --with-pid-dir=/run \
+        --with-ssl-dir=/overlayer/syshub \
+        --with-mantype=man \
+        --with-default-path=/overlayer/syshub/bin:/overlayer/zexlib/union/bin \
+        --with-superuser-path=/overlayer/syshub/bin:/overlayer/syshub/sbin:/overlayer/zexlib/union/bin \
+        --disable-strip
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install-nokeys
+}

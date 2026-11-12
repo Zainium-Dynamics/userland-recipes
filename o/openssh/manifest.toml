@@ -1,0 +1,34 @@
+[package]
+name             = "openssh"
+version          = "10.6p2"
+description      = "ssh, scp and sftp: secure remote login and file copy"
+license          = "BSD-2-Clause AND ISC"
+maintainer       = "Ali Zain <heyalizain@gmail.com>"
+homepage         = "https://www.openssh.com/"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "openssl", "zlib"]
+provides         = ["ssh", "scp", "sftp", "ssh-keygen", "ssh-agent", "openssh"]
+tags             = ["network", "cli", "security"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+libexec = "/overlayer/zexlib/union/libexec"
+etc     = "/overlayer/zexlib/union/etc"
+share   = "/overlayer/zexlib/union/share"
+var     = "/overlayer/zexlib/union/var"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
