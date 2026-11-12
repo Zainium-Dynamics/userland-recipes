@@ -1,0 +1,22 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=patch
+pkgver=2.8
+pkgrel=0
+source="https://ftp.gnu.org/gnu/patch/patch-$pkgver.tar.xz
+0001-zainium-paths.patch"
+sha256sums="f87cee69eec2b4fcbf60a396b030ad6aa3415f192aa5f7ee84cad5e11f7f5ae3  patch-$pkgver.tar.xz"
+
+# GNU patch. 0001-zainium-paths.patch is made by replant: the man page's example path.
+build() {
+    patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --mandir=/overlayer/syshub/share/man \
+        --disable-nls
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+}
