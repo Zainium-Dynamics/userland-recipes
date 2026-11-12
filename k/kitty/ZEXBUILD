@@ -53,4 +53,6 @@ build() {
 package() {
     mkdir -p "$PAYLOAD_DIR"
     cp -a "$SRCDIR/out/overlayer" "$PAYLOAD_DIR/"
+    # the HTML manual is online at sw.kovidgoyal.net/kitty; the man pages stay
+    rm -rf "$PAYLOAD_DIR/overlayer/syshub/share/doc/kitty"
 }

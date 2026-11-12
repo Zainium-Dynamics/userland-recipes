@@ -141,10 +141,41 @@ index 84c9b9d..55dd9fb 100644
  
  When opening in the same working directory as the current window causes the new window to connect to a remote host, you can use the 
  .B \-\-hold\-after\-ssh flag to prevent the new window from closing when the connection is terminated.
+diff --git a/docs/_build/man/kitten-choose-files.1 b/docs/_build/man/kitten-choose-files.1
+index b4393e9..312adba 100644
+--- a/docs/_build/man/kitten-choose-files.1
++++ b/docs/_build/man/kitten-choose-files.1
+@@ -839,7 +839,7 @@ If this option is not specified, config files are searched for in the order: \fB
+ .sp
+ If the environment variable \fBKITTY_CONFIG_DIRECTORY\fP \%<#\:envvar-KITTY_CONFIG_DIRECTORY> is specified, that directory is always used and the above searching does not happen.
+ .sp
+-If \fB/etc/xdg/kitty/choose\-files.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
++If \fB/overlayer/syshub/etc/xdg/kitty/choose\-files.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
+ .UNINDENT
+ .INDENT 0.0
+ .TP
 diff --git a/docs/_build/man/kitten-desktop-ui.1 b/docs/_build/man/kitten-desktop-ui.1
-index 0c26f8d..6ce305e 100644
+index 0c26f8d..883d58a 100644
 --- a/docs/_build/man/kitten-desktop-ui.1
 +++ b/docs/_build/man/kitten-desktop-ui.1
+@@ -71,7 +71,7 @@ kitten desktop\-ui enable\-portal
+ .UNINDENT
+ .sp
+ Then, set the following two environment variables, \fIsystem wide\fP, that means in
+-\fB/etc/environment\fP or the equivalent for your distribution:
++\fB/overlayer/syshub/etc/environment\fP or the equivalent for your distribution:
+ .INDENT 0.0
+ .INDENT 3.5
+ .sp
+@@ -119,7 +119,7 @@ There are multiple competing implementations of the backends. Each desktop
+ environment like KDE or GNOME has it\(aqs own backend and many window managers
+ provide implementations for some backends as well. Service discovery and
+ configuring which backend to use happens via the \fBxdg\-desktop\-portal\fP
+-program, usually found at \fB/usr/lib/xdg\-desktop\-portal\fP\&.
++program, usually found at \fB/overlayer/syshub/lib/xdg\-desktop\-portal\fP\&.
+ .sp
+ It can be configured by files in \fB$XDG_CONFIG_HOME/xdg\-desktop\-portal\fP,
+ which defaults to \fB~/.config/xdg\-desktop\-portal\fP\&. See
 @@ -171,7 +171,7 @@ Read the \fBportals.conf\fP man page and run:
  .INDENT 3.5
  .sp
@@ -154,6 +185,19 @@ index 0c26f8d..6ce305e 100644
  .EE
  .UNINDENT
  .UNINDENT
+diff --git a/docs/_build/man/kitten-diff.1 b/docs/_build/man/kitten-diff.1
+index 033954a..6f05efe 100644
+--- a/docs/_build/man/kitten-diff.1
++++ b/docs/_build/man/kitten-diff.1
+@@ -1018,7 +1018,7 @@ If this option is not specified, config files are searched for in the order: \fB
+ .sp
+ If the environment variable \fBKITTY_CONFIG_DIRECTORY\fP \%<#\:envvar-KITTY_CONFIG_DIRECTORY> is specified, that directory is always used and the above searching does not happen.
+ .sp
+-If \fB/etc/xdg/kitty/diff.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
++If \fB/overlayer/syshub/etc/xdg/kitty/diff.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
+ .UNINDENT
+ .INDENT 0.0
+ .TP
 diff --git a/docs/_build/man/kitten-edit-in-kitty.1 b/docs/_build/man/kitten-edit-in-kitty.1
 index 30ac219..c789107 100644
 --- a/docs/_build/man/kitten-edit-in-kitty.1
@@ -167,11 +211,31 @@ index 30ac219..c789107 100644
  
  When opening in the same working directory as the current window causes the new window to connect to a remote host, you can use the 
  .B \-\-hold\-after\-ssh flag to prevent the new window from closing when the connection is terminated.
+diff --git a/docs/_build/man/kitten-quick-access-terminal.1 b/docs/_build/man/kitten-quick-access-terminal.1
+index 85c5719..4dd83a0 100644
+--- a/docs/_build/man/kitten-quick-access-terminal.1
++++ b/docs/_build/man/kitten-quick-access-terminal.1
+@@ -345,7 +345,7 @@ If this option is not specified, config files are searched for in the order: \fB
+ .sp
+ If the environment variable \fBKITTY_CONFIG_DIRECTORY\fP \%<#\:envvar-KITTY_CONFIG_DIRECTORY> is specified, that directory is always used and the above searching does not happen.
+ .sp
+-If \fB/etc/xdg/kitty/quick\-access\-terminal.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
++If \fB/overlayer/syshub/etc/xdg/kitty/quick\-access\-terminal.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
+ .UNINDENT
+ .INDENT 0.0
+ .TP
 diff --git a/docs/_build/man/kitten-ssh.1 b/docs/_build/man/kitten-ssh.1
-index 7c6b7c5..3bd5ffa 100644
+index 7c6b7c5..9bf0b34 100644
 --- a/docs/_build/man/kitten-ssh.1
 +++ b/docs/_build/man/kitten-ssh.1
-@@ -677,7 +677,7 @@ command to apply your change (on the server):
+@@ -671,13 +671,13 @@ infocmp \-CrT0 xterm\-kitty
+ .UNINDENT
+ .sp
+ The output of this command is the termcap description, which should be appended
+-to \fB/usr/share/misc/termcap\fP on the remote server. Then run the following
++to \fB/overlayer/syshub/share/misc/termcap\fP on the remote server. Then run the following
+ command to apply your change (on the server):
+ .INDENT 0.0
  .INDENT 3.5
  .sp
  .EX
@@ -179,6 +243,19 @@ index 7c6b7c5..3bd5ffa 100644
 +cap_mkdb /overlayer/syshub/share/misc/termcap
  .EE
  .UNINDENT
+ .UNINDENT
+diff --git a/docs/_build/man/kitty.1 b/docs/_build/man/kitty.1
+index 419efd0..8e8cf82 100644
+--- a/docs/_build/man/kitty.1
++++ b/docs/_build/man/kitty.1
+@@ -73,7 +73,7 @@ If this option is not specified, config files are searched for in the order: \fB
+ .sp
+ If the environment variable \fBKITTY_CONFIG_DIRECTORY\fP \%<#\:envvar-KITTY_CONFIG_DIRECTORY> is specified, that directory is always used and the above searching does not happen.
+ .sp
+-If \fB/etc/xdg/kitty/kitty.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
++If \fB/overlayer/syshub/etc/xdg/kitty/kitty.conf\fP exists, it is merged before (i.e. with lower priority) than any user config files. It can be used to specify system\-wide defaults for all users. You can use either \fB\-\fP or \fB/dev/stdin\fP to read the config from STDIN.
+ .sp
+ When \fBNONE\fP is used, other files in the kitty config directory that are normally loaded automatically are also ignored, namely, the automatic color theme files (\fB*\-theme.auto.conf\fP), \fBopen\-actions.conf\fP, \fBlaunch\-actions.conf\fP, \fBmime.types\fP, \fBpaste\-actions.py\fP, \fBnotifications.py\fP and the custom window icon (\fBkitty.app.png\fP).
  .UNINDENT
 diff --git a/gen/__main__.py b/gen/__main__.py
 index 1a3ff14..004c21e 100644
@@ -342,6 +419,19 @@ index 3e66298..579497b 100644
  # License: GPLv3 Copyright: 2024, Kovid Goyal <kovid at kovidgoyal.net>
  
  # Entry point: collect_keys_data(opts) — collects all keybinding, alias, and
+diff --git a/kittens/desktop_ui/main.go b/kittens/desktop_ui/main.go
+index 89b6097..24bfe70 100644
+--- a/kittens/desktop_ui/main.go
++++ b/kittens/desktop_ui/main.go
+@@ -78,7 +78,7 @@ func specialize_command(parent *cli.Command) {
+ 	parent.AddSubCommand(&cli.Command{
+ 		Name:             "enable-portal",
+ 		ShortDescription: "This will create or edit the various files needed so that the portal from this kitten is used by xdg-desktop-portal",
+-		HelpText:         "Once you run this command, add :code:`kitten desktop-ui run-server` to your window manager startup sequence and reboot your computer (or logout and restart your session) and hopefully xdg-desktop-portal should now delegate to kitty for the portals implemented here. If it doesn't try running :code:`/usr/lib/xdg-desktop-portal -r -v` it will provide a lot of logging about why it is choosing different portal backends. That combined with a careful reading of :code:`man portals.conf` should be enough to learn how to convince xdg-desktop-portal to use kitty.\n\nYou can change the system color-scheme dynamically by running::\n\n:code:`kitten desktop-ui set-color-scheme dark`",
++		HelpText:         "Once you run this command, add :code:`kitten desktop-ui run-server` to your window manager startup sequence and reboot your computer (or logout and restart your session) and hopefully xdg-desktop-portal should now delegate to kitty for the portals implemented here. If it doesn't try running :code:`/overlayer/syshub/lib/xdg-desktop-portal -r -v` it will provide a lot of logging about why it is choosing different portal backends. That combined with a careful reading of :code:`man portals.conf` should be enough to learn how to convince xdg-desktop-portal to use kitty.\n\nYou can change the system color-scheme dynamically by running::\n\n:code:`kitten desktop-ui set-color-scheme dark`",
+ 		Run: func(cmd *cli.Command, args []string) (rc int, err error) {
+ 			err = enable_portal()
+ 			return utils.IfElse(err == nil, 0, 1), err
 diff --git a/kittens/desktop_ui/main.py b/kittens/desktop_ui/main.py
 index bebe0e5..37fbc62 100644
 --- a/kittens/desktop_ui/main.py
@@ -1068,7 +1158,7 @@ index c8c7e65..d1c8807 100644
  
  from collections.abc import Callable, Iterable, Iterator
 diff --git a/kitty/launch.py b/kitty/launch.py
-index 2231f24..84f6e38 100644
+index 2231f24..433a55d 100644
 --- a/kitty/launch.py
 +++ b/kitty/launch.py
 @@ -1,4 +1,4 @@
@@ -1077,6 +1167,15 @@ index 2231f24..84f6e38 100644
  # License: GPLv3 Copyright: 2019, Kovid Goyal <kovid at kovidgoyal.net>
  
  
+@@ -203,7 +203,7 @@ by the shell (needs :ref:`shell_integration` to work). The special value
+ oldest foreground process associated with the currently active window rather
+ than the newest foreground process. Finally, the special value :code:`root`
+ refers to the process that was originally started when the window was created.
+-If kitty itself started that process via a wrapper, such as :file:`/usr/bin/login`
++If kitty itself started that process via a wrapper, such as :file:`/overlayer/syshub/bin/login`
+ on macOS, the wrapper is ignored and its first child is used instead. The
+ working directory reported by the shell is used only when the root process is in
+ the foreground.
 diff --git a/kitty/launcher/single-instance.c b/kitty/launcher/single-instance.c
 index 5ee9ea6..6d167b1 100644
 --- a/kitty/launcher/single-instance.c
@@ -1844,7 +1943,7 @@ index f662dd5..f1040f8 100644
  
  import math
 diff --git a/kitty/simple_cli_definitions.py b/kitty/simple_cli_definitions.py
-index 5b6cd98..6c81e6a 100644
+index 5b6cd98..48a63f2 100644
 --- a/kitty/simple_cli_definitions.py
 +++ b/kitty/simple_cli_definitions.py
 @@ -1,4 +1,4 @@
@@ -1853,6 +1952,15 @@ index 5b6cd98..6c81e6a 100644
  # License: GPLv3 Copyright: 2025, Kovid Goyal <kovid at kovidgoyal.net>
  
  # This module must be runnable by a vanilla python interpreter
+@@ -380,7 +380,7 @@ is used as the config file.
+ If the environment variable :envvar:`KITTY_CONFIG_DIRECTORY` is specified, that
+ directory is always used and the above searching does not happen.
+ 
+-If :file:`/etc/xdg/{appname}/{conf_name}.conf` exists, it is merged before (i.e.
++If :file:`/overlayer/syshub/etc/xdg/{appname}/{conf_name}.conf` exists, it is merged before (i.e.
+ with lower priority) than any user config files. It can be used to specify
+ system-wide defaults for all users. You can use either :code:`-` or
+ :file:`/dev/stdin` to read the config from STDIN.
 diff --git a/kitty/tab_bar.py b/kitty/tab_bar.py
 index 214c8b2..95556be 100644
 --- a/kitty/tab_bar.py
@@ -2037,7 +2145,7 @@ index a92f05c..09efe07 100644
  # To be used via a script such as
  : <<'COMMENT'
 diff --git a/setup.py b/setup.py
-index e2eee12..040b1ec 100755
+index e2eee12..b48052b 100755
 --- a/setup.py
 +++ b/setup.py
 @@ -1,4 +1,4 @@
@@ -2046,6 +2154,26 @@ index e2eee12..040b1ec 100755
  # License: GPL v3 Copyright: 2016, Kovid Goyal <kovid at kovidgoyal.net>
  
  import argparse
+@@ -393,7 +393,7 @@ def libcrypto_flags() -> Tuple[List[str], List[str]]:
+             pats = f'{v[0]}.{v[1]}', f'{v[0]}'
+             for pat in pats:
+                 q = f'opt/openssl@{pat}/lib/pkgconfig'
+-                openssl_dirs = glob.glob(f'/opt/homebrew/{q}') + glob.glob(f'/usr/local/{q}')
++                openssl_dirs = glob.glob(f'/opt/homebrew/{q}') + glob.glob(f'/overlayer/syshub/{q}')
+                 if openssl_dirs:
+                     break
+             else:
+@@ -402,8 +402,8 @@ def libcrypto_flags() -> Tuple[List[str], List[str]]:
+         cflags = pkg_config('libcrypto', '--cflags-only-I', extra_pc_dir=extra_pc_dir)
+     ldflags = pkg_config('libcrypto', '--libs', extra_pc_dir=extra_pc_dir)
+     # Workaround bug in homebrew openssl package. This bug appears in CI only
+-    if is_macos and ldflags and 'homebrew/Cellar' in ldflags[0] and not ldflags[0].endswith('/lib'):
+-        ldflags.insert(0, ldflags[0] + '/lib')
++    if is_macos and ldflags and 'homebrew/Cellar' in ldflags[0] and not ldflags[0].endswith('/overlayer/syshub/lib'):
++        ldflags.insert(0, ldflags[0] + '/overlayer/syshub/lib')
+     return cflags, ldflags
+ 
+ 
 @@ -809,7 +809,7 @@ def kitty_env(args: Options) -> Env:
      cflags.extend(pkg_config('harfbuzz', '--cflags-only-I'))
      platform_libs.extend(pkg_config('harfbuzz', '--libs'))
@@ -2101,7 +2229,7 @@ index ced297e..0c358da 100644
              # Ensure terminfo is available in sudo
              function sudo
 diff --git a/shell-integration/ssh/bootstrap-utils.sh b/shell-integration/ssh/bootstrap-utils.sh
-index 76e4668..43a9c18 100644
+index 76e4668..f94f24d 100644
 --- a/shell-integration/ssh/bootstrap-utils.sh
 +++ b/shell-integration/ssh/bootstrap-utils.sh
 @@ -1,4 +1,4 @@
@@ -2133,6 +2261,15 @@ index 76e4668..43a9c18 100644
      && login_shell_is_ok "$output"
  }
  
+@@ -178,7 +178,7 @@ if [ -n "$KITTY_SH_INJECT" ]; then
+     _ksi_safe_source() { [ -f "$1" -a -r "$1" ] || return 1; . "$1"; return 0; }
+     [ -n "$KITTY_SH_POSIX_ENV" ] && export ENV="$KITTY_SH_POSIX_ENV"
+     unset KITTY_SH_POSIX_ENV
+-    _ksi_safe_source "/etc/profile"; _ksi_safe_source "${HOME-}/.profile"
++    _ksi_safe_source "/overlayer/syshub/etc/profile"; _ksi_safe_source "${HOME-}/.profile"
+     [ -n "$ENV" ] && _ksi_safe_source "$ENV"
+     unset -f _ksi_safe_source
+ fi' > "$sh_script"
 diff --git a/shell-integration/ssh/bootstrap.py b/shell-integration/ssh/bootstrap.py
 index 1427ce3..51cfe9d 100644
 --- a/shell-integration/ssh/bootstrap.py
