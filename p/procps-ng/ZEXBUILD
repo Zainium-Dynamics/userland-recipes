@@ -1,0 +1,31 @@
+maintainer="Ali Zain <heyalizain@gmail.com>"
+pkgname=procps-ng
+pkgver=4.0.7
+pkgrel=0
+source="https://downloads.sourceforge.net/project/procps-ng/Production/procps-ng-$pkgver.tar.xz
+0001-zainium-paths.patch"
+sha256sums="9d2021f47a4501c667862c9942a92d1953694b21d11bcd1702e83eb594e3d67d  procps-ng-$pkgver.tar.xz"
+makedepends="ncurses-dev"
+
+# top, watch, vmstat, slabtop and the rest. The tools the base already has from
+# userutiles (ps, kill, free, uptime, ...) stay the base's: zex leaves those files out.
+# 0001-zainium-paths.patch is made by replant.
+build() {
+    patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    ./configure \
+        --host="$CHOST" \
+        --prefix=/overlayer/syshub \
+        --sysconfdir=/overlayer/syshub/etc \
+        --mandir=/overlayer/syshub/share/man \
+        --disable-static \
+        --disable-nls \
+        --disable-kill \
+        --without-systemd
+    make
+}
+
+package() {
+    make DESTDIR="$PAYLOAD_DIR" install
+    # developer docs only (valgrind suppressions, library notes)
+    rm -rf "$PAYLOAD_DIR/overlayer/syshub/share/doc/procps-ng"
+}
