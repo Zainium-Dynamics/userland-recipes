@@ -4,12 +4,14 @@ pkgver=0.50.0
 pkgrel=0
 source="https://github.com/kovidgoyal/kitty/releases/download/v$pkgver/kitty-$pkgver.tar.xz
 0001-zainium-paths.patch
-0002-wayland-only.patch"
-sha256sums="01f20d0b253af0a7e041394a501adc83483f2eee01faf607a933c028343ab71a  kitty-$pkgver.tar.xz"
+0002-wayland-only.patch
+https://github.com/shader-slang/slang/releases/download/v2026.14.1/slang-2026.14.1-linux-x86_64.tar.gz"
+sha256sums="01f20d0b253af0a7e041394a501adc83483f2eee01faf607a933c028343ab71a  kitty-$pkgver.tar.xz
+21f2d7847385a770e569fb61b1507a7794d742d97850bce0432bff0032ca005f  slang-2026.14.1-linux-x86_64.tar.gz"
 # Zainium's own libraries and headers where we have them; only build tools and the
 # libraries the base lacks (lcms2, xxhash, simde) come from Alpine
 needs_toolchain="gcc-musl binutils linux-headers libglvnd libglvnd-dev gettext python python-dev pixman pixman-dev glib glib-dev pcre2 pcre2-dev libffi libffi-dev expat expat-dev bzip2 bzip2-dev brotli brotli-dev libdrm libdrm-dev util-linux cairo cairo-dev harfbuzz harfbuzz-dev fontconfig fontconfig-dev freetype freetype-dev libxkbcommon libxkbcommon-dev wayland wayland-dev wayland-protocols dbus dbus-dev systemd systemd-dev libpng libpng-dev zlib zlib-dev openssl openssl-dev mesa mesa-dev ncurses ncurses-dev pkgconf"
-makedepends="go ncurses lcms2-dev lcms2-static xxhash-dev simde-dev font-nerd-fonts-symbols"
+makedepends="go ncurses gcompat libstdc++ lcms2-dev lcms2-static xxhash-dev simde-dev font-nerd-fonts-symbols"
 
 # The kitty terminal. 0001-zainium-paths.patch moves the paths kitty and its
 # kitten helper read at run time to the Zainium layout: the system config in
@@ -25,6 +27,9 @@ build() {
     # build with Zainium's own compiler, against Zainium's headers and libraries,
     # with Zainium's python
     export CC="/overlayer/syshub/bin/x86_64-zainium-linux-musl-gcc"
+    # kitty turns its .slang shaders into GLSL with slangc at build time; the version kitty's
+    # own builds use, from shader-slang's release (glibc, run through gcompat), not packaged
+    export SLANGC="$SRCDIR/bin/slangc"
     # lcms2 and xxhash are not in the base, so they are linked in statically.
     # Their headers and simde's go in a private dir, since Zainium's gcc does not look in /usr/include
     D="$SRCDIR/static-deps"
