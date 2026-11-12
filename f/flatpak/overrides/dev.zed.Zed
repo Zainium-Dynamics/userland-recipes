@@ -1,3 +1,0 @@
-[Environment]
-# Zed starts its editor on the host by default, where the runtime libraries are not
-ZED_FLATPAK_NO_ESCAPE=1
