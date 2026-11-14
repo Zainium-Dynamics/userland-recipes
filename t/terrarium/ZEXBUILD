@@ -1,9 +1,9 @@
 maintainer="Ali Zain <alizain@zainiumdynamics.tech>"
 pkgname=terrarium
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=0
 source="https://github.com/Zainium-Dynamics/terrarium/archive/refs/tags/v$pkgver.tar.gz"
-sha256sums="8a37bc74b21780e21f8f4558612cd6e67a834d4b034f77883522dc8a0dbee763  v$pkgver.tar.gz"
+sha256sums="657df9631b47b18083f6dc370b37fdaa336e693582c3d8377050ff5b23026617  v$pkgver.tar.gz"
 # Zainium's own Go: its standard library reads resolv.conf and the CA certificates from
 # /overlayer/syshub/etc, so the module download finds DNS and TLS
 needs_toolchain="go"
