@@ -1,6 +1,6 @@
 [package]
 name             = "terrarium"
-version          = "0.1.0"
+version          = "0.1.1"
 description      = "Puts an installed Zainium OS on a USB drive, straight from the ISO: it starts any computer, UEFI or BIOS, keeps your files and can be encrypted"
 license          = "GPL-3.0"
 maintainer       = "Ali Zain <alizain@zainiumdynamics.tech>"
