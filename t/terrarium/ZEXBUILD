@@ -1,0 +1,35 @@
+maintainer="Ali Zain <alizain@zainiumdynamics.tech>"
+pkgname=terrarium
+pkgver=0.1.0
+pkgrel=0
+source="https://github.com/Zainium-Dynamics/terrarium/archive/refs/tags/v$pkgver.tar.gz"
+sha256sums="8a37bc74b21780e21f8f4558612cd6e67a834d4b034f77883522dc8a0dbee763  v$pkgver.tar.gz"
+# Zainium's own Go: its standard library reads resolv.conf and the CA certificates from
+# /overlayer/syshub/etc, so the module download finds DNS and TLS
+needs_toolchain="go"
+
+# terrarium puts an installed Zainium OS on a USB drive, straight from the ISO. A static Go
+# program: the tools it runs (mkfs.ext4, e2image, cryptsetup, limine) come from the ISO.
+build() {
+    cd "$SRCDIR/terrarium-$pkgver"
+    # Zainium's Go looks for DNS and CA certificates under /overlayer/syshub/etc.
+    # The build machine is Alpine, so give it the build machine's own (not packaged)
+    mkdir -p /overlayer/syshub/etc/ssl/certs
+    [ -e /overlayer/syshub/etc/resolv.conf ] || cp /etc/resolv.conf /overlayer/syshub/etc/resolv.conf
+    [ -e /overlayer/syshub/etc/ssl/certs/ca-certificates.crt ] ||
+        cp /etc/ssl/certs/ca-certificates.crt /overlayer/syshub/etc/ssl/certs/ca-certificates.crt
+    export GOROOT=/overlayer/syshub/lib/go
+    export PATH="$GOROOT/bin:$PATH"
+    export GOTOOLCHAIN=local CGO_ENABLED=0 GOFLAGS=-trimpath
+    export GOPATH="$SRCDIR/gopath" GOCACHE="$SRCDIR/gocache"
+    # the resolver path proves the build used Zainium's Go, not Alpine's
+    grep -q '/overlayer/syshub/etc/resolv.conf' "$GOROOT/src/net/dnsclient_unix.go"
+    go build -ldflags "-s -w" -o build/terrarium ./cmd/terrarium
+}
+
+package() {
+    cd "$SRCDIR/terrarium-$pkgver"
+    install -Dm755 build/terrarium "$PAYLOAD_DIR/bin/terrarium"
+    install -Dm644 README "$PAYLOAD_DIR/share/doc/terrarium/README"
+    install -Dm644 LICENSE "$PAYLOAD_DIR/share/licenses/terrarium/LICENSE"
+}
