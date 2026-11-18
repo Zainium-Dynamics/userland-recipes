@@ -1,0 +1,21 @@
+maintainer="Ali Zain <alizain@zainiumdynamics.tech>"
+pkgname=just
+pkgver=1.59.0
+pkgrel=0
+source="https://github.com/casey/just/archive/refs/tags/$pkgver.tar.gz"
+sha256sums="20f876880851f1cc67fc7eb7589c7f7ccaa7612d827feac75797cf4a6ed729aa  $pkgver.tar.gz"
+makedepends="cargo"
+
+# A command runner. replant finds FHS paths only in tests and the project's own dev
+# scripts; at run time just finds sh through PATH, so no patch is needed.
+build() {
+    cargo build --release --locked --target x86_64-unknown-linux-musl
+}
+
+package() {
+    local bin=target/x86_64-unknown-linux-musl/release/just
+    install -Dm755 "$bin" "$PAYLOAD_DIR/bin/just"
+    install -Dm644 completions/just.bash "$PAYLOAD_DIR/share/bash-completion/completions/just"
+    install -Dm644 completions/just.zsh "$PAYLOAD_DIR/share/zsh/site-functions/_just"
+    install -Dm644 completions/just.fish "$PAYLOAD_DIR/share/fish/vendor_completions.d/just.fish"
+}
