@@ -1,0 +1,38 @@
+maintainer="alizainx <heyalizain@gmail.com>"
+pkgname=graphite2
+pkgver=1.3.15
+pkgrel=0
+subpackages="graphite2-dev"
+source="https://github.com/silnrsi/graphite/releases/download/$pkgver/graphite2-$pkgver.tgz"
+sha256sums="c6bc8b4252724665297f7cad0c55897285c673f9b8e6db3522ace833593fe0b1  graphite2-$pkgver.tgz"
+# ninja from Alpine (Zainium has no ninja yet); cmake is Zainium's own, with the libraries it needs
+makedepends="samurai"
+needs_toolchain="cmake curl libarchive acl lz4 bzip2 xz zlib gcc-musl"
+
+# Font rendering for complex scripts (SIL Graphite), used by HarfBuzz and TeX engines.
+# replant finds FHS paths only in the Debian packaging and Python helper scripts.
+build() {
+    cd graphite2-$pkgver
+    /overlayer/syshub/bin/cmake -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/overlayer/syshub \
+        -DBUILD_TESTING=OFF \
+        -DBUILD_SHARED_LIBS=ON
+    ninja -C build
+    DESTDIR="$(pwd)/_zexbuild-install" ninja -C build install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib"
+    cp -P "$inst"/lib/libgraphite2.so.* "$PAYLOAD_DIR/lib/"
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig" "$PAYLOAD_DIR/share"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/libgraphite2.so "$PAYLOAD_DIR/lib/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+    cp -a "$inst"/share/graphite2 "$PAYLOAD_DIR/share/"
+}
