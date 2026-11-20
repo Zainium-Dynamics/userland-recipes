@@ -1,0 +1,73 @@
+--- a/source/common/putil.cpp
++++ b/source/common/putil.cpp
+@@ -685,11 +685,11 @@
+ #if !UCONFIG_NO_FILE_IO && ((U_PLATFORM_IS_DARWIN_BASED && (U_PLATFORM != U_PF_IPHONE || defined(U_TIMEZONE))) || U_PLATFORM_IS_LINUX_BASED || U_PLATFORM == U_PF_BSD || U_PLATFORM == U_PF_SOLARIS)
+ /* These platforms are likely to use Olson timezone IDs. */
+ /* common targets of the symbolic link at TZDEFAULT are:
+- * "/usr/share/zoneinfo/<olsonID>" default, older Linux distros, macOS to 10.12
++ * "/overlayer/syshub/share/zoneinfo/<olsonID>" default, older Linux distros, macOS to 10.12
+  * "../usr/share/zoneinfo/<olsonID>" newer Linux distros: Red Hat Enterprise Linux 7, Ubuntu 16, SuSe Linux 12
+- * "/usr/share/lib/zoneinfo/<olsonID>" Solaris
++ * "/overlayer/syshub/share/lib/zoneinfo/<olsonID>" Solaris
+  * "../usr/share/lib/zoneinfo/<olsonID>" Solaris
+- * "/var/db/timezone/zoneinfo/<olsonID>" macOS 10.13
++ * "/overlayer/syshub/var/db/timezone/zoneinfo/<olsonID>" macOS 10.13
+  * To avoid checking lots of paths, just check that the target path
+  * before the <olsonID> ends with "/zoneinfo/", and the <olsonID> is valid.
+  */
+@@ -699,18 +699,18 @@
+ #include <tzfile.h>
+ #define TZZONEINFO      (TZDIR "/")
+ #elif U_PLATFORM == U_PF_SOLARIS
+-#define TZDEFAULT       "/etc/localtime"
++#define TZDEFAULT       "/overlayer/syshub/etc/localtime"
+-#define TZZONEINFO      "/usr/share/lib/zoneinfo/"
++#define TZZONEINFO      "/overlayer/syshub/share/lib/zoneinfo/"
+ #define TZ_ENV_CHECK    "localtime"
+ #else
+-#define TZDEFAULT       "/etc/localtime"
++#define TZDEFAULT       "/overlayer/syshub/etc/localtime"
+-#define TZZONEINFO      "/usr/share/zoneinfo/"
++#define TZZONEINFO      "/overlayer/syshub/share/zoneinfo/"
+ #endif
+ #define TZZONEINFOTAIL  "/zoneinfo/"
+ #if U_HAVE_DIRENT_H
+ #define TZFILE_SKIP     "posixrules" /* tz file to skip when searching. */
+-/* Some Linux distributions have 'localtime' in /usr/share/zoneinfo
++/* Some Linux distributions have 'localtime' in /overlayer/syshub/share/zoneinfo
+-   symlinked to /etc/localtime, which makes searchForTZFile return
++   symlinked to /overlayer/syshub/etc/localtime, which makes searchForTZFile return
+    'localtime' when it's the first match. */
+ #define TZFILE_SKIP2    "localtime"
+ #define SEARCH_TZFILE
+@@ -752,12 +752,12 @@
+ }
+ 
+ /* On some Unix-like OS, 'posix' subdirectory in
+-   /usr/share/zoneinfo replicates the top-level contents. 'right'
++   /overlayer/syshub/share/zoneinfo replicates the top-level contents. 'right'
+    subdirectory has the same set of files, but individual files
+    are different from those in the top-level directory or 'posix'
+    because 'right' has files for TAI (Int'l Atomic Time) while 'posix'
+    has files for UTC.
+-   When the first match for /etc/localtime is in either of them
++   When the first match for /overlayer/syshub/etc/localtime is in either of them
+    (usually in posix because 'right' has different file contents),
+    or TZ environment variable points to one of them, createTimeZone
+    fails because, say, 'posix/America/New_York' is not an Olson
+@@ -1190,12 +1190,12 @@
+             int32_t tzZoneInfoTailLen = uprv_strlen(TZZONEINFOTAIL);
+             const char *tzZoneInfoTailPtr = uprv_strstr(gTimeZoneBuffer, TZZONEINFOTAIL);
+             // MacOS14 has the realpath as something like
+-            // /usr/share/zoneinfo.default/Australia/Melbourne
++            // /overlayer/syshub/share/zoneinfo.default/Australia/Melbourne
+             // which will not have "/zoneinfo/" in the path.
+             // Therefore if we fail, we fall back to read the link which is
+-            // /var/db/timezone/zoneinfo/Australia/Melbourne
++            // /overlayer/syshub/var/db/timezone/zoneinfo/Australia/Melbourne
+             // We also fall back to reading the link if the realpath leads to something like
+-            // /usr/share/zoneinfo/posixrules
++            // /overlayer/syshub/share/zoneinfo/posixrules
+             if (tzZoneInfoTailPtr == nullptr ||
+                     uprv_strcmp(tzZoneInfoTailPtr + tzZoneInfoTailLen, "posixrules") == 0) {
+                 ssize_t size = readlink(TZDEFAULT, gTimeZoneBuffer, sizeof(gTimeZoneBuffer)-1);

@@ -1,0 +1,43 @@
+maintainer="alizainx <heyalizain@gmail.com>"
+pkgname=icu
+pkgver=79.1
+pkgrel=0
+subpackages="icu-dev"
+source="https://github.com/unicode-org/icu/releases/download/release-$pkgver/icu4c-$pkgver-sources.tgz
+0001-zainium-paths.patch"
+sha256sums="06fa63ecb521048f8082f12ad988f6b678d90cbd88aafce24cbc94902b191d99  icu4c-$pkgver-sources.tgz"
+
+# 0001-zainium-paths.patch is made by replant and kept to source/common/putil.cpp: the time
+# zone files ICU reads at run time (/etc/localtime, /usr/share/zoneinfo). The other hits are
+# tests and build scripts.
+build() {
+    cd icu
+    patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
+    cd source
+    ./configure \
+        --prefix=/overlayer/syshub \
+        --libdir=/overlayer/syshub/lib \
+        --sysconfdir=/overlayer/syshub/etc \
+        --disable-samples \
+        --disable-tests \
+        --disable-static
+    make -j"$(nproc)"
+    make DESTDIR="$(pwd)/_zexbuild-install" install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/bin" "$PAYLOAD_DIR/lib"
+    cp -a "$inst"/bin/. "$PAYLOAD_DIR/bin/"
+    rm -f "$PAYLOAD_DIR/bin/icu-config"
+    cp -P "$inst"/lib/libicu*.so.* "$PAYLOAD_DIR/lib/"
+    [ -d "$inst/share/icu" ] && mkdir -p "$PAYLOAD_DIR/share" && cp -a "$inst/share/icu" "$PAYLOAD_DIR/share/"
+}
+
+dev() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    cp -P "$inst"/lib/libicu*.so "$PAYLOAD_DIR/lib/"
+    cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+}
