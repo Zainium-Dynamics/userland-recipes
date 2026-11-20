@@ -11,7 +11,10 @@ sha256sums="06fa63ecb521048f8082f12ad988f6b678d90cbd88aafce24cbc94902b191d99  ic
 # zone files ICU reads at run time (/etc/localtime, /usr/share/zoneinfo). The other hits are
 # tests and build scripts.
 build() {
-    # CI starts in the source tree (icu/)
+    # CI only unpacks *.tar.*; this is a .tgz
+    cd "$SRCDIR"
+    tar xzf "icu4c-$pkgver-sources.tgz"
+    cd icu
     patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
     cd source
     ./configure \
