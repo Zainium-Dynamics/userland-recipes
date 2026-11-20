@@ -19,13 +19,15 @@ build() {
     cd icu
     patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
     cd source
+    # archive: ICU's data is a .dat file in share/icu instead of assembly built into a library
     ./configure \
         --prefix=/overlayer/syshub \
         --libdir=/overlayer/syshub/lib \
         --sysconfdir=/overlayer/syshub/etc \
         --disable-samples \
         --disable-tests \
-        --disable-static
+        --disable-static \
+        --with-data-packaging=archive
     make -j"$(nproc)"
     make DESTDIR="$(pwd)/_zexbuild-install" install
 }
