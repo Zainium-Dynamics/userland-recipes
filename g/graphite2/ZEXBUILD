@@ -7,11 +7,15 @@ source="https://github.com/silnrsi/graphite/releases/download/$pkgver/graphite2-
 sha256sums="c6bc8b4252724665297f7cad0c55897285c673f9b8e6db3522ace833593fe0b1  graphite2-$pkgver.tgz"
 # ninja from Alpine (Zainium has no ninja yet); cmake is Zainium's own, with the libraries it needs
 makedepends="samurai"
-needs_toolchain="cmake curl libarchive acl lz4 bzip2 xz zlib gcc-musl"
+needs_toolchain="cmake curl libarchive acl bzip2 expat lz4 nghttp2 openssl xz zlib zstd gcc-musl"
 
 # Font rendering for complex scripts (SIL Graphite), used by HarfBuzz and TeX engines.
 # replant finds FHS paths only in the Debian packaging and Python helper scripts.
 build() {
+    # CI only unpacks *.tar.*; this is a .tgz
+    cd "$SRCDIR"
+    tar xzf "graphite2-$pkgver.tgz"
+    cd "graphite2-$pkgver"
     /overlayer/syshub/bin/cmake -B build -G Ninja \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/overlayer/syshub \
