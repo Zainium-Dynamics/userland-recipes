@@ -12,7 +12,6 @@ needs_toolchain="cmake curl libarchive acl lz4 bzip2 xz zlib gcc-musl"
 # Font rendering for complex scripts (SIL Graphite), used by HarfBuzz and TeX engines.
 # replant finds FHS paths only in the Debian packaging and Python helper scripts.
 build() {
-    cd graphite2-$pkgver
     /overlayer/syshub/bin/cmake -B build -G Ninja \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/overlayer/syshub \
