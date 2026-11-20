@@ -1,0 +1,31 @@
+[package]
+name             = "graphite2-dev"
+version          = "1.3.15"
+description      = "graphite2 headers, pkgconfig, cmake files"
+license          = "LGPL-2.1-or-later OR MPL-2.0 OR GPL-2.0-or-later"
+maintainer       = "alizainx <heyalizain@gmail.com>"
+homepage         = "https://graphite.sil.org"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["graphite2"]
+provides         = ["graphite2-dev"]
+tags             = ["library", "fonts", "dev"]
+
+[install]
+include = "/overlayer/zexlib/union/include"
+lib     = "/overlayer/zexlib/union/lib"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
