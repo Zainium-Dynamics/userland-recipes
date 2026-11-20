@@ -6,6 +6,8 @@ subpackages="icu-dev"
 source="https://github.com/unicode-org/icu/releases/download/release-$pkgver/icu4c-$pkgver-sources.tgz
 0001-zainium-paths.patch"
 sha256sums="06fa63ecb521048f8082f12ad988f6b678d90cbd88aafce24cbc94902b191d99  icu4c-$pkgver-sources.tgz"
+# libstdc++ and libgcc_s: ICU runs its own C++ tools (icupkg, genrb) during the build
+needs_toolchain="gcc-musl"
 
 # 0001-zainium-paths.patch is made by replant and kept to source/common/putil.cpp: the time
 # zone files ICU reads at run time (/etc/localtime, /usr/share/zoneinfo). The other hits are
