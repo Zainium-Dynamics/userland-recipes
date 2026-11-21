@@ -1,0 +1,24 @@
+maintainer="alizainx <heyalizain@gmail.com>"
+pkgname=tectonic
+pkgver=0.17.0
+pkgrel=0
+source="https://github.com/tectonic-typesetting/tectonic/archive/refs/tags/tectonic@$pkgver.zip"
+sha256sums="1f45b501f1c197ee94c0d096aa7735d34a782c8ec93d6466d89dadbe8c77a956  tectonic@$pkgver.zip"
+makedepends="cargo pkgconf"
+# the C libraries tectonic's bridges find with pkg-config, and libstdc++ for its C++ parts
+needs_toolchain="icu icu-dev graphite2 graphite2-dev harfbuzz harfbuzz-dev freetype freetype-dev fontconfig fontconfig-dev expat libpng libpng-dev openssl openssl-dev zlib zlib-dev gcc-musl"
+
+# A self-contained LaTeX engine (XeTeX based) that fetches the TeX packages a document needs.
+# replant finds no FHS path in code that runs, so there is no paths patch.
+build() {
+    # CI only unpacks *.tar.*; this is a .zip
+    cd "$SRCDIR"
+    unzip -q "tectonic@$pkgver.zip"
+    cd "tectonic-tectonic-$pkgver"
+    export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig:/overlayer/syshub/share/pkgconfig"
+    cargo build --release --locked --target x86_64-unknown-linux-musl
+}
+
+package() {
+    install -Dm755 target/x86_64-unknown-linux-musl/release/tectonic "$PAYLOAD_DIR/bin/tectonic"
+}
