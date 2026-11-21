@@ -1,0 +1,28 @@
+maintainer="alizainx <heyalizain@gmail.com>"
+pkgname=xcb-proto
+pkgver=1.17.0
+pkgrel=0
+source="https://www.x.org/releases/individual/proto/xcb-proto-$pkgver.tar.xz"
+sha256sums="2c1bacd2110f4799f74de6ebb714b94cf6f80fb112316b1219480fd22562148c  xcb-proto-$pkgver.tar.xz"
+makedepends="pkgconf python3"
+
+# The XML descriptions of the X C Binding and the Python generator libxcb builds from.
+# Build-time only, so it lives in the userland.
+build() {
+    PYTHON=/overlayer/syshub/bin/python3 ./configure \
+        --prefix=/overlayer/syshub --libdir=/overlayer/syshub/lib \
+        --datadir=/overlayer/syshub/share
+    make
+    make DESTDIR="$(pwd)/_zexbuild-install" install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    cp -a "$inst"/. "$PAYLOAD_DIR/"
+    rm -rf "$PAYLOAD_DIR/share/doc" "$PAYLOAD_DIR/share/man"
+    find "$PAYLOAD_DIR" -type f | while read -r f; do
+        grep -q '/usr' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
+}
