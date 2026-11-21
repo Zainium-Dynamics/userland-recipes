@@ -32,6 +32,14 @@ build() {
     unzip -q "tectonic@$pkgver.zip"
     cd "tectonic-tectonic-$pkgver"
 
+    # the tag's zip has no git submodules: fetch the bundled HarfBuzz at the commit tectonic pins.
+    # Zainium's own harfbuzz is built without graphite2, which XeTeX needs.
+    local hb=894a1f72ee93a1fd8dc1d9218cb3fd8f048be29a
+    wget -qO /tmp/harfbuzz.tar.gz "https://codeload.github.com/harfbuzz/harfbuzz/tar.gz/$hb"
+    tar xzf /tmp/harfbuzz.tar.gz -C crates/bridge_harfbuzz
+    rmdir crates/bridge_harfbuzz/harfbuzz 2>/dev/null || true
+    mv "crates/bridge_harfbuzz/harfbuzz-$hb" crates/bridge_harfbuzz/harfbuzz
+
     # Zainium's cargo and rustc, not the rustup ones the CI image has on PATH
     unset RUSTUP_TOOLCHAIN
     export CARGO="$sysroot/bin/cargo" RUSTC="$sysroot/bin/rustc"
