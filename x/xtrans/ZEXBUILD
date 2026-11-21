@@ -1,0 +1,29 @@
+maintainer="alizainx <heyalizain@gmail.com>"
+pkgname=xtrans
+pkgver=1.5.2
+pkgrel=0
+source="https://www.x.org/releases/individual/lib/xtrans-$pkgver.tar.xz"
+sha256sums="5c5cbfe34764a9131d048f03c31c19e57fb4c682d67713eab6a65541b4dff86c  xtrans-$pkgver.tar.xz"
+makedepends="pkgconf"
+
+# X network transport macros: headers only, build-time, so it lives in the userland.
+build() {
+    ./configure --prefix=/overlayer/syshub --libdir=/overlayer/syshub/lib \
+        --includedir=/overlayer/syshub/include --datadir=/overlayer/syshub/share
+    make
+    make DESTDIR="$(pwd)/_zexbuild-install" install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/include" "$PAYLOAD_DIR/lib/pkgconfig" "$PAYLOAD_DIR/share"
+    cp -a "$inst"/include/. "$PAYLOAD_DIR/include/"
+    [ -d "$inst/lib/pkgconfig" ] && cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+    [ -d "$inst/share/pkgconfig" ] && mkdir -p "$PAYLOAD_DIR/share/pkgconfig" && cp -a "$inst"/share/pkgconfig/. "$PAYLOAD_DIR/share/pkgconfig/"
+    rm -rf "$PAYLOAD_DIR/share/doc" "$PAYLOAD_DIR/share/man"
+    find "$PAYLOAD_DIR" -type f | while read -r f; do
+        grep -q '/usr' "$f" || continue
+        tr -d '\000' < "$f" | cmp -s - "$f" || continue
+        sed -i -e 's#/usr/local#/overlayer/syshub#g' -e 's#/usr/#/overlayer/syshub/#g' "$f"
+    done
+}
