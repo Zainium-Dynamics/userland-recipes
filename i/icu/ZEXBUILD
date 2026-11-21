@@ -28,8 +28,10 @@ build() {
         --disable-tests \
         --disable-static \
         --with-data-packaging=archive
-    # data/ races under -j (out/tmp may not exist yet): finish what is left one job at a time
-    make -j"$(nproc)" || make -j1
+    # with archive data already in the native format, data/Makefile writes out/tmp/icudata.lst
+    # without creating out/tmp first
+    mkdir -p data/out/tmp
+    make -j"$(nproc)"
     make DESTDIR="$(pwd)/_zexbuild-install" install
 }
 
