@@ -1,0 +1,29 @@
+[package]
+name             = "tectonic"
+version          = "0.17.0"
+description      = "A modern, self-contained LaTeX engine"
+license          = "MIT"
+maintainer       = "alizainx <heyalizain@gmail.com>"
+homepage         = "https://tectonic-typesetting.github.io"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl", "icu", "graphite2", "harfbuzz", "freetype", "fontconfig", "libpng", "openssl", "zlib", "gcc-musl"]
+provides         = ["tectonic", "latex"]
+tags             = ["latex", "tex", "documents", "cli"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
