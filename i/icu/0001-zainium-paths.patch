@@ -71,3 +71,25 @@
              if (tzZoneInfoTailPtr == nullptr ||
                      uprv_strcmp(tzZoneInfoTailPtr + tzZoneInfoTailLen, "posixrules") == 0) {
                  ssize_t size = readlink(TZDEFAULT, gTimeZoneBuffer, sizeof(gTimeZoneBuffer)-1);
+--- a/source/common/unicode/ucat.h
++++ b/source/common/unicode/ucat.h
+@@ -78,7 +78,7 @@
+  *
+  * @param name string containing the full path pointing to the
+  * directory where the resources reside followed by the package name
+- * e.g. "/usr/resource/my_app/resources/guimessages" on a Unix system.
++ * e.g. "/overlayer/syshub/resource/my_app/resources/guimessages" on a Unix system.
+  * If NULL, ICU default data files will be used.
+  *
+  * Unlike POSIX, environment variables are not interpolated within the
+--- a/source/common/unicode/usprep.h
++++ b/source/common/unicode/usprep.h
+@@ -174,7 +174,7 @@
+  *
+  * @param path      string containing the full path pointing to the directory
+  *                  where the profile reside followed by the package name
+- *                  e.g. "/usr/resource/my_app/profiles/mydata" on a Unix system.
++ *                  e.g. "/overlayer/syshub/resource/my_app/profiles/mydata" on a Unix system.
+  *                  if NULL, ICU default data files will be used.
+  * @param fileName  name of the profile file to be opened
+  * @param status    ICU error code in/out parameter. Must not be NULL.

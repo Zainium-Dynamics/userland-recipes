@@ -9,8 +9,9 @@ sha256sums="06fa63ecb521048f8082f12ad988f6b678d90cbd88aafce24cbc94902b191d99  ic
 # libstdc++ and libgcc_s: ICU runs its own C++ tools (icupkg, genrb) during the build
 needs_toolchain="gcc-musl"
 
-# 0001-zainium-paths.patch is made by replant and kept to source/common/putil.cpp: the time
-# zone files ICU reads at run time (/etc/localtime, /usr/share/zoneinfo). The other hits are
+# 0001-zainium-paths.patch is made by replant and kept to the files that get installed:
+# source/common/putil.cpp (the time zone files ICU reads at run time, /etc/localtime and
+# /usr/share/zoneinfo) and two public headers whose comments name /usr. The other hits are
 # tests and build scripts.
 build() {
     # CI only unpacks *.tar.*; this is a .tgz
