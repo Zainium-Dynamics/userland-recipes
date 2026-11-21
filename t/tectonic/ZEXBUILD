@@ -45,10 +45,16 @@ build() {
     export CARGO_TARGET_X86_64_ZAINIUM_LINUX_MUSL_LINKER="$gcc"
     export RUSTFLAGS="-C target-feature=-crt-static -C link-arg=-B$gcc_prefix -C link-arg=-L$sysroot/lib"
 
-    # Zainium's cargo on the Alpine host: the CA bundle is at Alpine's path, not Zainium's, and
-    # crates.io downloads stalled at 0 bytes over multiplexed HTTP/2
-    export CARGO_HTTP_CAINFO=/etc/ssl/certs/ca-certificates.crt SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-    export CARGO_HTTP_MULTIPLEXING=false CARGO_NET_RETRY=10
+    # Zainium's cargo runs on Zainium's musl, which reads resolv.conf, hosts and the CA bundle
+    # from /overlayer/syshub/etc; the Alpine CI host has them only in /etc, so without these
+    # copies cargo could not resolve index.crates.io
+    mkdir -p "$sysroot/etc/ssl/certs"
+    for f in resolv.conf hosts; do
+        [ -e "$sysroot/etc/$f" ] || cp /etc/$f "$sysroot/etc/$f"
+    done
+    [ -e "$sysroot/etc/ssl/certs/ca-certificates.crt" ] ||
+        cp /etc/ssl/certs/ca-certificates.crt "$sysroot/etc/ssl/certs/ca-certificates.crt"
+    export CARGO_NET_RETRY=10
     "$CARGO" fetch --locked
     "$CARGO" build --release --locked --target "$triple"
 }
