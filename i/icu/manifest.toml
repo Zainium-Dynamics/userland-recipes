@@ -1,0 +1,31 @@
+[package]
+name             = "icu"
+version          = "79.1"
+description      = "International Components for Unicode"
+license          = "Unicode-3.0"
+maintainer       = "alizainx <heyalizain@gmail.com>"
+homepage         = "https://icu.unicode.org"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["icu"]
+tags             = ["library", "unicode"]
+
+[install]
+bin     = "/overlayer/zexlib/union/bin"
+lib     = "/overlayer/zexlib/union/lib"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
