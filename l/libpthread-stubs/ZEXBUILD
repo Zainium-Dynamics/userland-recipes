@@ -1,0 +1,23 @@
+maintainer="alizainx <heyalizain@gmail.com>"
+pkgname=libpthread-stubs
+pkgver=0.5
+pkgrel=0
+source="https://www.x.org/releases/individual/lib/libpthread-stubs-$pkgver.tar.xz"
+sha256sums="59da566decceba7c2a7970a4a03b48d9905f1262ff94410a649224e33d2442bc  libpthread-stubs-$pkgver.tar.xz"
+makedepends="pkgconf"
+
+# A pkg-config file so libxcb and friends can link pthread portably. On Linux musl there is
+# no real library; it is build-time only, so it lives in the userland.
+build() {
+    ./configure --prefix=/overlayer/syshub --libdir=/overlayer/syshub/lib \
+        --datadir=/overlayer/syshub/share
+    make
+    make DESTDIR="$(pwd)/_zexbuild-install" install
+}
+
+package() {
+    local inst="_zexbuild-install/overlayer/syshub"
+    mkdir -p "$PAYLOAD_DIR/lib/pkgconfig"
+    [ -d "$inst/lib/pkgconfig" ] && cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+    [ -d "$inst/share/pkgconfig" ] && mkdir -p "$PAYLOAD_DIR/share/pkgconfig" && cp -a "$inst"/share/pkgconfig/. "$PAYLOAD_DIR/share/pkgconfig/"
+}
