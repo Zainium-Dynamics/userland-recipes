@@ -5,8 +5,9 @@ pkgrel=0
 source="https://github.com/tectonic-typesetting/tectonic/archive/refs/tags/tectonic@$pkgver.zip"
 sha256sums="1f45b501f1c197ee94c0d096aa7735d34a782c8ec93d6466d89dadbe8c77a956  tectonic@$pkgver.zip"
 # everything from Zainium: rustc and cargo (with what they need to run), pkgconf, gcc-musl as
-# the C/C++ compiler and linker, and the libraries tectonic's bridges find with pkg-config
-needs_toolchain="rustc cargo llvm libffi libxml2 xz ncurses zstd curl nghttp2 pkgconf gcc-musl binutils icu icu-dev graphite2 graphite2-dev harfbuzz harfbuzz-dev freetype freetype-dev fontconfig fontconfig-dev expat libpng libpng-dev openssl openssl-dev zlib zlib-dev"
+# the C/C++ compiler and linker, and the libraries tectonic's bridges find with pkg-config,
+# with everything their .pc files require (glib, pcre2, libffi, bzip2, brotli, expat)
+needs_toolchain="rustc cargo llvm libffi libffi-dev libxml2 xz ncurses zstd curl nghttp2 pkgconf gcc-musl binutils icu icu-dev graphite2 graphite2-dev harfbuzz harfbuzz-dev glib glib-dev pcre2 pcre2-dev freetype freetype-dev bzip2 bzip2-dev brotli brotli-dev fontconfig fontconfig-dev expat expat-dev libpng libpng-dev openssl openssl-dev zlib zlib-dev"
 
 # A self-contained LaTeX engine (XeTeX based) that fetches the TeX packages a document needs.
 # replant finds no FHS path in code that runs, so there is no paths patch.
@@ -45,15 +46,6 @@ build() {
     export CARGO_TARGET_X86_64_ZAINIUM_LINUX_MUSL_LINKER="$gcc"
     export RUSTFLAGS="-C target-feature=-crt-static -C link-arg=-B$gcc_prefix -C link-arg=-L$sysroot/lib"
 
-    # Zainium's cargo runs on Zainium's musl, which reads resolv.conf, hosts and the CA bundle
-    # from /overlayer/syshub/etc; the Alpine CI host has them only in /etc, so without these
-    # copies cargo could not resolve index.crates.io
-    mkdir -p "$sysroot/etc/ssl/certs"
-    for f in resolv.conf hosts; do
-        [ -e "$sysroot/etc/$f" ] || cp /etc/$f "$sysroot/etc/$f"
-    done
-    [ -e "$sysroot/etc/ssl/certs/ca-certificates.crt" ] ||
-        cp /etc/ssl/certs/ca-certificates.crt "$sysroot/etc/ssl/certs/ca-certificates.crt"
     export CARGO_NET_RETRY=10
     "$CARGO" fetch --locked
     "$CARGO" build --release --locked --target "$triple"
