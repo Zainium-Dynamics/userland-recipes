@@ -4,21 +4,50 @@ pkgver=0.17.0
 pkgrel=0
 source="https://github.com/tectonic-typesetting/tectonic/archive/refs/tags/tectonic@$pkgver.zip"
 sha256sums="1f45b501f1c197ee94c0d096aa7735d34a782c8ec93d6466d89dadbe8c77a956  tectonic@$pkgver.zip"
-makedepends="cargo pkgconf"
-# the C libraries tectonic's bridges find with pkg-config, and libstdc++ for its C++ parts
-needs_toolchain="icu icu-dev graphite2 graphite2-dev harfbuzz harfbuzz-dev freetype freetype-dev fontconfig fontconfig-dev expat libpng libpng-dev openssl openssl-dev zlib zlib-dev gcc-musl"
+# everything from Zainium: rustc and cargo (with what they need to run), pkgconf, gcc-musl as
+# the C/C++ compiler and linker, and the libraries tectonic's bridges find with pkg-config
+needs_toolchain="rustc cargo llvm libffi libxml2 xz ncurses zstd curl nghttp2 pkgconf gcc-musl binutils icu icu-dev graphite2 graphite2-dev harfbuzz harfbuzz-dev freetype freetype-dev fontconfig fontconfig-dev expat libpng libpng-dev openssl openssl-dev zlib zlib-dev"
 
 # A self-contained LaTeX engine (XeTeX based) that fetches the TeX packages a document needs.
 # replant finds no FHS path in code that runs, so there is no paths patch.
 build() {
+    local sysroot=/overlayer/syshub
+    local triple=x86_64-zainium-linux-musl
+    local gccver gcc_prefix gcc
+    gccver="$(ls "$sysroot/lib/gcc/$triple" | head -1)"
+    gcc_prefix="$sysroot/lib/gcc/$triple/$gccver/"
+    gcc="$sysroot/bin/$triple-gcc"
+
+    # the C++ bridges link -lstdc++, which needs the unversioned link
+    for pair in "libstdc++.so.6:libstdc++.so.6.0.*" "libstdc++.so:libstdc++.so.6.0.*"; do
+        link="${pair%%:*}"
+        [ -e "$sysroot/lib/$link" ] && continue
+        real="$(ls "$sysroot"/lib/${pair#*:} 2>/dev/null | grep -v -e '-gdb.py' | head -1)"
+        [ -n "$real" ] && ln -s "$(basename "$real")" "$sysroot/lib/$link"
+    done
+
     # CI only unpacks *.tar.*; this is a .zip
     cd "$SRCDIR"
     unzip -q "tectonic@$pkgver.zip"
     cd "tectonic-tectonic-$pkgver"
-    export PKG_CONFIG_PATH="/overlayer/syshub/lib/pkgconfig:/overlayer/syshub/share/pkgconfig"
-    cargo build --release --locked --target x86_64-unknown-linux-musl
+
+    # Zainium's cargo and rustc, not the rustup ones the CI image has on PATH
+    unset RUSTUP_TOOLCHAIN
+    export CARGO="$sysroot/bin/cargo" RUSTC="$sysroot/bin/rustc"
+    export PKG_CONFIG="$sysroot/bin/pkgconf" PKG_CONFIG_ALLOW_CROSS=1
+    export PKG_CONFIG_PATH="$sysroot/lib/pkgconfig:$sysroot/share/pkgconfig"
+    export OPENSSL_DIR="$sysroot" OPENSSL_LIB_DIR="$sysroot/lib" OPENSSL_INCLUDE_DIR="$sysroot/include"
+    export CC_x86_64_zainium_linux_musl="$gcc"
+    export CXX_x86_64_zainium_linux_musl="$sysroot/bin/$triple-g++"
+    export AR_x86_64_zainium_linux_musl="$sysroot/bin/$triple-ar"
+    export CFLAGS_x86_64_zainium_linux_musl="-O2 -pipe -fPIC -B$gcc_prefix -I$sysroot/include"
+    export CXXFLAGS_x86_64_zainium_linux_musl="-O2 -pipe -fPIC -B$gcc_prefix -I$sysroot/include"
+    export CARGO_TARGET_X86_64_ZAINIUM_LINUX_MUSL_LINKER="$gcc"
+    export RUSTFLAGS="-C target-feature=-crt-static -C link-arg=-B$gcc_prefix -C link-arg=-L$sysroot/lib"
+
+    "$CARGO" build --release --locked --target "$triple"
 }
 
 package() {
-    install -Dm755 target/x86_64-unknown-linux-musl/release/tectonic "$PAYLOAD_DIR/bin/tectonic"
+    install -Dm755 target/x86_64-zainium-linux-musl/release/tectonic "$PAYLOAD_DIR/bin/tectonic"
 }
