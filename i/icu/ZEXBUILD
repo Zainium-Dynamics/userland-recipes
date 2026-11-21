@@ -19,12 +19,14 @@ build() {
     cd icu
     patch -p1 < "$SRCDIR/0001-zainium-paths.patch"
     cd source
-    # archive: ICU's data is a .dat file in share/icu instead of assembly built into a library
+    # archive: ICU's data is a .dat file in share/icu instead of assembly built into a library;
+    # no extras: uconv packs its messages the same way, with assembly
     ./configure \
         --prefix=/overlayer/syshub \
         --libdir=/overlayer/syshub/lib \
         --sysconfdir=/overlayer/syshub/etc \
         --disable-samples \
+        --disable-extras \
         --disable-tests \
         --disable-static \
         --with-data-packaging=archive
