@@ -28,7 +28,8 @@ build() {
         --disable-tests \
         --disable-static \
         --with-data-packaging=archive
-    make -j"$(nproc)"
+    # data/ races under -j (out/tmp may not exist yet): finish what is left one job at a time
+    make -j"$(nproc)" || make -j1
     make DESTDIR="$(pwd)/_zexbuild-install" install
 }
 
