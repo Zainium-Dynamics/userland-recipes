@@ -140,6 +140,17 @@ install_toolchain_deps() {
 }
 install_toolchain_deps
 
+# Zainium's musl reads resolv.conf, hosts and the CA bundle from /overlayer/syshub/etc
+# (there is no /etc at a Zainium root). This Alpine host has them only in /etc, so a
+# Zainium tool from needs_toolchain (cargo, curl, git) could not resolve or verify
+# anything. Copy the host's files there, once, for every recipe.
+mkdir -p /overlayer/syshub/etc/ssl/certs
+for f in resolv.conf hosts; do
+    [ -e "/overlayer/syshub/etc/$f" ] || cp "/etc/$f" "/overlayer/syshub/etc/$f"
+done
+[ -e /overlayer/syshub/etc/ssl/certs/ca-certificates.crt ] ||
+    cp /etc/ssl/certs/ca-certificates.crt /overlayer/syshub/etc/ssl/certs/ca-certificates.crt
+
 # musl is real now (just unpacked above) — safe to point every
 # recipe's LDFLAGS/RUSTFLAGS at Zainium's actual loader.
 export LDFLAGS="${LDFLAGS:-} -Wl,-dynamic-linker=$ZAINIUM_LDSO -Wl,-rpath=/overlayer/syshub/lib"
