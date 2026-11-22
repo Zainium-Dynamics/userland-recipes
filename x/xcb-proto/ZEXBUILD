@@ -9,7 +9,10 @@ makedepends="pkgconf python3"
 # The XML descriptions of the X C Binding and the Python generator libxcb builds from.
 # Build-time only, so it lives in the userland.
 build() {
-    PYTHON=/overlayer/syshub/bin/python3 ./configure \
+    # Alpine's python3 (makedepends) runs configure and byte-compiles xcbgen;
+    # xcbgen is pure Python and libxcb finds it through xcb-proto.pc's pythondir,
+    # so the exact interpreter version here does not matter.
+    ./configure \
         --prefix=/overlayer/syshub --libdir=/overlayer/syshub/lib \
         --datadir=/overlayer/syshub/share
     make
