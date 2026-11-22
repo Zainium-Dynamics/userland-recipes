@@ -1,0 +1,32 @@
+
+[package]
+name             = "xtrans"
+version          = "1.5.2"
+description      = "X network transport layer macros (headers only)"
+license          = "MIT"
+maintainer       = "alizainx <heyalizain@gmail.com>"
+homepage         = "https://gitlab.freedesktop.org/xorg/lib/libxtrans"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["xtrans"]
+tags             = ["x11", "headers", "dev"]
+
+[install]
+include = "/overlayer/zexlib/union/include"
+lib     = "/overlayer/zexlib/union/lib"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
