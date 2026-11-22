@@ -1,0 +1,31 @@
+
+[package]
+name             = "libpthread-stubs"
+version          = "0.5"
+description      = "pthread stub pkg-config for portable libxcb linking (no library on musl)"
+license          = "MIT"
+maintainer       = "alizainx <heyalizain@gmail.com>"
+homepage         = "https://gitlab.freedesktop.org/xorg/lib/libpthread-stubs"
+build_type       = "dynamic"
+libc_target      = "musl"
+
+blake3           = ""
+ed25519_sig      = ""
+ed25519_pubkey   = ""
+
+requires_syshub  = ""
+depends          = ["musl"]
+provides         = ["libpthread-stubs"]
+tags             = ["x11", "pkgconfig", "dev"]
+
+[install]
+lib     = "/overlayer/zexlib/union/lib"
+share   = "/overlayer/zexlib/union/share"
+_syshub = false
+
+[remove]
+files    = []
+dirs     = []
+symlinks = []
+
+[hooks]
