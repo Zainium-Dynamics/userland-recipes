@@ -2,7 +2,7 @@ maintainer="alizainx <heyalizain@gmail.com>"
 pkgname=xtrans
 pkgver=1.5.2
 pkgrel=0
-source="https://www.x.org/releases/individual/lib/xtrans-$pkgver.tar.xz"
+source="https://xorg.freedesktop.org/archive/individual/lib/xtrans-$pkgver.tar.xz"
 sha256sums="5c5cbfe34764a9131d048f03c31c19e57fb4c682d67713eab6a65541b4dff86c  xtrans-$pkgver.tar.xz"
 makedepends="pkgconf"
 
