@@ -2,7 +2,7 @@ maintainer="alizainx <heyalizain@gmail.com>"
 pkgname=xorgproto
 pkgver=2024.1
 pkgrel=0
-source="https://www.x.org/releases/individual/proto/xorgproto-$pkgver.tar.xz"
+source="https://xorg.freedesktop.org/archive/individual/proto/xorgproto-$pkgver.tar.xz"
 sha256sums="372225fd40815b8423547f5d890c5debc72e88b91088fbfb13158c20495ccb59  xorgproto-$pkgver.tar.xz"
 makedepends="meson samurai"
 
