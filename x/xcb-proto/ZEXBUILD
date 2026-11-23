@@ -2,7 +2,7 @@ maintainer="alizainx <heyalizain@gmail.com>"
 pkgname=xcb-proto
 pkgver=1.17.0
 pkgrel=0
-source="https://www.x.org/releases/individual/proto/xcb-proto-$pkgver.tar.xz"
+source="https://xorg.freedesktop.org/archive/individual/proto/xcb-proto-$pkgver.tar.xz"
 sha256sums="2c1bacd2110f4799f74de6ebb714b94cf6f80fb112316b1219480fd22562148c  xcb-proto-$pkgver.tar.xz"
 makedepends="pkgconf python3"
 
