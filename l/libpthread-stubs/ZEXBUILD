@@ -18,6 +18,11 @@ build() {
 package() {
     local inst="_zexbuild-install/overlayer/syshub"
     mkdir -p "$PAYLOAD_DIR/lib/pkgconfig"
-    [ -d "$inst/lib/pkgconfig" ] && cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
-    [ -d "$inst/share/pkgconfig" ] && mkdir -p "$PAYLOAD_DIR/share/pkgconfig" && cp -a "$inst"/share/pkgconfig/. "$PAYLOAD_DIR/share/pkgconfig/"
+    if [ -d "$inst/lib/pkgconfig" ]; then
+        cp -a "$inst"/lib/pkgconfig/. "$PAYLOAD_DIR/lib/pkgconfig/"
+    fi
+    if [ -d "$inst/share/pkgconfig" ]; then
+        mkdir -p "$PAYLOAD_DIR/share/pkgconfig"
+        cp -a "$inst"/share/pkgconfig/. "$PAYLOAD_DIR/share/pkgconfig/"
+    fi
 }
